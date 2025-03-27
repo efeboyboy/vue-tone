@@ -3,6 +3,10 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
 
+const props = defineProps<{
+  isAudioReady: boolean
+}>()
+
 const { getContext } = useToneContext()
 
 let osc1: Tone.Oscillator
@@ -69,23 +73,6 @@ const updateShape2 = () => {
   }
 }
 
-const toggleOscillators = () => {
-  if (!osc1 || !osc2) return
-
-  if (isPlaying.value) {
-    osc1.stop()
-    osc2.stop()
-    mod1.stop()
-    mod2.stop()
-  } else {
-    osc1.start()
-    osc2.start()
-    mod1.start()
-    mod2.start()
-  }
-  isPlaying.value = !isPlaying.value
-}
-
 const drawWaveform = () => {
   if (!canvas1.value || !canvas2.value || !analyzer1 || !analyzer2) return
 
@@ -128,7 +115,7 @@ const drawWaveform = () => {
   requestAnimationFrame(drawWaveform)
 }
 
-onMounted(() => {
+const initializeOscillators = () => {
   const context = getContext()
 
   // Create analyzers
@@ -172,11 +159,11 @@ onMounted(() => {
   const modGain2 = new Tone.Gain(0)
 
   // FM modulation routing with shaped waveforms
-  mod1.connect(shaper1) // Shape the modulator signal first
+  mod1.connect(shaper1)
   mod2.connect(shaper2)
-  shaper1.connect(modGain1) // Then control its amplitude
+  shaper1.connect(modGain1)
   shaper2.connect(modGain2)
-  modGain1.connect(osc2.frequency) // Cross-modulate to opposite oscillator
+  modGain1.connect(osc2.frequency)
   modGain2.connect(osc1.frequency)
 
   // Create output analyzers and gains
@@ -219,8 +206,31 @@ onMounted(() => {
     modGain2.gain.rampTo(modulationDepth, 0.1)
   })
 
+  // Start oscillators automatically
+  osc1.start()
+  osc2.start()
+  mod1.start()
+  mod2.start()
+  isPlaying.value = true
+
   // Start visualization
   drawWaveform()
+}
+
+// Watch for audio initialization
+watch(
+  () => props.isAudioReady,
+  (isReady) => {
+    if (isReady) {
+      initializeOscillators()
+    }
+  },
+)
+
+onMounted(() => {
+  if (props.isAudioReady) {
+    initializeOscillators()
+  }
 })
 
 // Watch for changes in shape amounts
@@ -298,10 +308,6 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-
-    <button @click="toggleOscillators" :class="{ playing: isPlaying }" class="toggle-button">
-      {{ isPlaying ? 'Stop' : 'Start' }} Oscillators
-    </button>
   </div>
 </template>
 
@@ -366,25 +372,5 @@ onUnmounted(() => {
 .control-group span {
   color: #666;
   font-size: 0.9rem;
-}
-
-.toggle-button {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.toggle-button.playing {
-  background-color: #f44336;
-}
-
-.toggle-button:hover {
-  opacity: 0.9;
 }
 </style>
