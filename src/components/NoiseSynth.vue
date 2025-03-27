@@ -9,6 +9,9 @@ const props = defineProps<{
 
 const { getContext } = useToneContext()
 
+// Add output node for LPG routing
+const output = new Tone.Gain()
+
 let noise: Tone.NoiseSynth
 let analyzer: Tone.Analyser
 
@@ -67,7 +70,7 @@ const initializeNoiseSynth = () => {
     },
     volume: volume.value,
   }).connect(analyzer)
-  analyzer.toDestination()
+  analyzer.connect(output)
 
   // Start visualization
   drawWaveform()
@@ -115,6 +118,12 @@ onMounted(() => {
 onUnmounted(() => {
   if (noise) noise.dispose()
   if (analyzer) analyzer.dispose()
+  output.dispose()
+})
+
+// Expose output node for LPG routing
+defineExpose({
+  output,
 })
 </script>
 

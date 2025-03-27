@@ -1,14 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import DualOscillator from '../components/DualOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
+import LowPassGate from '../components/LowPassGate.vue'
 
 const isAudioInitialized = ref(false)
+
+// References to components for audio routing
+const dualOscRef = ref()
+const noiseSynthRef = ref()
+const lpg1Ref = ref()
+const lpg2Ref = ref()
+const lpg3Ref = ref()
 
 // Listen for the global audio initialization event
 const handleAudioInitialized = () => {
   isAudioInitialized.value = true
 }
+
+// Set up audio routing when components are mounted
+onMounted(() => {
+  // Wait for a moment to ensure all components are initialized
+  setTimeout(() => {
+    if (dualOscRef.value && lpg1Ref.value && lpg2Ref.value) {
+      // Route oscillator 1 through LPG 1
+      dualOscRef.value.output1.connect(lpg1Ref.value.input)
+      lpg1Ref.value.output.toDestination()
+
+      // Route oscillator 2 through LPG 2
+      dualOscRef.value.output2.connect(lpg2Ref.value.input)
+      lpg2Ref.value.output.toDestination()
+    }
+
+    if (noiseSynthRef.value && lpg3Ref.value) {
+      // Route noise synth through LPG 3
+      noiseSynthRef.value.output.connect(lpg3Ref.value.input)
+      lpg3Ref.value.output.toDestination()
+    }
+  }, 100)
+})
 
 // Add event listener when component is mounted
 window.addEventListener('audioInitialized', handleAudioInitialized)
@@ -19,10 +49,15 @@ window.addEventListener('audioInitialized', handleAudioInitialized)
     <h1>Bongo Patch</h1>
     <div class="synth-container">
       <div class="oscillators">
-        <DualOscillator :is-audio-ready="isAudioInitialized" />
+        <DualOscillator ref="dualOscRef" :is-audio-ready="isAudioInitialized" />
+      </div>
+      <div class="lpgs">
+        <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
+        <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
+        <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
       </div>
       <div class="noise-synths">
-        <NoiseSynth :is-audio-ready="isAudioInitialized" />
+        <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
       </div>
     </div>
   </div>
@@ -45,11 +80,18 @@ h1 {
 }
 
 .oscillators,
-.noise-synths {
+.noise-synths,
+.lpgs {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 2rem;
+}
+
+.lpgs {
+  background: rgba(156, 39, 176, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
 }
 </style>

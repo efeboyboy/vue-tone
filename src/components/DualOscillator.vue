@@ -9,6 +9,10 @@ const props = defineProps<{
 
 const { getContext } = useToneContext()
 
+// Add output nodes for LPG routing
+const output1 = new Tone.Gain()
+const output2 = new Tone.Gain()
+
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
 let mod1: Tone.Oscillator
@@ -175,8 +179,8 @@ const initializeOscillators = () => {
   osc2.connect(outGain2)
   outGain1.connect(analyzer1)
   outGain2.connect(analyzer2)
-  analyzer1.toDestination()
-  analyzer2.toDestination()
+  analyzer1.connect(output1)
+  analyzer2.connect(output2)
 
   // Watch modulation parameters
   watch(modIndex1, (value) => {
@@ -246,6 +250,14 @@ onUnmounted(() => {
   if (shaper2) shaper2.dispose()
   if (analyzer1) analyzer1.dispose()
   if (analyzer2) analyzer2.dispose()
+  output1.dispose()
+  output2.dispose()
+})
+
+// Expose output nodes for LPG routing
+defineExpose({
+  output1,
+  output2,
 })
 </script>
 
