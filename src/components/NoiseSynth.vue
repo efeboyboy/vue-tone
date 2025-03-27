@@ -12,8 +12,10 @@ const { getContext } = useToneContext()
 // Add output node for LPG routing
 const output = new Tone.Gain()
 
+// Initialize analyzer at module level
+const analyzer = new Tone.Analyser('waveform', 1024)
+
 let noise: Tone.NoiseSynth
-let analyzer: Tone.Analyser
 
 const attack = ref(0.01)
 const decay = ref(0.2)
@@ -53,9 +55,6 @@ const drawWaveform = () => {
 const initializeNoiseSynth = () => {
   const context = getContext()
 
-  // Create analyzer
-  analyzer = new Tone.Analyser('waveform', 1024)
-
   // Create white noise synth
   noise = new Tone.NoiseSynth({
     context,
@@ -69,8 +68,7 @@ const initializeNoiseSynth = () => {
       release: release.value,
     },
     volume: volume.value,
-  }).connect(analyzer)
-  analyzer.connect(output)
+  }).connect(output)
 
   // Start visualization
   drawWaveform()
@@ -121,9 +119,10 @@ onUnmounted(() => {
   output.dispose()
 })
 
-// Expose output node for LPG routing
+// Expose nodes for external routing
 defineExpose({
   output,
+  analyzer,
 })
 </script>
 

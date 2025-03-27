@@ -13,14 +13,16 @@ const { getContext } = useToneContext()
 const output1 = new Tone.Gain()
 const output2 = new Tone.Gain()
 
+// Initialize analyzers at module level
+const analyzer1 = new Tone.Analyser('waveform', 1024)
+const analyzer2 = new Tone.Analyser('waveform', 1024)
+
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
 let mod1: Tone.Oscillator
 let mod2: Tone.Oscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
-let analyzer1: Tone.Analyser
-let analyzer2: Tone.Analyser
 
 const isPlaying = ref(false)
 const freq1 = ref(440)
@@ -122,10 +124,6 @@ const drawWaveform = () => {
 const initializeOscillators = () => {
   const context = getContext()
 
-  // Create analyzers
-  analyzer1 = new Tone.Analyser('waveform', 1024)
-  analyzer2 = new Tone.Analyser('waveform', 1024)
-
   // Create carrier oscillators
   osc1 = new Tone.Oscillator({
     context,
@@ -170,17 +168,15 @@ const initializeOscillators = () => {
   modGain1.connect(osc2.frequency)
   modGain2.connect(osc1.frequency)
 
-  // Create output analyzers and gains
+  // Create output gains
   const outGain1 = new Tone.Gain(1)
   const outGain2 = new Tone.Gain(1)
 
   // Output routing
   osc1.connect(outGain1)
   osc2.connect(outGain2)
-  outGain1.connect(analyzer1)
-  outGain2.connect(analyzer2)
-  analyzer1.connect(output1)
-  analyzer2.connect(output2)
+  outGain1.connect(output1)
+  outGain2.connect(output2)
 
   // Watch modulation parameters
   watch(modIndex1, (value) => {
@@ -254,10 +250,12 @@ onUnmounted(() => {
   output2.dispose()
 })
 
-// Expose output nodes for LPG routing
+// Expose nodes for external routing
 defineExpose({
   output1,
   output2,
+  analyzer1,
+  analyzer2,
 })
 </script>
 

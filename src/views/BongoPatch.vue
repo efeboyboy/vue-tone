@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import DualOscillator from '../components/DualOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
@@ -18,30 +18,47 @@ const handleAudioInitialized = () => {
   isAudioInitialized.value = true
 }
 
-// Set up audio routing when components are mounted
+const setupAudioRouting = () => {
+  // Route oscillator 1 through LPG 1
+  if (dualOscRef.value?.output1 && lpg1Ref.value?.input) {
+    dualOscRef.value.output1.connect(lpg1Ref.value.input)
+    lpg1Ref.value.output.connect(dualOscRef.value.analyzer1)
+    dualOscRef.value.analyzer1.toDestination()
+  }
+
+  // Route oscillator 2 through LPG 2
+  if (dualOscRef.value?.output2 && lpg2Ref.value?.input) {
+    dualOscRef.value.output2.connect(lpg2Ref.value.input)
+    lpg2Ref.value.output.connect(dualOscRef.value.analyzer2)
+    dualOscRef.value.analyzer2.toDestination()
+  }
+
+  // Route noise synth through LPG 3
+  if (noiseSynthRef.value?.output && lpg3Ref.value?.input) {
+    noiseSynthRef.value.output.connect(lpg3Ref.value.input)
+    lpg3Ref.value.output.connect(noiseSynthRef.value.analyzer)
+    noiseSynthRef.value.analyzer.toDestination()
+  }
+}
+
+// Watch for audio initialization
+watch(
+  () => isAudioInitialized.value,
+  (isReady) => {
+    if (isReady) {
+      // Wait for components to initialize
+      setTimeout(setupAudioRouting, 100)
+    }
+  },
+)
+
 onMounted(() => {
-  // Wait for a moment to ensure all components are initialized
-  setTimeout(() => {
-    if (dualOscRef.value && lpg1Ref.value && lpg2Ref.value) {
-      // Route oscillator 1 through LPG 1
-      dualOscRef.value.output1.connect(lpg1Ref.value.input)
-      lpg1Ref.value.output.toDestination()
-
-      // Route oscillator 2 through LPG 2
-      dualOscRef.value.output2.connect(lpg2Ref.value.input)
-      lpg2Ref.value.output.toDestination()
-    }
-
-    if (noiseSynthRef.value && lpg3Ref.value) {
-      // Route noise synth through LPG 3
-      noiseSynthRef.value.output.connect(lpg3Ref.value.input)
-      lpg3Ref.value.output.toDestination()
-    }
-  }, 100)
+  window.addEventListener('audioInitialized', handleAudioInitialized)
 })
 
-// Add event listener when component is mounted
-window.addEventListener('audioInitialized', handleAudioInitialized)
+onUnmounted(() => {
+  window.removeEventListener('audioInitialized', handleAudioInitialized)
+})
 </script>
 
 <template>

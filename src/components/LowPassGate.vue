@@ -12,48 +12,16 @@ const { getContext } = useToneContext()
 
 let filter: Tone.Filter
 let vca: Tone.Gain
-let analyzer: Tone.Analyser
 
 const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
 const amount = ref(0.5)
-
-const canvas = ref<HTMLCanvasElement | null>(null)
 
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
 const output = new Tone.Gain()
 
-const drawResponse = () => {
-  if (!canvas.value || !analyzer) return
-
-  const ctx = canvas.value.getContext('2d')
-  if (!ctx) return
-
-  const width = canvas.value.width
-  const height = canvas.value.height
-
-  const wave = analyzer.getValue() as Float32Array
-
-  ctx.clearRect(0, 0, width, height)
-  ctx.beginPath()
-  ctx.strokeStyle = '#9c27b0'
-  ctx.lineWidth = 2
-  wave.forEach((value, i) => {
-    const x = (i / wave.length) * width
-    const y = (((value as number) + 1) / 2) * height
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  })
-  ctx.stroke()
-
-  requestAnimationFrame(drawResponse)
-}
-
 const initializeLPG = () => {
   const context = getContext()
-
-  // Create analyzer
-  analyzer = new Tone.Analyser('waveform', 1024)
 
   // Create filter and VCA
   filter = new Tone.Filter({
@@ -70,9 +38,6 @@ const initializeLPG = () => {
 
   // Initial routing based on mode
   updateRouting()
-
-  // Start visualization
-  drawResponse()
 }
 
 const updateRouting = () => {
@@ -88,17 +53,14 @@ const updateRouting = () => {
     case 'COMBO':
       input.connect(filter)
       filter.connect(vca)
-      vca.connect(analyzer)
       vca.connect(output)
       break
     case 'VCF':
       input.connect(filter)
-      filter.connect(analyzer)
       filter.connect(output)
       break
     case 'VCA':
       input.connect(vca)
-      vca.connect(analyzer)
       vca.connect(output)
       break
   }
@@ -144,7 +106,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (filter) filter.dispose()
   if (vca) vca.dispose()
-  if (analyzer) analyzer.dispose()
   input.dispose()
   output.dispose()
 })
@@ -160,7 +121,6 @@ defineExpose({
   <div class="lpg">
     <div class="module">
       <h3>{{ label }}</h3>
-      <canvas ref="canvas" width="300" height="60" class="response"></canvas>
       <div class="controls">
         <div class="control-group">
           <label>Mode</label>
@@ -199,15 +159,6 @@ defineExpose({
 .module h3 {
   margin: 0 0 1rem 0;
   color: #333;
-}
-
-.response {
-  width: 100%;
-  height: 60px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 1rem;
 }
 
 .controls {
