@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DualOscillator from '../components/DualOscillator.vue'
+import NoiseSynth from '../components/NoiseSynth.vue'
 
 const isAudioInitialized = ref(false)
 
@@ -16,8 +17,13 @@ window.addEventListener('audioInitialized', handleAudioInitialized)
 <template>
   <div class="bongo-patch">
     <h1>Bongo Patch</h1>
-    <div class="oscillators">
-      <DualOscillator :is-audio-ready="isAudioInitialized" />
+    <div class="synth-container">
+      <div class="oscillators">
+        <DualOscillator :is-audio-ready="isAudioInitialized" />
+      </div>
+      <div class="noise-synths">
+        <NoiseSynth :is-audio-ready="isAudioInitialized" />
+      </div>
     </div>
   </div>
 </template>
@@ -32,7 +38,14 @@ h1 {
   color: #333;
 }
 
-.oscillators {
+.synth-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.oscillators,
+.noise-synths {
   display: flex;
   justify-content: center;
   align-items: center;
