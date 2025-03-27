@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
 
@@ -7,20 +7,67 @@ const { getContext } = useToneContext()
 
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
+let shaper1: Tone.WaveShaper
+let shaper2: Tone.WaveShaper
+let analyzer1: Tone.Analyser
+let analyzer2: Tone.Analyser
 
 const isPlaying = ref(false)
 const freq1 = ref(440)
 const freq2 = ref(443)
-const detune = ref(3)
+const shape1Amount = ref(1)
+const shape2Amount = ref(1)
 
-const updateFrequencies = () => {
-  const baseFreq = freq1.value
-  freq2.value = baseFreq + detune.value
-  if (osc1 && osc2) {
-    osc1.frequency.value = freq1.value
-    osc2.frequency.value = freq2.value
+const canvas1 = ref<HTMLCanvasElement | null>(null)
+const canvas2 = ref<HTMLCanvasElement | null>(null)
+
+// Create a square wave shaping function with amount control
+const makeSquareShaper = (val: number, amount: number) => {
+  return Math.tanh(val * amount) // Smooth square wave with variable hardness
+}
+
+// Create a saw wave shaping function with amount control
+const makeSawShaper = (val: number, amount: number) => {
+  return val * amount // Variable slope saw wave
+}
+
+const updateFrequency1 = () => {
+  if (osc1) {
+    osc1.frequency.rampTo(freq1.value, 0.1)
   }
 }
+
+const updateFrequency2 = () => {
+  if (osc2) {
+    osc2.frequency.rampTo(freq2.value, 0.1)
+  }
+}
+
+const updateShape1 = () => {
+  if (shaper1) {
+    const curve = new Float32Array(4096)
+    for (let i = 0; i < 4096; i++) {
+      const x = (i / 4096) * 2 - 1
+      curve[i] = makeSquareShaper(x, shape1Amount.value)
+    }
+    shaper1.curve = curve
+  }
+}
+
+const updateShape2 = () => {
+  if (shaper2) {
+    const curve = new Float32Array(4096)
+    for (let i = 0; i < 4096; i++) {
+      const x = (i / 4096) * 2 - 1
+      curve[i] = makeSawShaper(x, shape2Amount.value)
+    }
+    shaper2.curve = curve
+  }
+}
+
+// Watch for changes in shape amounts
+watch(shape1Amount, updateShape1)
+watch(shape2Amount, updateShape2)
 
 const toggleOscillators = () => {
   if (!osc1 || !osc2) return
@@ -35,56 +82,150 @@ const toggleOscillators = () => {
   isPlaying.value = !isPlaying.value
 }
 
+const drawWaveform = () => {
+  if (!canvas1.value || !canvas2.value || !analyzer1 || !analyzer2) return
+
+  const ctx1 = canvas1.value.getContext('2d')
+  const ctx2 = canvas2.value.getContext('2d')
+  if (!ctx1 || !ctx2) return
+
+  const width = canvas1.value.width
+  const height = canvas1.value.height
+
+  const wave1 = analyzer1.getValue() as Float32Array
+  const wave2 = analyzer2.getValue() as Float32Array
+
+  // Draw oscillator 1 waveform
+  ctx1.clearRect(0, 0, width, height)
+  ctx1.beginPath()
+  ctx1.strokeStyle = '#4caf50'
+  ctx1.lineWidth = 2
+  wave1.forEach((value, i) => {
+    const x = (i / wave1.length) * width
+    const y = (((value as number) + 1) / 2) * height
+    if (i === 0) ctx1.moveTo(x, y)
+    else ctx1.lineTo(x, y)
+  })
+  ctx1.stroke()
+
+  // Draw oscillator 2 waveform
+  ctx2.clearRect(0, 0, width, height)
+  ctx2.beginPath()
+  ctx2.strokeStyle = '#2196f3'
+  ctx2.lineWidth = 2
+  wave2.forEach((value, i) => {
+    const x = (i / wave2.length) * width
+    const y = (((value as number) + 1) / 2) * height
+    if (i === 0) ctx2.moveTo(x, y)
+    else ctx2.lineTo(x, y)
+  })
+  ctx2.stroke()
+
+  requestAnimationFrame(drawWaveform)
+}
+
 onMounted(() => {
   const context = getContext()
 
+  // Create analyzers
+  analyzer1 = new Tone.Analyser('waveform', 1024)
+  analyzer2 = new Tone.Analyser('waveform', 1024)
+
+  // Create WaveShapers with initial curves
+  shaper1 = new Tone.WaveShaper((curve) => makeSquareShaper(curve, shape1Amount.value), 4096)
+  shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
+
+  // Create oscillators and connect through shapers
   osc1 = new Tone.Oscillator({
     context,
     frequency: freq1.value,
     type: 'sine',
     volume: -10,
-  }).toDestination()
+  })
 
   osc2 = new Tone.Oscillator({
     context,
     frequency: freq2.value,
     type: 'sine',
     volume: -10,
-  }).toDestination()
+  })
+
+  // Connect signal chains
+  osc1.connect(shaper1)
+  shaper1.connect(analyzer1)
+  analyzer1.toDestination()
+
+  osc2.connect(shaper2)
+  shaper2.connect(analyzer2)
+  analyzer2.toDestination()
+
+  // Start visualization
+  drawWaveform()
 })
 
 onUnmounted(() => {
   if (osc1) osc1.dispose()
   if (osc2) osc2.dispose()
+  if (shaper1) shaper1.dispose()
+  if (shaper2) shaper2.dispose()
+  if (analyzer1) analyzer1.dispose()
+  if (analyzer2) analyzer2.dispose()
 })
 </script>
 
 <template>
   <div class="dual-oscillator">
-    <div class="controls">
-      <div class="control-group">
-        <label>Base Frequency (Hz)</label>
-        <input type="range" min="220" max="880" v-model.number="freq1" @input="updateFrequencies" />
-        <span>{{ freq1 }}Hz</span>
+    <div class="oscillators">
+      <div class="oscillator">
+        <h3>Square Oscillator</h3>
+        <canvas ref="canvas1" width="300" height="100" class="waveform"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label>Frequency (Hz)</label>
+            <input
+              type="range"
+              min="220"
+              max="880"
+              v-model.number="freq1"
+              @input="updateFrequency1"
+            />
+            <span>{{ freq1 }}Hz</span>
+          </div>
+          <div class="control-group">
+            <label>Shape Amount</label>
+            <input type="range" min="1" max="50" step="0.1" v-model.number="shape1Amount" />
+            <span>{{ shape1Amount }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="control-group">
-        <label>Detune (Hz)</label>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          step="0.1"
-          v-model.number="detune"
-          @input="updateFrequencies"
-        />
-        <span>{{ detune }}Hz</span>
+      <div class="oscillator">
+        <h3>Saw Oscillator</h3>
+        <canvas ref="canvas2" width="300" height="100" class="waveform"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label>Frequency (Hz)</label>
+            <input
+              type="range"
+              min="220"
+              max="880"
+              v-model.number="freq2"
+              @input="updateFrequency2"
+            />
+            <span>{{ freq2 }}Hz</span>
+          </div>
+          <div class="control-group">
+            <label>Shape Amount</label>
+            <input type="range" min="1" max="50" step="0.1" v-model.number="shape2Amount" />
+            <span>{{ shape2Amount }}</span>
+          </div>
+        </div>
       </div>
-
-      <button @click="toggleOscillators" :class="{ playing: isPlaying }" class="toggle-button">
-        {{ isPlaying ? 'Stop' : 'Start' }} Oscillators
-      </button>
     </div>
+
+    <button @click="toggleOscillators" :class="{ playing: isPlaying }" class="toggle-button">
+      {{ isPlaying ? 'Stop' : 'Start' }} Oscillators
+    </button>
   </div>
 </template>
 
@@ -93,8 +234,36 @@ onUnmounted(() => {
   padding: 1rem;
   background: #f5f5f5;
   border-radius: 8px;
-  max-width: 400px;
+  max-width: 800px;
   margin: 1rem;
+}
+
+.oscillators {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.oscillator {
+  flex: 1;
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.oscillator h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.waveform {
+  width: 100%;
+  height: 100px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 1rem;
 }
 
 .controls {
@@ -111,14 +280,21 @@ onUnmounted(() => {
 
 .control-group label {
   font-weight: bold;
+  color: #666;
 }
 
 .control-group input[type='range'] {
   width: 100%;
 }
 
+.control-group span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
 .toggle-button {
-  padding: 0.5rem 1rem;
+  width: 100%;
+  padding: 0.75rem;
   font-size: 1rem;
   background-color: #4caf50;
   color: white;
