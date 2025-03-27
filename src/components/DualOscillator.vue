@@ -7,6 +7,8 @@ const { getContext } = useToneContext()
 
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
+let mod1: Tone.Oscillator
+let mod2: Tone.Oscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
 let analyzer1: Tone.Analyser
@@ -73,9 +75,13 @@ const toggleOscillators = () => {
   if (isPlaying.value) {
     osc1.stop()
     osc2.stop()
+    mod1.stop()
+    mod2.stop()
   } else {
     osc1.start()
     osc2.start()
+    mod1.start()
+    mod2.start()
   }
   isPlaying.value = !isPlaying.value
 }
@@ -129,10 +135,6 @@ onMounted(() => {
   analyzer1 = new Tone.Analyser('waveform', 1024)
   analyzer2 = new Tone.Analyser('waveform', 1024)
 
-  // Create WaveShapers with initial curves
-  shaper1 = new Tone.WaveShaper((curve) => makeSquareShaper(curve, shape1Amount.value), 4096)
-  shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
-
   // Create carrier oscillators
   osc1 = new Tone.Oscillator({
     context,
@@ -148,30 +150,46 @@ onMounted(() => {
     volume: -10,
   })
 
-  // Create modulator oscillators
-  const mod1 = new Tone.Oscillator({
+  // Create modulator oscillators (will be shaped)
+  mod1 = new Tone.Oscillator({
     context,
     frequency: freq1.value,
-    type: 'square',
-  }).start()
+    type: 'sine',
+  })
 
-  const mod2 = new Tone.Oscillator({
+  mod2 = new Tone.Oscillator({
     context,
     frequency: freq2.value,
-    type: 'sawtooth',
-  }).start()
+    type: 'sine',
+  })
+
+  // Create WaveShapers with initial curves
+  shaper1 = new Tone.WaveShaper((curve) => makeSquareShaper(curve, shape1Amount.value), 4096)
+  shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
 
   // Create gain nodes for modulation amount
   const modGain1 = new Tone.Gain(0)
   const modGain2 = new Tone.Gain(0)
 
-  // FM modulation routing
-  mod1.connect(modGain1)
-  mod2.connect(modGain2)
+  // FM modulation routing with shaped waveforms
+  mod1.connect(shaper1) // Shape the modulator signal first
+  mod2.connect(shaper2)
+  shaper1.connect(modGain1) // Then control its amplitude
+  shaper2.connect(modGain2)
+  modGain1.connect(osc2.frequency) // Cross-modulate to opposite oscillator
+  modGain2.connect(osc1.frequency)
 
-  // Scale the modulation frequency by the carrier frequency for proper harmonicity
-  modGain1.connect(osc1.frequency)
-  modGain2.connect(osc2.frequency)
+  // Create output analyzers and gains
+  const outGain1 = new Tone.Gain(1)
+  const outGain2 = new Tone.Gain(1)
+
+  // Output routing
+  osc1.connect(outGain1)
+  osc2.connect(outGain2)
+  outGain1.connect(analyzer1)
+  outGain2.connect(analyzer2)
+  analyzer1.toDestination()
+  analyzer2.toDestination()
 
   // Watch modulation parameters
   watch(modIndex1, (value) => {
@@ -201,15 +219,6 @@ onMounted(() => {
     modGain2.gain.rampTo(modulationDepth, 0.1)
   })
 
-  // Connect to shapers and output chain
-  osc1.connect(shaper1)
-  shaper1.connect(analyzer1)
-  analyzer1.toDestination()
-
-  osc2.connect(shaper2)
-  shaper2.connect(analyzer2)
-  analyzer2.toDestination()
-
   // Start visualization
   drawWaveform()
 })
@@ -221,6 +230,8 @@ watch(shape2Amount, updateShape2)
 onUnmounted(() => {
   if (osc1) osc1.dispose()
   if (osc2) osc2.dispose()
+  if (mod1) mod1.dispose()
+  if (mod2) mod2.dispose()
   if (shaper1) shaper1.dispose()
   if (shaper2) shaper2.dispose()
   if (analyzer1) analyzer1.dispose()
