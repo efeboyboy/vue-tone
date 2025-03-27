@@ -5,8 +5,8 @@ import { useToneContext } from '../composables/useToneContext'
 
 const { getContext } = useToneContext()
 
-let osc1: Tone.Oscillator
-let osc2: Tone.Oscillator
+let osc1: Tone.FMOscillator
+let osc2: Tone.FMOscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
 let analyzer1: Tone.Analyser
@@ -17,6 +17,10 @@ const freq1 = ref(440)
 const freq2 = ref(443)
 const shape1Amount = ref(1)
 const shape2Amount = ref(1)
+const harmonicity1 = ref(1)
+const harmonicity2 = ref(1)
+const modIndex1 = ref(1)
+const modIndex2 = ref(1)
 
 const canvas1 = ref<HTMLCanvasElement | null>(null)
 const canvas2 = ref<HTMLCanvasElement | null>(null)
@@ -65,9 +69,37 @@ const updateShape2 = () => {
   }
 }
 
-// Watch for changes in shape amounts
+const updateHarmonicity1 = () => {
+  if (osc1) {
+    osc1.harmonicity.rampTo(harmonicity1.value, 0.1)
+  }
+}
+
+const updateHarmonicity2 = () => {
+  if (osc2) {
+    osc2.harmonicity.rampTo(harmonicity2.value, 0.1)
+  }
+}
+
+const updateModIndex1 = () => {
+  if (osc1) {
+    osc1.modulationIndex.rampTo(modIndex1.value, 0.1)
+  }
+}
+
+const updateModIndex2 = () => {
+  if (osc2) {
+    osc2.modulationIndex.rampTo(modIndex2.value, 0.1)
+  }
+}
+
+// Watch for changes in shape amounts and FM parameters
 watch(shape1Amount, updateShape1)
 watch(shape2Amount, updateShape2)
+watch(harmonicity1, updateHarmonicity1)
+watch(harmonicity2, updateHarmonicity2)
+watch(modIndex1, updateModIndex1)
+watch(modIndex2, updateModIndex2)
 
 const toggleOscillators = () => {
   if (!osc1 || !osc2) return
@@ -135,18 +167,24 @@ onMounted(() => {
   shaper1 = new Tone.WaveShaper((curve) => makeSquareShaper(curve, shape1Amount.value), 4096)
   shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
 
-  // Create oscillators and connect through shapers
-  osc1 = new Tone.Oscillator({
+  // Create FM oscillators and connect through shapers
+  osc1 = new Tone.FMOscillator({
     context,
     frequency: freq1.value,
     type: 'sine',
+    modulationType: 'square',
+    harmonicity: harmonicity1.value,
+    modulationIndex: modIndex1.value,
     volume: -10,
   })
 
-  osc2 = new Tone.Oscillator({
+  osc2 = new Tone.FMOscillator({
     context,
     frequency: freq2.value,
     type: 'sine',
+    modulationType: 'sawtooth',
+    harmonicity: harmonicity2.value,
+    modulationIndex: modIndex2.value,
     volume: -10,
   })
 
@@ -177,7 +215,7 @@ onUnmounted(() => {
   <div class="dual-oscillator">
     <div class="oscillators">
       <div class="oscillator">
-        <h3>Square Oscillator</h3>
+        <h3>Square FM Oscillator</h3>
         <canvas ref="canvas1" width="300" height="100" class="waveform"></canvas>
         <div class="controls">
           <div class="control-group">
@@ -196,11 +234,21 @@ onUnmounted(() => {
             <input type="range" min="1" max="50" step="0.1" v-model.number="shape1Amount" />
             <span>{{ shape1Amount }}</span>
           </div>
+          <div class="control-group">
+            <label>Harmonicity</label>
+            <input type="range" min="0" max="5" step="0.1" v-model.number="harmonicity1" />
+            <span>{{ harmonicity1 }}</span>
+          </div>
+          <div class="control-group">
+            <label>Modulation Index</label>
+            <input type="range" min="0" max="10" step="0.1" v-model.number="modIndex1" />
+            <span>{{ modIndex1 }}</span>
+          </div>
         </div>
       </div>
 
       <div class="oscillator">
-        <h3>Saw Oscillator</h3>
+        <h3>Saw FM Oscillator</h3>
         <canvas ref="canvas2" width="300" height="100" class="waveform"></canvas>
         <div class="controls">
           <div class="control-group">
@@ -218,6 +266,16 @@ onUnmounted(() => {
             <label>Shape Amount</label>
             <input type="range" min="1" max="50" step="0.1" v-model.number="shape2Amount" />
             <span>{{ shape2Amount }}</span>
+          </div>
+          <div class="control-group">
+            <label>Harmonicity</label>
+            <input type="range" min="0" max="5" step="0.1" v-model.number="harmonicity2" />
+            <span>{{ harmonicity2 }}</span>
+          </div>
+          <div class="control-group">
+            <label>Modulation Index</label>
+            <input type="range" min="0" max="10" step="0.1" v-model.number="modIndex2" />
+            <span>{{ modIndex2 }}</span>
           </div>
         </div>
       </div>
