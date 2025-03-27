@@ -5,8 +5,8 @@ import { useToneContext } from '../composables/useToneContext'
 
 const { getContext } = useToneContext()
 
-let osc1: Tone.FMOscillator
-let osc2: Tone.FMOscillator
+let osc1: Tone.Oscillator
+let osc2: Tone.Oscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
 let analyzer1: Tone.Analyser
@@ -17,8 +17,6 @@ const freq1 = ref(440)
 const freq2 = ref(443)
 const shape1Amount = ref(1)
 const shape2Amount = ref(1)
-const harmonicity1 = ref(1)
-const harmonicity2 = ref(1)
 const modIndex1 = ref(1)
 const modIndex2 = ref(1)
 
@@ -68,38 +66,6 @@ const updateShape2 = () => {
     shaper2.curve = curve
   }
 }
-
-const updateHarmonicity1 = () => {
-  if (osc1) {
-    osc1.harmonicity.rampTo(harmonicity1.value, 0.1)
-  }
-}
-
-const updateHarmonicity2 = () => {
-  if (osc2) {
-    osc2.harmonicity.rampTo(harmonicity2.value, 0.1)
-  }
-}
-
-const updateModIndex1 = () => {
-  if (osc1) {
-    osc1.modulationIndex.rampTo(modIndex1.value, 0.1)
-  }
-}
-
-const updateModIndex2 = () => {
-  if (osc2) {
-    osc2.modulationIndex.rampTo(modIndex2.value, 0.1)
-  }
-}
-
-// Watch for changes in shape amounts and FM parameters
-watch(shape1Amount, updateShape1)
-watch(shape2Amount, updateShape2)
-watch(harmonicity1, updateHarmonicity1)
-watch(harmonicity2, updateHarmonicity2)
-watch(modIndex1, updateModIndex1)
-watch(modIndex2, updateModIndex2)
 
 const toggleOscillators = () => {
   if (!osc1 || !osc2) return
@@ -167,28 +133,75 @@ onMounted(() => {
   shaper1 = new Tone.WaveShaper((curve) => makeSquareShaper(curve, shape1Amount.value), 4096)
   shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
 
-  // Create FM oscillators and connect through shapers
-  osc1 = new Tone.FMOscillator({
+  // Create carrier oscillators
+  osc1 = new Tone.Oscillator({
     context,
     frequency: freq1.value,
     type: 'sine',
-    modulationType: 'square',
-    harmonicity: harmonicity1.value,
-    modulationIndex: modIndex1.value,
     volume: -10,
   })
 
-  osc2 = new Tone.FMOscillator({
+  osc2 = new Tone.Oscillator({
     context,
     frequency: freq2.value,
     type: 'sine',
-    modulationType: 'sawtooth',
-    harmonicity: harmonicity2.value,
-    modulationIndex: modIndex2.value,
     volume: -10,
   })
 
-  // Connect signal chains
+  // Create modulator oscillators
+  const mod1 = new Tone.Oscillator({
+    context,
+    frequency: freq1.value,
+    type: 'square',
+  }).start()
+
+  const mod2 = new Tone.Oscillator({
+    context,
+    frequency: freq2.value,
+    type: 'sawtooth',
+  }).start()
+
+  // Create gain nodes for modulation amount
+  const modGain1 = new Tone.Gain(0)
+  const modGain2 = new Tone.Gain(0)
+
+  // FM modulation routing
+  mod1.connect(modGain1)
+  mod2.connect(modGain2)
+
+  // Scale the modulation frequency by the carrier frequency for proper harmonicity
+  modGain1.connect(osc1.frequency)
+  modGain2.connect(osc2.frequency)
+
+  // Watch modulation parameters
+  watch(modIndex1, (value) => {
+    // Scale modulation index by frequency for consistent FM depth
+    const modulationDepth = value * freq1.value
+    modGain1.gain.rampTo(modulationDepth, 0.1)
+  })
+
+  watch(modIndex2, (value) => {
+    const modulationDepth = value * freq2.value
+    modGain2.gain.rampTo(modulationDepth, 0.1)
+  })
+
+  // Update modulator frequencies when carrier frequencies change
+  watch(freq1, (value) => {
+    osc1.frequency.rampTo(value, 0.1)
+    mod1.frequency.rampTo(value, 0.1)
+    // Update modulation depth to maintain consistent FM character
+    const modulationDepth = modIndex1.value * value
+    modGain1.gain.rampTo(modulationDepth, 0.1)
+  })
+
+  watch(freq2, (value) => {
+    osc2.frequency.rampTo(value, 0.1)
+    mod2.frequency.rampTo(value, 0.1)
+    const modulationDepth = modIndex2.value * value
+    modGain2.gain.rampTo(modulationDepth, 0.1)
+  })
+
+  // Connect to shapers and output chain
   osc1.connect(shaper1)
   shaper1.connect(analyzer1)
   analyzer1.toDestination()
@@ -200,6 +213,10 @@ onMounted(() => {
   // Start visualization
   drawWaveform()
 })
+
+// Watch for changes in shape amounts
+watch(shape1Amount, updateShape1)
+watch(shape2Amount, updateShape2)
 
 onUnmounted(() => {
   if (osc1) osc1.dispose()
@@ -235,11 +252,6 @@ onUnmounted(() => {
             <span>{{ shape1Amount }}</span>
           </div>
           <div class="control-group">
-            <label>Harmonicity</label>
-            <input type="range" min="0" max="5" step="0.1" v-model.number="harmonicity1" />
-            <span>{{ harmonicity1 }}</span>
-          </div>
-          <div class="control-group">
             <label>Modulation Index</label>
             <input type="range" min="0" max="10" step="0.1" v-model.number="modIndex1" />
             <span>{{ modIndex1 }}</span>
@@ -266,11 +278,6 @@ onUnmounted(() => {
             <label>Shape Amount</label>
             <input type="range" min="1" max="50" step="0.1" v-model.number="shape2Amount" />
             <span>{{ shape2Amount }}</span>
-          </div>
-          <div class="control-group">
-            <label>Harmonicity</label>
-            <input type="range" min="0" max="5" step="0.1" v-model.number="harmonicity2" />
-            <span>{{ harmonicity2 }}</span>
           </div>
           <div class="control-group">
             <label>Modulation Index</label>
