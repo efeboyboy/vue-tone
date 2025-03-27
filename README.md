@@ -1,39 +1,82 @@
-# .
+# Vue Tone.js Timing Demo
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue 3 + TypeScript application demonstrating precise timing control using Tone.js.
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Precise audio timing using Tone.js Context, Clock, and Transport
+- Event emission system for timing synchronization
+- High-resolution timing measurements
+- Interactive audio context management
 
-## Type Support for `.vue` Imports in TS
+## Timing System
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+The application uses three synchronized timing systems:
 
-## Customize configuration
+1. **Clock Time**: Deterministic scheduling time
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+   - Starts at lookAhead value (0.01s)
+   - Increments exactly 1 second per tick
+   - Used for precise event scheduling
 
-## Project Setup
+2. **Context Time**: Web Audio context time
 
-```sh
+   - Real-time audio system clock
+   - Typically within 1ms of Clock Time
+   - Represents actual audio timing
+
+3. **Transport Time**: Musical timeline
+   - Synchronized with global transport
+   - Used for musical events and scheduling
+   - Maintains consistent timing offset
+
+## Configuration
+
+```typescript
+const audioContext = new Tone.Context({
+  latencyHint: 'interactive', // Optimized for interactive applications
+  lookAhead: 0.01, // 10ms lookahead for scheduling
+  updateInterval: 0.01, // 10ms update interval for timing
+})
+```
+
+## Sample Output
+
+```javascript
+Timing Info: {
+  'Clock Time': '0.010',      // Deterministic scheduling time
+  'Context Time': '0.011',    // Actual audio context time
+  'Transport Time': '0.029'   // Musical timeline time
+}
+```
+
+## Getting Started
+
+1. Install dependencies:
+
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+2. Run the development server:
 
-```sh
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+3. Build for production:
 
-```sh
+```bash
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Dependencies
 
-```sh
-npm run lint
-```
+- Vue 3
+- TypeScript
+- Tone.js
+- Vite
+
+## License
+
+MIT
