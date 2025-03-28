@@ -14,7 +14,7 @@ let filter: Tone.Filter
 let vca: Tone.Gain
 
 const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
-const amount = ref(0.5)
+const amount = ref(0)
 
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
@@ -85,17 +85,18 @@ const updateRouting = () => {
 const updateAmount = () => {
   if (!filter || !vca) return
 
-  const normalizedAmount = amount.value
+  // Adjust the input range to be more responsive at lower values
+  const normalizedAmount = Math.pow(amount.value, 0.5) // Square root for more sensitivity at low values
 
-  // Update filter frequency with exponential scaling
-  const minFreq = 20
+  // Update filter frequency with adjusted exponential scaling
+  const minFreq = 100 // Increased minimum frequency
   const maxFreq = 20000
   const freqRange = Math.log(maxFreq / minFreq)
   const frequency = minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
 
-  // Update VCA with exponential amplitude scaling for better musical response
-  const minGain = 0.0001 // -80dB
+  // Update VCA with adjusted exponential amplitude scaling
+  const minGain = 0.01 // -40dB, more audible minimum
   const maxGain = 1 // 0dB
   const gainRange = Math.log(maxGain / minGain)
   const gain = minGain * Math.exp(gainRange * normalizedAmount)
