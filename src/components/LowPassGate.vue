@@ -1,0 +1,242 @@
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import * as Tone from 'tone'
+import { useToneContext } from '../composables/useToneContext'
+
+const props = defineProps<{
+  isAudioReady: boolean
+  label: string
+}>()
+
+const { getContext } = useToneContext()
+
+let filter: Tone.Filter
+let vca: Tone.Gain
+
+const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
+const amount = ref(0)
+const cvAmount = ref(0)
+
+// Create input and output nodes for external connections
+const input = new Tone.Gain()
+const output = new Tone.Gain()
+const amountNode = new Tone.Gain()
+const cvInput = new Tone.Gain()
+
+// Connect CV input to amount modulation
+cvInput.connect(amountNode)
+cvInput.gain.value = 0 // Initial CV input gain
+
+const initializeLPG = () => {
+  const context = getContext()
+
+  // Create filter and VCA
+  filter = new Tone.Filter({
+    context,
+    frequency: 20000,
+    type: 'lowpass',
+    rolloff: -24,
+  })
+
+  vca = new Tone.Gain({
+    context,
+    gain: 0,
+  })
+
+  // Create a gain node for filter frequency modulation
+  const filterAmountNode = new Tone.Gain()
+  amountNode.connect(filterAmountNode)
+
+  // Scale and offset the filter frequency modulation
+  filterAmountNode.gain.value = 19980 // maxFreq - minFreq
+  filter.frequency.value = 20 // Set minimum frequency as base value
+  filterAmountNode.connect(filter.frequency)
+
+  // Connect CV input directly to VCA gain with proper scaling
+  const vcaAmountNode = new Tone.Gain()
+  amountNode.connect(vcaAmountNode)
+  vcaAmountNode.gain.value = 1
+  vcaAmountNode.connect(vca.gain)
+
+  // Connect CV input directly to VCA gain for direct modulation
+  const vcaCVNode = new Tone.Gain()
+  cvInput.connect(vcaCVNode)
+  vcaCVNode.gain.value = 1
+  vcaCVNode.connect(vca.gain)
+
+  // Initial routing based on mode
+  updateRouting()
+}
+
+const updateRouting = () => {
+  if (!filter || !vca) return
+
+  // Disconnect everything
+  input.disconnect()
+  filter.disconnect()
+  vca.disconnect()
+
+  // Set up new routing based on mode
+  switch (mode.value) {
+    case 'COMBO':
+      input.connect(filter)
+      filter.connect(vca)
+      vca.connect(output)
+      break
+    case 'VCF':
+      input.connect(filter)
+      filter.connect(output)
+      break
+    case 'VCA':
+      input.connect(vca)
+      vca.connect(output)
+      break
+  }
+}
+
+const updateAmount = () => {
+  if (!filter || !vca) return
+
+  // Adjust the input range to be more responsive at lower values
+  const normalizedAmount = Math.pow(amount.value, 0.5) // Square root for more sensitivity at low values
+
+  // Update filter frequency with adjusted exponential scaling
+  const minFreq = 100 // Increased minimum frequency
+  const maxFreq = 20000
+  const freqRange = Math.log(maxFreq / minFreq)
+  const frequency =
+    amount.value === 0
+      ? 0 // Absolute zero frequency when amount is 0
+      : minFreq * Math.exp(freqRange * normalizedAmount)
+  filter.frequency.rampTo(frequency, 0.1)
+
+  // Update VCA with adjusted exponential amplitude scaling
+  const minGain = 0.01 // -40dB, more audible minimum
+  const maxGain = 1 // 0dB
+  const gainRange = Math.log(maxGain / minGain)
+  const gain =
+    amount.value === 0
+      ? 0 // Absolute zero gain when amount is 0
+      : minGain * Math.exp(gainRange * normalizedAmount)
+  vca.gain.rampTo(gain, 0.1)
+}
+
+// Watch for audio initialization
+watch(
+  () => props.isAudioReady,
+  (isReady) => {
+    if (isReady) {
+      initializeLPG()
+    }
+  },
+)
+
+// Watch for mode and amount changes
+watch(mode, updateRouting)
+watch(amount, updateAmount)
+
+// Watch for CV amount changes
+watch(cvAmount, (newValue) => {
+  cvInput.gain.value = newValue
+})
+
+onMounted(() => {
+  if (props.isAudioReady) {
+    initializeLPG()
+  }
+})
+
+onUnmounted(() => {
+  if (filter) filter.dispose()
+  if (vca) vca.dispose()
+  input.dispose()
+  output.dispose()
+  amountNode.dispose()
+})
+
+// Expose input and output nodes for external connections
+defineExpose({
+  input,
+  output,
+  amount: amountNode,
+})
+</script>
+
+<template>
+  <div class="lpg">
+    <div class="module">
+      <h3>{{ label }}</h3>
+      <div class="controls">
+        <div class="control-group">
+          <label>Mode</label>
+          <select v-model="mode">
+            <option value="COMBO">COMBO (VCA + VCF)</option>
+            <option value="VCF">VCF</option>
+            <option value="VCA">VCA</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Offset</label>
+          <input type="range" min="0" max="1" step="0.01" v-model.number="cvAmount" />
+          <span>{{ Math.round(cvAmount * 100) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.lpg {
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 1rem;
+}
+
+.module {
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.module h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-weight: bold;
+  color: #666;
+}
+
+.control-group select,
+.control-group input[type='range'] {
+  width: 100%;
+}
+
+.control-group select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+.control-group span {
+  color: #666;
+  font-size: 0.9rem;
+}
+</style>

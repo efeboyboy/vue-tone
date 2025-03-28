@@ -3,7 +3,19 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
 
+const props = defineProps<{
+  isAudioReady: boolean
+}>()
+
 const { getContext } = useToneContext()
+
+// Add output nodes for LPG routing
+const output1 = new Tone.Gain()
+const output2 = new Tone.Gain()
+
+// Initialize analyzers at module level
+const analyzer1 = new Tone.Analyser('waveform', 1024)
+const analyzer2 = new Tone.Analyser('waveform', 1024)
 
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
@@ -11,8 +23,6 @@ let mod1: Tone.Oscillator
 let mod2: Tone.Oscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
-let analyzer1: Tone.Analyser
-let analyzer2: Tone.Analyser
 
 const isPlaying = ref(false)
 const freq1 = ref(440)
@@ -69,23 +79,6 @@ const updateShape2 = () => {
   }
 }
 
-const toggleOscillators = () => {
-  if (!osc1 || !osc2) return
-
-  if (isPlaying.value) {
-    osc1.stop()
-    osc2.stop()
-    mod1.stop()
-    mod2.stop()
-  } else {
-    osc1.start()
-    osc2.start()
-    mod1.start()
-    mod2.start()
-  }
-  isPlaying.value = !isPlaying.value
-}
-
 const drawWaveform = () => {
   if (!canvas1.value || !canvas2.value || !analyzer1 || !analyzer2) return
 
@@ -128,12 +121,8 @@ const drawWaveform = () => {
   requestAnimationFrame(drawWaveform)
 }
 
-onMounted(() => {
+const initializeOscillators = () => {
   const context = getContext()
-
-  // Create analyzers
-  analyzer1 = new Tone.Analyser('waveform', 1024)
-  analyzer2 = new Tone.Analyser('waveform', 1024)
 
   // Create carrier oscillators
   osc1 = new Tone.Oscillator({
@@ -150,7 +139,7 @@ onMounted(() => {
     volume: -10,
   })
 
-  // Create modulator oscillators (will be shaped)
+  // Create modulator oscillators
   mod1 = new Tone.Oscillator({
     context,
     frequency: freq1.value,
@@ -171,25 +160,23 @@ onMounted(() => {
   const modGain1 = new Tone.Gain(0)
   const modGain2 = new Tone.Gain(0)
 
-  // FM modulation routing with shaped waveforms
-  mod1.connect(shaper1) // Shape the modulator signal first
-  mod2.connect(shaper2)
-  shaper1.connect(modGain1) // Then control its amplitude
-  shaper2.connect(modGain2)
-  modGain1.connect(osc2.frequency) // Cross-modulate to opposite oscillator
-  modGain2.connect(osc1.frequency)
-
-  // Create output analyzers and gains
+  // Create output gains
   const outGain1 = new Tone.Gain(1)
   const outGain2 = new Tone.Gain(1)
 
-  // Output routing
-  osc1.connect(outGain1)
-  osc2.connect(outGain2)
-  outGain1.connect(analyzer1)
-  outGain2.connect(analyzer2)
-  analyzer1.toDestination()
-  analyzer2.toDestination()
+  // FM modulation routing
+  mod1.connect(modGain1)
+  mod2.connect(modGain2)
+  modGain1.connect(osc2.frequency)
+  modGain2.connect(osc1.frequency)
+
+  // Output routing with waveshaping
+  osc1.connect(shaper1)
+  osc2.connect(shaper2)
+  shaper1.connect(outGain1)
+  shaper2.connect(outGain2)
+  outGain1.connect(output1)
+  outGain2.connect(output2)
 
   // Watch modulation parameters
   watch(modIndex1, (value) => {
@@ -219,8 +206,31 @@ onMounted(() => {
     modGain2.gain.rampTo(modulationDepth, 0.1)
   })
 
+  // Start oscillators automatically
+  osc1.start()
+  osc2.start()
+  mod1.start()
+  mod2.start()
+  isPlaying.value = true
+
   // Start visualization
   drawWaveform()
+}
+
+// Watch for audio initialization
+watch(
+  () => props.isAudioReady,
+  (isReady) => {
+    if (isReady) {
+      initializeOscillators()
+    }
+  },
+)
+
+onMounted(() => {
+  if (props.isAudioReady) {
+    initializeOscillators()
+  }
 })
 
 // Watch for changes in shape amounts
@@ -236,6 +246,16 @@ onUnmounted(() => {
   if (shaper2) shaper2.dispose()
   if (analyzer1) analyzer1.dispose()
   if (analyzer2) analyzer2.dispose()
+  output1.dispose()
+  output2.dispose()
+})
+
+// Expose nodes for external routing
+defineExpose({
+  output1,
+  output2,
+  analyzer1,
+  analyzer2,
 })
 </script>
 
@@ -298,10 +318,6 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-
-    <button @click="toggleOscillators" :class="{ playing: isPlaying }" class="toggle-button">
-      {{ isPlaying ? 'Stop' : 'Start' }} Oscillators
-    </button>
   </div>
 </template>
 
@@ -366,25 +382,5 @@ onUnmounted(() => {
 .control-group span {
   color: #666;
   font-size: 0.9rem;
-}
-
-.toggle-button {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.toggle-button.playing {
-  background-color: #f44336;
-}
-
-.toggle-button:hover {
-  opacity: 0.9;
 }
 </style>
