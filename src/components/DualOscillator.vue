@@ -139,7 +139,7 @@ const initializeOscillators = () => {
     volume: -10,
   })
 
-  // Create modulator oscillators (will be shaped)
+  // Create modulator oscillators
   mod1 = new Tone.Oscillator({
     context,
     frequency: freq1.value,
@@ -160,21 +160,21 @@ const initializeOscillators = () => {
   const modGain1 = new Tone.Gain(0)
   const modGain2 = new Tone.Gain(0)
 
-  // FM modulation routing with shaped waveforms
-  mod1.connect(shaper1)
-  mod2.connect(shaper2)
-  shaper1.connect(modGain1)
-  shaper2.connect(modGain2)
-  modGain1.connect(osc2.frequency)
-  modGain2.connect(osc1.frequency)
-
   // Create output gains
   const outGain1 = new Tone.Gain(1)
   const outGain2 = new Tone.Gain(1)
 
-  // Output routing
-  osc1.connect(outGain1)
-  osc2.connect(outGain2)
+  // FM modulation routing
+  mod1.connect(modGain1)
+  mod2.connect(modGain2)
+  modGain1.connect(osc2.frequency)
+  modGain2.connect(osc1.frequency)
+
+  // Output routing with waveshaping
+  osc1.connect(shaper1)
+  osc2.connect(shaper2)
+  shaper1.connect(outGain1)
+  shaper2.connect(outGain2)
   outGain1.connect(output1)
   outGain2.connect(output2)
 
