@@ -9,13 +9,17 @@ const props = defineProps<{
 
 const { getContext } = useToneContext()
 
-// Add output nodes for LPG routing
+// Create output nodes for LPG routing
 const output1 = new Tone.Gain()
 const output2 = new Tone.Gain()
 
 // Initialize analyzers at module level
 const analyzer1 = new Tone.Analyser('waveform', 1024)
 const analyzer2 = new Tone.Analyser('waveform', 1024)
+
+// Create frequency control signals for external modulation
+const freq1Signal = new Tone.Signal(440)
+const freq2Signal = new Tone.Signal(440)
 
 let osc1: Tone.Oscillator
 let osc2: Tone.Oscillator
@@ -139,6 +143,10 @@ const initializeOscillators = () => {
     volume: -10,
   })
 
+  // Connect frequency signals to oscillators
+  freq1Signal.connect(osc1.frequency)
+  freq2Signal.connect(osc2.frequency)
+
   // Create modulator oscillators
   mod1 = new Tone.Oscillator({
     context,
@@ -246,6 +254,8 @@ onUnmounted(() => {
   if (shaper2) shaper2.dispose()
   if (analyzer1) analyzer1.dispose()
   if (analyzer2) analyzer2.dispose()
+  freq1Signal.dispose()
+  freq2Signal.dispose()
   output1.dispose()
   output2.dispose()
 })
@@ -256,6 +266,8 @@ defineExpose({
   output2,
   analyzer1,
   analyzer2,
+  freq1: freq1Signal,
+  freq2: freq2Signal,
 })
 </script>
 

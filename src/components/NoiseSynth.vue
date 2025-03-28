@@ -9,19 +9,18 @@ const props = defineProps<{
 
 const { getContext } = useToneContext()
 
-// Add output node for LPG routing
+// Create output and analyzer nodes
 const output = new Tone.Gain()
-
-// Initialize analyzer at module level
 const analyzer = new Tone.Analyser('waveform', 1024)
 
-let noise: Tone.Noise
+// Create playbackRate control signal for external modulation
+const playbackRateSignal = new Tone.Signal(1)
 
+let noise: Tone.Noise
+const canvas = ref<HTMLCanvasElement | null>(null)
 const noiseType = ref<'white' | 'pink' | 'brown'>('white')
 const playbackRate = ref(1)
 const volume = ref(-10)
-
-const canvas = ref<HTMLCanvasElement | null>(null)
 
 const drawWaveform = () => {
   if (!canvas.value || !analyzer) return
@@ -53,13 +52,18 @@ const drawWaveform = () => {
 const initializeNoise = () => {
   const context = getContext()
 
-  // Create noise source
   noise = new Tone.Noise({
     context,
     type: noiseType.value,
     playbackRate: playbackRate.value,
     volume: volume.value,
-  }).connect(output)
+  })
+
+  // Connect noise to output
+  noise.connect(output)
+
+  // Connect to analyzer for visualization
+  output.connect(analyzer)
 
   // Start noise immediately (it will be controlled by LPG)
   noise.start()
@@ -78,21 +82,19 @@ watch(
   },
 )
 
-// Watch for noise type changes
+// Watch for parameter changes
 watch(noiseType, (value) => {
   if (noise) {
     noise.type = value
   }
 })
 
-// Watch for playback rate changes
 watch(playbackRate, (value) => {
   if (noise) {
-    noise.playbackRate = value
+    playbackRateSignal.value = value
   }
 })
 
-// Watch for volume changes
 watch(volume, (value) => {
   if (noise) {
     noise.volume.value = value
@@ -108,6 +110,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (noise) noise.dispose()
   if (analyzer) analyzer.dispose()
+  playbackRateSignal.dispose()
   output.dispose()
 })
 
@@ -115,6 +118,7 @@ onUnmounted(() => {
 defineExpose({
   output,
   analyzer,
+  playbackRate: playbackRateSignal,
 })
 </script>
 
