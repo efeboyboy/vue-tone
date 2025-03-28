@@ -75,11 +75,11 @@ const updateAmount = () => {
 
   const normalizedAmount = amount.value
 
-  // Update filter frequency (exponential scaling for more natural response)
+  // Update filter frequency (inverted exponential scaling for more response at low values)
   const minFreq = 20
   const maxFreq = 20000
   const frequency = Math.exp(
-    Math.log(minFreq) + normalizedAmount * (Math.log(maxFreq) - Math.log(minFreq)),
+    Math.log(maxFreq) - (1 - normalizedAmount) * (Math.log(maxFreq) - Math.log(minFreq)),
   )
   filter.frequency.rampTo(frequency, 0.1)
 
