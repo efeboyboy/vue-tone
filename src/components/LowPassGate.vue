@@ -37,8 +37,20 @@ const initializeLPG = () => {
     gain: 1,
   })
 
-  // Connect amount node to VCA gain
-  amountNode.connect(vca.gain)
+  // Create a gain node for filter frequency modulation
+  const filterAmountNode = new Tone.Gain()
+  amountNode.connect(filterAmountNode)
+
+  // Scale and offset the filter frequency modulation
+  filterAmountNode.gain.value = 19980 // maxFreq - minFreq
+  filter.frequency.value = 20 // Set minimum frequency as base value
+  filterAmountNode.connect(filter.frequency)
+
+  // Connect amount node to VCA gain with proper scaling
+  const vcaAmountNode = new Tone.Gain()
+  amountNode.connect(vcaAmountNode)
+  vcaAmountNode.gain.value = 1
+  vcaAmountNode.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
@@ -75,16 +87,19 @@ const updateAmount = () => {
 
   const normalizedAmount = amount.value
 
-  // Update filter frequency (inverted exponential scaling for more response at low values)
+  // Update filter frequency with exponential scaling
   const minFreq = 20
   const maxFreq = 20000
-  const frequency = Math.exp(
-    Math.log(maxFreq) - (1 - normalizedAmount) * (Math.log(maxFreq) - Math.log(minFreq)),
-  )
+  const freqRange = Math.log(maxFreq / minFreq)
+  const frequency = minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
 
-  // Update VCA gain
-  vca.gain.rampTo(normalizedAmount, 0.1)
+  // Update VCA with exponential amplitude scaling for better musical response
+  const minGain = 0.0001 // -80dB
+  const maxGain = 1 // 0dB
+  const gainRange = Math.log(maxGain / minGain)
+  const gain = minGain * Math.exp(gainRange * normalizedAmount)
+  vca.gain.rampTo(gain, 0.1)
 }
 
 // Watch for audio initialization
