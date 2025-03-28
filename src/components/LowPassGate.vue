@@ -40,7 +40,7 @@ const initializeLPG = () => {
 
   vca = new Tone.Gain({
     context,
-    gain: 1,
+    gain: 0,
   })
 
   // Create a gain node for filter frequency modulation
@@ -52,11 +52,17 @@ const initializeLPG = () => {
   filter.frequency.value = 20 // Set minimum frequency as base value
   filterAmountNode.connect(filter.frequency)
 
-  // Connect amount node to VCA gain with proper scaling
+  // Connect CV input directly to VCA gain with proper scaling
   const vcaAmountNode = new Tone.Gain()
   amountNode.connect(vcaAmountNode)
   vcaAmountNode.gain.value = 1
   vcaAmountNode.connect(vca.gain)
+
+  // Connect CV input directly to VCA gain for direct modulation
+  const vcaCVNode = new Tone.Gain()
+  cvInput.connect(vcaCVNode)
+  vcaCVNode.gain.value = 1
+  vcaCVNode.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
