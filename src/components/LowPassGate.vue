@@ -15,11 +15,17 @@ let vca: Tone.Gain
 
 const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
 const amount = ref(0)
+const cvAmount = ref(0)
 
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
 const output = new Tone.Gain()
 const amountNode = new Tone.Gain()
+const cvInput = new Tone.Gain()
+
+// Connect CV input to amount modulation
+cvInput.connect(amountNode)
+cvInput.gain.value = 0 // Initial CV input gain
 
 const initializeLPG = () => {
   const context = getContext()
@@ -123,6 +129,11 @@ watch(
 watch(mode, updateRouting)
 watch(amount, updateAmount)
 
+// Watch for CV amount changes
+watch(cvAmount, (newValue) => {
+  cvInput.gain.value = newValue
+})
+
 onMounted(() => {
   if (props.isAudioReady) {
     initializeLPG()
@@ -159,9 +170,9 @@ defineExpose({
           </select>
         </div>
         <div class="control-group">
-          <label>Amount</label>
-          <input type="range" min="0" max="1" step="0.01" v-model.number="amount" />
-          <span>{{ Math.round(amount * 100) }}%</span>
+          <label>Offset</label>
+          <input type="range" min="0" max="1" step="0.01" v-model.number="cvAmount" />
+          <span>{{ Math.round(cvAmount * 100) }}%</span>
         </div>
       </div>
     </div>
