@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import * as Tone from 'tone'
 import DualOscillator from '../components/DualOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
 import FunctionGenerator from '../components/FunctionGenerator.vue'
+import MasterClock from '../components/MasterClock.vue'
 
 const isAudioInitialized = ref(false)
+const masterClockRef = ref()
 
 // References to components for audio routing
 const dualOscRef = ref()
@@ -16,6 +19,16 @@ const lpg3Ref = ref()
 const func1Ref = ref()
 const func2Ref = ref()
 const func3Ref = ref()
+
+// Setup 16th note triggers
+const setupTriggers = () => {
+  const transport = Tone.getTransport()
+  transport.scheduleRepeat((time) => {
+    func1Ref.value?.trigger(time)
+    func2Ref.value?.trigger(time)
+    func3Ref.value?.trigger(time)
+  }, '16n')
+}
 
 // Listen for the global audio initialization event
 const handleAudioInitialized = () => {
@@ -54,6 +67,9 @@ const setupAudioRouting = () => {
   if (func3Ref.value?.output && lpg3Ref.value?.amount) {
     func3Ref.value.output.connect(lpg3Ref.value.amount)
   }
+
+  // Setup clock triggers
+  setupTriggers()
 }
 
 // Watch for audio initialization
@@ -80,6 +96,7 @@ onUnmounted(() => {
   <div class="bongo-patch">
     <h1>Bongo Patch</h1>
     <div class="synth-container">
+      <MasterClock ref="masterClockRef" :is-audio-ready="isAudioInitialized" />
       <div class="oscillators">
         <DualOscillator ref="dualOscRef" :is-audio-ready="isAudioInitialized" />
         <div class="noise-synths">
