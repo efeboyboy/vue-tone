@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import DualOscillator from '../components/DualOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
+import FunctionGenerator from '../components/FunctionGenerator.vue'
 
 const isAudioInitialized = ref(false)
 
@@ -12,6 +13,9 @@ const noiseSynthRef = ref()
 const lpg1Ref = ref()
 const lpg2Ref = ref()
 const lpg3Ref = ref()
+const func1Ref = ref()
+const func2Ref = ref()
+const func3Ref = ref()
 
 // Listen for the global audio initialization event
 const handleAudioInitialized = () => {
@@ -38,6 +42,17 @@ const setupAudioRouting = () => {
     noiseSynthRef.value.output.connect(lpg3Ref.value.input)
     lpg3Ref.value.output.connect(noiseSynthRef.value.analyzer)
     noiseSynthRef.value.analyzer.toDestination()
+  }
+
+  // Connect function generators to LPGs
+  if (func1Ref.value?.output && lpg1Ref.value?.amount) {
+    func1Ref.value.output.connect(lpg1Ref.value.amount)
+  }
+  if (func2Ref.value?.output && lpg2Ref.value?.amount) {
+    func2Ref.value.output.connect(lpg2Ref.value.amount)
+  }
+  if (func3Ref.value?.output && lpg3Ref.value?.amount) {
+    func3Ref.value.output.connect(lpg3Ref.value.amount)
   }
 }
 
@@ -76,6 +91,11 @@ onUnmounted(() => {
         <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
         <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
       </div>
+      <div class="function-generators">
+        <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
+        <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
+        <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+      </div>
     </div>
   </div>
 </template>
@@ -98,7 +118,8 @@ h1 {
 
 .oscillators,
 .noise-synths,
-.lpgs {
+.lpgs,
+.function-generators {
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -108,6 +129,12 @@ h1 {
 
 .lpgs {
   background: rgba(156, 39, 176, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.function-generators {
+  background: rgba(76, 175, 80, 0.1);
   padding: 2rem;
   border-radius: 8px;
 }

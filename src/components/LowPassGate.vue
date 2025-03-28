@@ -19,6 +19,7 @@ const amount = ref(0.5)
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
 const output = new Tone.Gain()
+const amountNode = new Tone.Gain()
 
 const initializeLPG = () => {
   const context = getContext()
@@ -35,6 +36,9 @@ const initializeLPG = () => {
     context,
     gain: 1,
   })
+
+  // Connect amount node to VCA gain
+  amountNode.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
@@ -108,12 +112,14 @@ onUnmounted(() => {
   if (vca) vca.dispose()
   input.dispose()
   output.dispose()
+  amountNode.dispose()
 })
 
 // Expose input and output nodes for external connections
 defineExpose({
   input,
   output,
+  amount: amountNode,
 })
 </script>
 

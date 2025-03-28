@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch, ref } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '@/composables/useToneContext'
 
@@ -10,29 +10,42 @@ const props = defineProps<{
 
 const { getContext } = useToneContext()
 
-let func: Tone.Envelope
-let vca: Tone.Gain
+// Reactive envelope parameters
+const attack = ref(0.01)
+const decay = ref(0.1)
 
-const input = new Tone.Gain()
+let func: Tone.Envelope
 const output = new Tone.Gain()
 
 const initializeFunctionGenerator = () => {
   const context = getContext()
 
-  // Create envelope and VCA
+  // Create envelope with AD configuration
   func = new Tone.Envelope({
     context,
-    attack: 0.01,
-    decay: 0.1,
-    sustain: 0,
-    release: 0,
+    attack: attack.value,
+    decay: decay.value,
+    sustain: 0, // We're using AD envelope, so sustain is always 0
+    release: 0, // Not using release for AD envelope
   })
 
-  vca = new Tone.Gain({
-    context,
-    gain: 1,
-  })
+  // Connect envelope directly to output
+  func.connect(output)
 }
+
+const updateEnvelopeParams = () => {
+  if (!func) return
+  func.attack = attack.value
+  func.decay = decay.value
+}
+
+// Trigger the envelope
+const trigger = () => {
+  if (!func) return
+  func.triggerAttackRelease(decay.value)
+}
+
+watch([attack, decay], updateEnvelopeParams)
 
 watch(
   () => props.isAudioReady,
@@ -51,19 +64,95 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (func) func.dispose()
-  if (vca) vca.dispose()
-  input.dispose()
   output.dispose()
 })
 
 defineExpose({
-  input,
   output,
+  trigger,
 })
 </script>
 
 <template>
   <div class="function-generator">
-    <h3>{{ props.label }}</h3>
+    <div class="module">
+      <h3>{{ props.label }}</h3>
+      <div class="controls">
+        <div class="control-group">
+          <label>Attack</label>
+          <input type="range" min="0.001" max="0.25" step="0.001" v-model.number="attack" />
+          <span>{{ Math.round(attack * 1000) }}ms</span>
+        </div>
+        <div class="control-group">
+          <label>Decay</label>
+          <input type="range" min="0.001" max="0.5" step="0.001" v-model.number="decay" />
+          <span>{{ Math.round(decay * 1000) }}ms</span>
+        </div>
+        <button @click="trigger" class="trigger-btn">Trigger</button>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.function-generator {
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 1rem;
+}
+
+.module {
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.module h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-weight: bold;
+  color: #666;
+}
+
+.control-group input[type='range'] {
+  width: 100%;
+}
+
+.control-group span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.trigger-btn {
+  padding: 0.5rem 1rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.trigger-btn:hover {
+  background: #45a049;
+}
+</style>
