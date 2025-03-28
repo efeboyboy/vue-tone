@@ -27,10 +27,13 @@ let mod1: Tone.Oscillator
 let mod2: Tone.Oscillator
 let shaper1: Tone.WaveShaper
 let shaper2: Tone.WaveShaper
+let modGain1: Tone.Gain
+let modGain2: Tone.Gain
 
 const isPlaying = ref(false)
-const freq1 = ref(440)
-const freq2 = ref(443)
+const baseFreq = 440
+const detune1 = ref(0)
+const detune2 = ref(0)
 const shape1Amount = ref(1)
 const shape2Amount = ref(1)
 const modIndex1 = ref(1)
@@ -49,15 +52,25 @@ const makeSawShaper = (val: number, amount: number) => {
   return val * amount // Variable slope saw wave
 }
 
-const updateFrequency1 = () => {
+const updateDetune1 = () => {
   if (osc1) {
-    osc1.frequency.rampTo(freq1.value, 0.1)
+    osc1.detune.rampTo(detune1.value, 0.1)
+    mod1.detune.rampTo(detune1.value, 0.1)
+    // Update modulation depth to maintain consistent FM character
+    const currentFreq = baseFreq * Math.pow(2, detune1.value / 1200)
+    const modulationDepth = modIndex1.value * currentFreq
+    modGain1.gain.rampTo(modulationDepth, 0.1)
   }
 }
 
-const updateFrequency2 = () => {
+const updateDetune2 = () => {
   if (osc2) {
-    osc2.frequency.rampTo(freq2.value, 0.1)
+    osc2.detune.rampTo(detune2.value, 0.1)
+    mod2.detune.rampTo(detune2.value, 0.1)
+    // Update modulation depth to maintain consistent FM character
+    const currentFreq = baseFreq * Math.pow(2, detune2.value / 1200)
+    const modulationDepth = modIndex2.value * currentFreq
+    modGain2.gain.rampTo(modulationDepth, 0.1)
   }
 }
 
@@ -131,14 +144,16 @@ const initializeOscillators = () => {
   // Create carrier oscillators
   osc1 = new Tone.Oscillator({
     context,
-    frequency: freq1.value,
+    frequency: baseFreq,
+    detune: detune1.value,
     type: 'sine',
     volume: -10,
   })
 
   osc2 = new Tone.Oscillator({
     context,
-    frequency: freq2.value,
+    frequency: baseFreq,
+    detune: detune2.value,
     type: 'sine',
     volume: -10,
   })
@@ -150,13 +165,15 @@ const initializeOscillators = () => {
   // Create modulator oscillators
   mod1 = new Tone.Oscillator({
     context,
-    frequency: freq1.value,
+    frequency: baseFreq,
+    detune: detune1.value,
     type: 'sine',
   })
 
   mod2 = new Tone.Oscillator({
     context,
-    frequency: freq2.value,
+    frequency: baseFreq,
+    detune: detune2.value,
     type: 'sine',
   })
 
@@ -165,8 +182,8 @@ const initializeOscillators = () => {
   shaper2 = new Tone.WaveShaper((curve) => makeSawShaper(curve, shape2Amount.value), 4096)
 
   // Create gain nodes for modulation amount
-  const modGain1 = new Tone.Gain(0)
-  const modGain2 = new Tone.Gain(0)
+  modGain1 = new Tone.Gain(0)
+  modGain2 = new Tone.Gain(0)
 
   // Create output gains
   const outGain1 = new Tone.Gain(1)
@@ -189,28 +206,29 @@ const initializeOscillators = () => {
   // Watch modulation parameters
   watch(modIndex1, (value) => {
     // Scale modulation index by frequency for consistent FM depth
-    const modulationDepth = value * freq1.value
+    const modulationDepth = value * baseFreq
     modGain1.gain.rampTo(modulationDepth, 0.1)
   })
 
   watch(modIndex2, (value) => {
-    const modulationDepth = value * freq2.value
+    const modulationDepth = value * baseFreq
     modGain2.gain.rampTo(modulationDepth, 0.1)
   })
 
-  // Update modulator frequencies when carrier frequencies change
-  watch(freq1, (value) => {
-    osc1.frequency.rampTo(value, 0.1)
-    mod1.frequency.rampTo(value, 0.1)
-    // Update modulation depth to maintain consistent FM character
-    const modulationDepth = modIndex1.value * value
+  // Watch for changes in detune values
+  watch(detune1, (value) => {
+    const currentFreq = baseFreq * Math.pow(2, value / 1200)
+    osc1.detune.rampTo(value, 0.1)
+    mod1.detune.rampTo(value, 0.1)
+    const modulationDepth = modIndex1.value * currentFreq
     modGain1.gain.rampTo(modulationDepth, 0.1)
   })
 
-  watch(freq2, (value) => {
-    osc2.frequency.rampTo(value, 0.1)
-    mod2.frequency.rampTo(value, 0.1)
-    const modulationDepth = modIndex2.value * value
+  watch(detune2, (value) => {
+    const currentFreq = baseFreq * Math.pow(2, value / 1200)
+    osc2.detune.rampTo(value, 0.1)
+    mod2.detune.rampTo(value, 0.1)
+    const modulationDepth = modIndex2.value * currentFreq
     modGain2.gain.rampTo(modulationDepth, 0.1)
   })
 
@@ -279,15 +297,21 @@ defineExpose({
         <canvas ref="canvas1" width="300" height="100" class="waveform"></canvas>
         <div class="controls">
           <div class="control-group">
-            <label>Frequency (Hz)</label>
+            <label>Detune (cents)</label>
             <input
               type="range"
-              min="220"
-              max="880"
-              v-model.number="freq1"
-              @input="updateFrequency1"
+              min="-1200"
+              max="1200"
+              step="1"
+              v-model.number="detune1"
+              @input="updateDetune1"
             />
-            <span>{{ freq1 }}Hz</span>
+            <span
+              >{{ Math.round(baseFreq * Math.pow(2, detune1 / 1200)) }}Hz ({{
+                detune1
+              }}
+              cents)</span
+            >
           </div>
           <div class="control-group">
             <label>Shape Amount</label>
@@ -307,15 +331,21 @@ defineExpose({
         <canvas ref="canvas2" width="300" height="100" class="waveform"></canvas>
         <div class="controls">
           <div class="control-group">
-            <label>Frequency (Hz)</label>
+            <label>Detune (cents)</label>
             <input
               type="range"
-              min="220"
-              max="880"
-              v-model.number="freq2"
-              @input="updateFrequency2"
+              min="-1200"
+              max="1200"
+              step="1"
+              v-model.number="detune2"
+              @input="updateDetune2"
             />
-            <span>{{ freq2 }}Hz</span>
+            <span
+              >{{ Math.round(baseFreq * Math.pow(2, detune2 / 1200)) }}Hz ({{
+                detune2
+              }}
+              cents)</span
+            >
           </div>
           <div class="control-group">
             <label>Shape Amount</label>

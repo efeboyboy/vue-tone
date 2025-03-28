@@ -39,10 +39,12 @@ const updateEnvelopeParams = () => {
   func.decay = decay.value
 }
 
-// Trigger the envelope
+// Trigger the envelope with proper scheduling
 const trigger = () => {
   if (!func) return
-  func.triggerAttackRelease(decay.value)
+  // Schedule the trigger slightly ahead in time for better accuracy
+  const time = Tone.now() + 0.1 // Schedule 100ms ahead
+  func.triggerAttackRelease(decay.value, time)
 }
 
 watch([attack, decay], updateEnvelopeParams)
