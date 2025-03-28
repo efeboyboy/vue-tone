@@ -15,12 +15,10 @@ const output = new Tone.Gain()
 // Initialize analyzer at module level
 const analyzer = new Tone.Analyser('waveform', 1024)
 
-let noise: Tone.NoiseSynth
+let noise: Tone.Noise
 
-const attack = ref(0.01)
-const decay = ref(0.2)
-const sustain = ref(0.5)
-const release = ref(0.3)
+const noiseType = ref<'white' | 'pink' | 'brown'>('white')
+const playbackRate = ref(1)
 const volume = ref(-10)
 
 const canvas = ref<HTMLCanvasElement | null>(null)
@@ -52,32 +50,22 @@ const drawWaveform = () => {
   requestAnimationFrame(drawWaveform)
 }
 
-const initializeNoiseSynth = () => {
+const initializeNoise = () => {
   const context = getContext()
 
-  // Create white noise synth
-  noise = new Tone.NoiseSynth({
+  // Create noise source
+  noise = new Tone.Noise({
     context,
-    noise: {
-      type: 'white',
-    },
-    envelope: {
-      attack: attack.value,
-      decay: decay.value,
-      sustain: sustain.value,
-      release: release.value,
-    },
+    type: noiseType.value,
+    playbackRate: playbackRate.value,
     volume: volume.value,
   }).connect(output)
 
+  // Start noise immediately (it will be controlled by LPG)
+  noise.start()
+
   // Start visualization
   drawWaveform()
-}
-
-const triggerNoise = () => {
-  if (noise) {
-    noise.triggerAttackRelease('8n')
-  }
 }
 
 // Watch for audio initialization
@@ -85,18 +73,22 @@ watch(
   () => props.isAudioReady,
   (isReady) => {
     if (isReady) {
-      initializeNoiseSynth()
+      initializeNoise()
     }
   },
 )
 
-// Watch for envelope changes
-watch([attack, decay, sustain, release], () => {
+// Watch for noise type changes
+watch(noiseType, (value) => {
   if (noise) {
-    noise.envelope.attack = attack.value
-    noise.envelope.decay = decay.value
-    noise.envelope.sustain = sustain.value
-    noise.envelope.release = release.value
+    noise.type = value
+  }
+})
+
+// Watch for playback rate changes
+watch(playbackRate, (value) => {
+  if (noise) {
+    noise.playbackRate = value
   }
 })
 
@@ -109,7 +101,7 @@ watch(volume, (value) => {
 
 onMounted(() => {
   if (props.isAudioReady) {
-    initializeNoiseSynth()
+    initializeNoise()
   }
 })
 
@@ -129,35 +121,27 @@ defineExpose({
 <template>
   <div class="noise-synth">
     <div class="synth">
-      <h3>White Noise Synth</h3>
+      <h3>Noise Source</h3>
       <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
       <div class="controls">
         <div class="control-group">
-          <label>Attack</label>
-          <input type="range" min="0.01" max="1" step="0.01" v-model.number="attack" />
-          <span>{{ attack }}s</span>
+          <label>Type</label>
+          <select v-model="noiseType">
+            <option value="white">White</option>
+            <option value="pink">Pink</option>
+            <option value="brown">Brown</option>
+          </select>
         </div>
         <div class="control-group">
-          <label>Decay</label>
-          <input type="range" min="0.01" max="1" step="0.01" v-model.number="decay" />
-          <span>{{ decay }}s</span>
-        </div>
-        <div class="control-group">
-          <label>Sustain</label>
-          <input type="range" min="0" max="1" step="0.01" v-model.number="sustain" />
-          <span>{{ sustain }}</span>
-        </div>
-        <div class="control-group">
-          <label>Release</label>
-          <input type="range" min="0.01" max="2" step="0.01" v-model.number="release" />
-          <span>{{ release }}s</span>
+          <label>Playback Rate</label>
+          <input type="range" min="0.1" max="4" step="0.1" v-model.number="playbackRate" />
+          <span>{{ playbackRate }}x</span>
         </div>
         <div class="control-group">
           <label>Volume</label>
           <input type="range" min="-40" max="0" step="1" v-model.number="volume" />
           <span>{{ volume }}dB</span>
         </div>
-        <button class="trigger-button" @click="triggerNoise">Trigger White Noise</button>
       </div>
     </div>
   </div>
@@ -210,27 +194,20 @@ defineExpose({
   color: #666;
 }
 
+.control-group select,
 .control-group input[type='range'] {
   width: 100%;
+}
+
+.control-group select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
 }
 
 .control-group span {
   color: #666;
   font-size: 0.9rem;
-}
-
-.trigger-button {
-  padding: 0.75rem;
-  background: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.2s;
-}
-
-.trigger-button:hover {
-  background: #1976d2;
 }
 </style>

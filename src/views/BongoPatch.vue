@@ -67,14 +67,14 @@ onUnmounted(() => {
     <div class="synth-container">
       <div class="oscillators">
         <DualOscillator ref="dualOscRef" :is-audio-ready="isAudioInitialized" />
+        <div class="noise-synths">
+          <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
+        </div>
       </div>
       <div class="lpgs">
         <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
         <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
         <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
-      </div>
-      <div class="noise-synths">
-        <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
       </div>
     </div>
   </div>
