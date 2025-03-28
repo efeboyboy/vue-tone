@@ -92,14 +92,20 @@ const updateAmount = () => {
   const minFreq = 100 // Increased minimum frequency
   const maxFreq = 20000
   const freqRange = Math.log(maxFreq / minFreq)
-  const frequency = minFreq * Math.exp(freqRange * normalizedAmount)
+  const frequency =
+    amount.value === 0
+      ? 0 // Absolute zero frequency when amount is 0
+      : minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
 
   // Update VCA with adjusted exponential amplitude scaling
   const minGain = 0.01 // -40dB, more audible minimum
   const maxGain = 1 // 0dB
   const gainRange = Math.log(maxGain / minGain)
-  const gain = minGain * Math.exp(gainRange * normalizedAmount)
+  const gain =
+    amount.value === 0
+      ? 0 // Absolute zero gain when amount is 0
+      : minGain * Math.exp(gainRange * normalizedAmount)
   vca.gain.rampTo(gain, 0.1)
 }
 
