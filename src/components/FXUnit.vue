@@ -266,10 +266,8 @@ defineExpose({
   flex-direction: column;
   align-items: center;
   gap: var(--space-xs);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
   padding: var(--space-sm);
-  flex: 1;
+  justify-content: space-between;
 }
 
 .fx-header {

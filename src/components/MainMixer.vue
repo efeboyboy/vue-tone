@@ -139,7 +139,7 @@ defineExpose({
               />
             </div>
           </div>
-          <div class="mixer-channel master-channel">
+          <!-- <div class="mixer-channel master-channel">
             <div class="channel-label">Master</div>
             <ControlKnob
               v-model="masterVolume"
@@ -149,7 +149,7 @@ defineExpose({
               label="vol"
               size="small"
             />
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -162,11 +162,28 @@ defineExpose({
   flex-direction: column;
   padding: var(--space-sm);
   width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.module-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mixer-channels {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   width: 100%;
   flex-wrap: wrap;
   gap: var(--space-md);
@@ -182,6 +199,10 @@ defineExpose({
 .channel-label {
   font-weight: bold;
   margin-bottom: var(--space-xs);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
 }
 
 .button-group {

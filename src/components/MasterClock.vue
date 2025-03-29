@@ -133,6 +133,7 @@ defineExpose({
   gap: var(--space-sm);
   padding: var(--space-sm);
   width: 100%;
+  height: 100%;
   justify-content: space-between;
 }
 

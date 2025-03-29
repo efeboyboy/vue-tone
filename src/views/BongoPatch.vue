@@ -194,6 +194,20 @@ watch(
         class="module mixer-module"
       />
       <FXUnit ref="fxUnitRef" :is-audio-initialized="isAudioInitialized" class="module fx-module" />
+      <div class="module how-to-module">
+        <div class="module-header">
+          <h3>Quick Tips</h3>
+        </div>
+        <div class="module-content">
+          <ul class="tips-list">
+            <li>Set BPM with master clock</li>
+            <li>Create patterns on sequencers</li>
+            <li>Adjust sound with oscillators</li>
+            <li>Mix channels with mixer</li>
+            <li>Add effects with FX unit</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Column 2: Saw Voice -->
@@ -289,3 +303,10 @@ watch(
     </div>
   </div>
 </template>
+
+<style>
+.how-to-module {
+  height: 100%;
+  width: 100%;
+}
+</style>
