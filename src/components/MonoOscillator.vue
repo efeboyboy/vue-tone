@@ -17,6 +17,9 @@ let modulator: Tone.Oscillator
 let shaper: Tone.WaveShaper
 const output = new Tone.Gain(0.5) // Main output with initial gain
 
+// Add frequency control signal
+const frequencySignal = new Tone.Signal(440)
+
 // Modulation system
 const modBus = {
   fm: {
@@ -95,6 +98,9 @@ const initializeOscillator = () => {
     type: 'sine',
   })
 
+  // Connect frequency signal to oscillator
+  frequencySignal.connect(oscillator.frequency)
+
   // Create modulator oscillator
   modulator = new Tone.Oscillator({
     context,
@@ -147,6 +153,7 @@ onUnmounted(() => {
   modulator?.dispose()
   shaper?.dispose()
   output.dispose()
+  frequencySignal.dispose()
   modBus.fm.input.dispose()
   modBus.fm.amount.dispose()
   modBus.shape.input.dispose()
@@ -158,6 +165,7 @@ defineExpose({
   output,
   fmIn: modBus.fm.input,
   shapeIn: modBus.shape.input,
+  freq: frequencySignal,
 })
 </script>
 

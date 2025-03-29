@@ -24,7 +24,7 @@ const output = new Tone.Gain()
 const amountNode = new Tone.Gain()
 
 // Initialize with amount as base level
-amountNode.gain.value = 0
+amountNode.gain.value = 1 // Changed from 0 to 1 to allow modulation through
 
 const initializeLPG = () => {
   const context = getContext()
@@ -43,7 +43,7 @@ const initializeLPG = () => {
   })
 
   // Create a gain node for filter frequency modulation
-  const filterAmountNode = new Tone.Gain()
+  const filterAmountNode = new Tone.Gain(1) // Changed from default to 1
   amountNode.connect(filterAmountNode)
 
   // Scale and offset the filter frequency modulation

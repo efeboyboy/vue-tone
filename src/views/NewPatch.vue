@@ -41,10 +41,10 @@ const seq3Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
 const setupAudioRouting = () => {
   // Connect sequencers to oscillators and noise
   if (seq1Ref.value?.output && sawOsc.value) {
-    seq1Ref.value.output.connect(sawOsc.value.fmIn)
+    seq1Ref.value.output.connect(sawOsc.value.freq)
   }
   if (seq2Ref.value?.output && squareOsc.value) {
-    seq2Ref.value.output.connect(squareOsc.value.fmIn)
+    seq2Ref.value.output.connect(squareOsc.value.freq)
   }
   if (seq3Ref.value?.output && noiseSynthRef.value) {
     seq3Ref.value.output.connect(noiseSynthRef.value.playbackRate)
