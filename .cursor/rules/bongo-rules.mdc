@@ -9,3 +9,9 @@ alwaysApply: true
 - [ToneInitializer.vue](mdc:src/components/ToneInitializer.vue) helps initialize and set the [useToneContext.ts](mdc:src/composables/useToneContext.ts) on the [App.vue](mdc:src/App.vue).
 - Then main patch goes to [BongoPatch.vue](mdc:src/views/BongoPatch.vue), it works because it's wrapped around [App.vue](mdc:src/App.vue).
 - Create a Braun-style design system on component control inputs, such as switches, buttons, knobs, sliders and so on. 
+- Use [theme.css](mdc:src/theme.css) variables
+
+# Modules
+
+- [Oscillator.vue](mdc:src/components/Oscillator.vue) creates an FM ready oscillator
+- [MainMixer.vue](mdc:src/components/MainMixer.vue) final mix before destination
