@@ -167,25 +167,29 @@ watch(
         label="Saw Sequencer"
         class="module sequencer-module"
       />
-      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
-      <MonoOscillator
-        ref="sawOsc"
-        :is-audio-ready="isAudioInitialized"
-        waveform-type="sine-to-saw"
-        class="module oscillator-module"
-      />
-      <LowPassGate
-        ref="lpg1Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="LPG A"
-        class="module lpg-module"
-      />
-      <FunctionGenerator
-        ref="func1Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="Func 1"
-        class="module envelope-module"
-      />
+      <div class="shared-row">
+        <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
+        <MonoOscillator
+          ref="sawOsc"
+          :is-audio-ready="isAudioInitialized"
+          waveform-type="sine-to-saw"
+          class="module oscillator-module"
+        />
+      </div>
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg1Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG A"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func1Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="Func 1"
+          class="module envelope-module"
+        />
+      </div>
     </div>
 
     <!-- Column 3: Square Voice -->
@@ -196,25 +200,29 @@ watch(
         label="Square Sequencer"
         class="module sequencer-module"
       />
-      <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
-      <MonoOscillator
-        ref="squareOsc"
-        :is-audio-ready="isAudioInitialized"
-        waveform-type="sine-to-square"
-        class="module oscillator-module"
-      />
-      <LowPassGate
-        ref="lpg2Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="LPG B"
-        class="module lpg-module"
-      />
-      <FunctionGenerator
-        ref="func2Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="Func 2"
-        class="module envelope-module"
-      />
+      <div class="shared-row">
+        <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
+        <MonoOscillator
+          ref="squareOsc"
+          :is-audio-ready="isAudioInitialized"
+          waveform-type="sine-to-square"
+          class="module oscillator-module"
+        />
+      </div>
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg2Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG B"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func2Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="Func 2"
+          class="module envelope-module"
+        />
+      </div>
     </div>
 
     <!-- Column 4: Noise Voice -->
@@ -225,26 +233,109 @@ watch(
         label="Noise Sequencer"
         class="module sequencer-module"
       />
-      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
-      <NoiseSynth
-        ref="noiseSynthRef"
-        :is-audio-ready="isAudioInitialized"
-        class="module oscillator-module"
-      />
-      <LowPassGate
-        ref="lpg3Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="LPG C"
-        class="module lpg-module"
-      />
-      <FunctionGenerator
-        ref="func3Ref"
-        :is-audio-ready="isAudioInitialized"
-        label="Func 3"
-        class="module envelope-module"
-      />
+      <div class="shared-row">
+        <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
+        <NoiseSynth
+          ref="noiseSynthRef"
+          :is-audio-ready="isAudioInitialized"
+          class="module oscillator-module"
+        />
+      </div>
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg3Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG C"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func3Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="Func 3"
+          class="module envelope-module"
+        />
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.main-container {
+  display: grid;
+  grid-template-columns: minmax(200px, 20%) repeat(3, 1fr);
+  gap: var(--space-sm);
+  width: 100vw;
+  height: 100vh;
+  padding: var(--space-md);
+  background-color: var(--color-bg-darker);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.voice-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+}
+
+.voice-column > * {
+  flex: 1;
+}
+
+.voice-column > .sequencer-module {
+  flex: 0 0 auto;
+}
+
+.clock-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+}
+
+.shared-row {
+  display: flex;
+  gap: var(--space-sm);
+  width: 100%;
+  flex: 1;
+}
+
+/* Media Queries for Responsive Layout */
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+  }
+
+  .clock-column {
+    grid-column: 1 / -1;
+    max-height: 25vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(3, 1fr);
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .shared-row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .shared-row .module {
+    width: 100%;
+  }
+
+  .voice-column {
+    min-height: 0;
+    height: auto;
+  }
+}
+</style>

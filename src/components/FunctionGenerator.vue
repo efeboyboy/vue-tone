@@ -3,10 +3,11 @@ import { onMounted, onUnmounted, watch, ref } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '@/composables/useToneContext'
 import ControlKnob from './ui/ControlKnob.vue'
+import EnvelopeScreen from './EnvelopeScreen.vue'
 
 const props = defineProps<{
-  isAudioReady: boolean
-  label: string
+  label?: string
+  isAudioReady?: boolean
 }>()
 
 const { getContext } = useToneContext()
@@ -14,6 +15,7 @@ const { getContext } = useToneContext()
 // Reactive envelope parameters
 const attack = ref(0.01)
 const decay = ref(0.1)
+const isTriggered = ref(false)
 
 let func: Tone.Envelope
 const output = new Tone.Gain(2) // Set initial gain to 5 for stronger modulation
@@ -75,7 +77,11 @@ const updateEnvelopeParams = () => {
 const trigger = (time = Tone.now() + 0.1) => {
   if (!func) return
   // console.log(`[FunctionGenerator ${props.label}] Triggered at time: ${time}`)
+  isTriggered.value = true
   func.triggerAttackRelease(decay.value, time)
+  setTimeout(() => {
+    isTriggered.value = false
+  }, decay.value * 1000)
 }
 
 watch([attack, decay], updateEnvelopeParams)
@@ -110,28 +116,32 @@ defineExpose({
   <div class="module function-generator">
     <div class="module-header">
       <h3>{{ props.label }}</h3>
-      <div class="led-indicator" :class="{ active: isActive }"></div>
     </div>
     <div class="module-content">
+      <div class="screen-container">
+        <EnvelopeScreen :attack-time="attack" :decay-time="decay" :triggered="isTriggered" />
+      </div>
       <div class="control-section">
         <div class="control-row">
           <div class="control-group">
+            <div class="led-indicator" :class="{ active: isTriggered }"></div>
             <ControlKnob
               v-model="attack"
               :min="0.001"
               :max="0.25"
               :step="0.001"
-              label="Attack"
+              label="ATTACK"
               size="medium"
             />
           </div>
           <div class="control-group">
+            <div class="led-indicator" :class="{ active: isTriggered }"></div>
             <ControlKnob
               v-model="decay"
               :min="0.001"
               :max="0.5"
               :step="0.001"
-              label="Decay"
+              label="DECAY"
               size="medium"
             />
           </div>

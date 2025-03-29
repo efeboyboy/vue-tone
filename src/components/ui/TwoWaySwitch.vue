@@ -66,49 +66,50 @@ const handleClick = (position: 'off' | 'on') => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
   position: relative;
-  width: var(--switch-width, 100px);
+  width: var(--switch-width, clamp(80px, 10vw, 100px));
 }
 
 .switch-container.small {
-  --switch-width: 80px;
-  --switch-height: 32px;
-  --label-font-size: var(--font-size-xs);
+  --switch-width: clamp(60px, 8vw, 80px);
+  --switch-height: clamp(24px, 3vh, 32px);
 }
 
 .switch-container.medium {
-  --switch-width: 100px;
-  --switch-height: 36px;
-  --label-font-size: var(--font-size-sm);
+  --switch-width: clamp(80px, 10vw, 100px);
+  --switch-height: clamp(28px, 4vh, 36px);
 }
 
 .switch-container.large {
-  --switch-width: 120px;
-  --switch-height: 40px;
-  --label-font-size: var(--font-size-md);
+  --switch-width: clamp(100px, 12vw, 120px);
+  --switch-height: clamp(32px, 5vh, 40px);
 }
 
 .led-indicator {
-  width: 8px;
-  height: 8px;
+  width: var(--led-size, clamp(6px, 0.75vw, 8px));
+  height: var(--led-size, clamp(6px, 0.75vw, 8px));
   border-radius: 50%;
-  background: var(--led-inactive);
-  margin-bottom: var(--spacing-xs);
-  transition: all var(--transition-normal);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  margin-bottom: var(--space-xxs);
+  transition: all 0.2s ease;
 }
 
 .led-indicator.active {
-  background: var(--led-active);
-  box-shadow: 0 0 8px var(--led-glow);
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
 }
 
 .switch-track {
   position: relative;
   width: 100%;
   height: var(--switch-height);
-  background: var(--knob-background);
-  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-inset);
   overflow: hidden;
 }
 
@@ -120,7 +121,7 @@ const handleClick = (position: 'off' | 'on') => {
   position: absolute;
   width: 50%;
   height: 100%;
-  background: var(--knob-indicator);
+  background: var(--color-bg-tertiary);
   transition: transform 0.2s ease;
   z-index: 1;
 }
@@ -147,30 +148,37 @@ const handleClick = (position: 'off' | 'on') => {
 }
 
 .click-area .label {
-  color: var(--knob-label);
+  color: var(--color-text-muted);
   opacity: 0.5;
-  font-size: var(--label-font-size);
-  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-sans);
   text-transform: uppercase;
   pointer-events: none;
-  transition: all var(--transition-normal);
+  transition: all 0.2s ease;
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .click-area.active .label {
   opacity: 1;
   font-weight: 600;
-  text-shadow: 0 0 8px var(--led-glow);
+  color: var(--color-text-primary);
 }
 
 .label-container {
   text-align: center;
+  width: 100%;
 }
 
 .switch-label {
-  font-size: var(--label-font-size);
-  color: var(--knob-label);
-  text-transform: lowercase;
-  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

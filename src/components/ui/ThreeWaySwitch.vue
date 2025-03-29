@@ -93,32 +93,32 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   align-items: center;
   gap: var(--space-xs);
   position: relative;
-  width: var(--switch-width, 140px);
+  width: var(--switch-width, clamp(120px, 14vw, 140px));
 }
 
 .switch-container.small {
-  --switch-width: 120px;
-  --switch-height: 32px;
+  --switch-width: clamp(100px, 12vw, 120px);
+  --switch-height: clamp(24px, 3vh, 32px);
 }
 
 .switch-container.medium {
-  --switch-width: 140px;
-  --switch-height: 36px;
+  --switch-width: clamp(120px, 14vw, 140px);
+  --switch-height: clamp(28px, 4vh, 36px);
 }
 
 .switch-container.large {
-  --switch-width: 180px;
-  --switch-height: 40px;
+  --switch-width: clamp(140px, 18vw, 180px);
+  --switch-height: clamp(32px, 5vh, 40px);
 }
 
 .led-indicator {
-  width: 8px;
-  height: 8px;
+  width: var(--led-size, clamp(6px, 0.75vw, 8px));
+  height: var(--led-size, clamp(6px, 0.75vw, 8px));
   border-radius: var(--radius-full);
   background-color: var(--color-bg-tertiary);
   border: 1px solid var(--color-border-dark);
   box-shadow: var(--shadow-inset);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-xxs);
   transition: all 0.2s ease;
 }
 
@@ -128,15 +128,20 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 }
 
 .label-container {
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-xxs);
+  width: 100%;
 }
 
 .switch-label {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   font-family: var(--font-sans);
   letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .switch-track {
@@ -195,17 +200,27 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 
 .click-area .label {
   color: var(--color-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-family: var(--font-sans);
   text-transform: uppercase;
   pointer-events: none;
   transition: all 0.2s ease;
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .click-area.active .label {
   color: var(--color-text-primary);
   font-weight: 600;
-  text-shadow: 0 0 8px var(--color-primary-glow);
+  text-shadow: 0 0 4px var(--color-primary-glow);
+}
+
+@media (max-width: 768px) {
+  .click-area .label {
+    font-size: clamp(0.55rem, 1.2vw, 0.65rem);
+  }
 }
 </style>

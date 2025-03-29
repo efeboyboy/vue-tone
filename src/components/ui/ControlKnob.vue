@@ -93,20 +93,20 @@ const handleMouseUp = () => {
   gap: var(--space-xs);
   user-select: none;
   position: relative;
-  width: var(--knob-size, 65px);
-  height: calc(var(--knob-size, 65px) + 24px); /* Space for label only */
+  width: var(--knob-size, clamp(48px, 6vw, 65px));
+  height: calc(var(--knob-size, clamp(48px, 6vw, 65px)) + 18px); /* Space for label only */
 }
 
 .control-knob-container.small {
-  --knob-size: 48px;
+  --knob-size: clamp(32px, 4vw, 48px);
 }
 
 .control-knob-container.medium {
-  --knob-size: 65px;
+  --knob-size: clamp(48px, 6vw, 65px);
 }
 
 .control-knob-container.large {
-  --knob-size: 80px;
+  --knob-size: clamp(60px, 8vw, 80px);
 }
 
 .knob-background {
@@ -150,8 +150,8 @@ const handleMouseUp = () => {
 
 .indicator-line {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: clamp(2px, 0.5vw, 4px);
+  height: clamp(2px, 0.5vw, 4px);
   background: var(--color-primary);
   border-radius: 50%;
   top: 10%;
@@ -167,10 +167,13 @@ const handleMouseUp = () => {
 }
 
 .knob-label {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   font-family: var(--font-sans);
   letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
