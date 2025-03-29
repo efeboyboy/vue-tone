@@ -7,6 +7,8 @@ import MonoOscillator from '../components/MonoOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
 import FunctionGenerator from '../components/FunctionGenerator.vue'
+import MainMixer from '../components/MainMixer.vue'
+import FXUnit from '../components/FXUnit.vue'
 import * as Tone from 'tone'
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 
@@ -27,6 +29,10 @@ const lpg3Ref = ref()
 const func1Ref = ref()
 const func2Ref = ref()
 const func3Ref = ref()
+
+// Create refs for mixers and effects
+const mixerRef = ref<InstanceType<typeof MainMixer> | null>(null)
+const fxUnitRef = ref<InstanceType<typeof FXUnit> | null>(null)
 
 // Create refs for oscilloscopes
 const scope1Ref = ref()
@@ -50,25 +56,50 @@ const setupAudioRouting = () => {
     seq3Ref.value.output.connect(noiseSynthRef.value.playbackRate)
   }
 
-  // Route OSC 1 to LPG 1
-  if (sawOsc.value?.output && lpg1Ref.value?.input && scope1Ref.value?.input) {
+  // Route OSC 1 to LPG 1, then to Mixer channel A
+  if (
+    sawOsc.value?.output &&
+    lpg1Ref.value?.input &&
+    scope1Ref.value?.input &&
+    mixerRef.value?.channelA
+  ) {
     sawOsc.value.output.connect(lpg1Ref.value.input)
     lpg1Ref.value.output.connect(scope1Ref.value.input)
-    lpg1Ref.value.output.toDestination()
+    lpg1Ref.value.output.connect(mixerRef.value.channelA)
   }
 
-  // Route OSC 2 to LPG 2
-  if (squareOsc.value?.output && lpg2Ref.value?.input && scope2Ref.value?.input) {
+  // Route OSC 2 to LPG 2, then to Mixer channel B
+  if (
+    squareOsc.value?.output &&
+    lpg2Ref.value?.input &&
+    scope2Ref.value?.input &&
+    mixerRef.value?.channelB
+  ) {
     squareOsc.value.output.connect(lpg2Ref.value.input)
     lpg2Ref.value.output.connect(scope2Ref.value.input)
-    lpg2Ref.value.output.toDestination()
+    lpg2Ref.value.output.connect(mixerRef.value.channelB)
   }
 
-  // Route Noise to LPG 3
-  if (noiseSynthRef.value?.output && lpg3Ref.value?.input && scope3Ref.value?.input) {
+  // Route Noise to LPG 3, then to Mixer channel C
+  if (
+    noiseSynthRef.value?.output &&
+    lpg3Ref.value?.input &&
+    scope3Ref.value?.input &&
+    mixerRef.value?.channelC
+  ) {
     noiseSynthRef.value.output.connect(lpg3Ref.value.input)
     lpg3Ref.value.output.connect(scope3Ref.value.input)
-    lpg3Ref.value.output.toDestination()
+    lpg3Ref.value.output.connect(mixerRef.value.channelC)
+  }
+
+  // Connect mixer to FX unit
+  if (mixerRef.value?.output && fxUnitRef.value?.input) {
+    mixerRef.value.output.connect(fxUnitRef.value.input)
+  }
+
+  // Connect FX unit to destination
+  if (fxUnitRef.value?.output) {
+    fxUnitRef.value.output.toDestination()
   }
 
   // Connect function generators to LPGs
@@ -157,6 +188,12 @@ watch(
         :is-audio-ready="isAudioInitialized"
         class="module clock-module"
       />
+      <MainMixer
+        ref="mixerRef"
+        :is-audio-initialized="isAudioInitialized"
+        class="module mixer-module"
+      />
+      <FXUnit ref="fxUnitRef" :is-audio-initialized="isAudioInitialized" class="module fx-module" />
     </div>
 
     <!-- Column 2: Saw Voice -->
