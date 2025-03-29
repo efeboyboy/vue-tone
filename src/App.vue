@@ -8,14 +8,22 @@ import NavBar from './components/web/NavBar.vue'
   <div id="app">
     <ToneInitializer />
     <NavBar />
-    <router-view />
+    <main>
+      <router-view />
+    </main>
   </div>
 </template>
 
 <style>
 #app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+main {
+  flex: 1;
+  overflow: hidden;
 }
 </style>

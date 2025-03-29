@@ -9,6 +9,7 @@ defineProps<{
 const canvas = ref<HTMLCanvasElement | null>(null)
 const analyzer = new Tone.Analyser('waveform', 1024)
 const input = new Tone.Gain()
+let resizeObserver: ResizeObserver | null = null
 
 // Connect input to analyzer
 input.connect(analyzer)
@@ -72,20 +73,34 @@ const drawWaveform = () => {
 
 onMounted(() => {
   if (canvas.value) {
+    // Initial size setup
+    const containerWidth = canvas.value.parentElement?.clientWidth || 300
+    const containerHeight = canvas.value.parentElement?.clientHeight || 150
+    canvas.value.width = containerWidth
+    canvas.value.height = containerHeight
+
     // Make canvas responsive
-    const resizeObserver = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
+      if (!canvas.value) return
+
       for (const entry of entries) {
         const { width, height } = entry.contentRect
-        canvas.value!.width = width
-        canvas.value!.height = height
+        if (canvas.value && width > 0 && height > 0) {
+          canvas.value.width = width
+          canvas.value.height = height
+        }
       }
     })
-    resizeObserver.observe(canvas.value)
+    resizeObserver.observe(canvas.value.parentElement as Element)
   }
   drawWaveform()
 })
 
 onUnmounted(() => {
+  if (resizeObserver && canvas.value?.parentElement) {
+    resizeObserver.unobserve(canvas.value.parentElement)
+    resizeObserver.disconnect()
+  }
   analyzer.dispose()
   input.dispose()
 })
