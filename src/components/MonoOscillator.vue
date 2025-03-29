@@ -171,7 +171,7 @@ defineExpose({
 
 <template>
   <div class="module">
-    <h3>{{ waveformType === 'sine-to-saw' ? 'Saw' : 'Square' }} Oscillator</h3>
+    <h3>oscillator a</h3>
     <div class="controls">
       <div class="control-group">
         <ControlKnob
@@ -213,9 +213,6 @@ defineExpose({
   display: flex;
   flex-direction: column;
   padding: var(--module-padding);
-  border-radius: var(--module-border-radius);
-  background: var(--panel-background);
-  border: 1px solid var(--border-color);
   gap: var(--spacing-lg);
 }
 

@@ -150,40 +150,57 @@ watch(
 
 <template>
   <div class="bongo-rack">
+    <!-- Control Column -->
+
     <div class="col col-1">
       <MasterClock ref="masterClockRef" :is-audio-ready="isAudioInitialized" />
     </div>
+
+    <!-- Sound A Column -->
     <div class="col col-2">
       <StepSequencer ref="seq1Ref" :is-audio-ready="isAudioInitialized" label="Saw Sequencer" />
-
-      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
-      <MonoOscillator
-        ref="sawOsc"
-        :is-audio-ready="isAudioInitialized"
-        waveform-type="sine-to-saw"
-      />
-      <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
-      <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
+      <div class="oscillator-container">
+        <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
+        <MonoOscillator
+          ref="sawOsc"
+          :is-audio-ready="isAudioInitialized"
+          waveform-type="sine-to-saw"
+        />
+      </div>
+      <div class="control-container">
+        <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
+        <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
+      </div>
     </div>
+
+    <!-- Sound B Column -->
     <div class="col col-3">
       <StepSequencer ref="seq2Ref" :is-audio-ready="isAudioInitialized" label="Square Sequencer" />
-
-      <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
-      <MonoOscillator
-        ref="squareOsc"
-        :is-audio-ready="isAudioInitialized"
-        waveform-type="sine-to-square"
-      />
-      <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
-      <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
+      <div class="oscillator-container">
+        <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
+        <MonoOscillator
+          ref="squareOsc"
+          :is-audio-ready="isAudioInitialized"
+          waveform-type="sine-to-square"
+        />
+      </div>
+      <div class="control-container">
+        <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
+        <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
+      </div>
     </div>
+
+    <!-- Sound C Column -->
     <div class="col col-4">
       <StepSequencer ref="seq3Ref" :is-audio-ready="isAudioInitialized" label="Noise Sequencer" />
-
-      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
-      <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
-      <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
-      <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+      <div class="oscillator-container">
+        <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
+        <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
+      </div>
+      <div class="control-container">
+        <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
+        <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+      </div>
     </div>
   </div>
 </template>
@@ -191,11 +208,7 @@ watch(
 <style scoped>
 .bongo-rack {
   display: flex;
-  gap: var(--module-gap);
-  width: 100vw;
   padding: var(--module-padding);
-  box-sizing: border-box;
-  overflow-x: hidden;
   background-color: var(--gradient-rack);
 }
 
@@ -204,14 +217,23 @@ watch(
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  background-color: var(--panel-background);
-  gap: var(--module-gap);
   padding: var(--module-padding);
-  border-radius: var(--module-border-radius);
-  border: 1px solid var(--border-color);
+  gap: var(--module-gap);
 }
 
-.col-1 {
-  flex: 0.75;
+.oscillator-container {
+  display: flex;
+  gap: var(--module-gap);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.control-container {
+  display: flex;
+  gap: var(--module-gap);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
 </style>

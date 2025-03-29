@@ -58,31 +58,11 @@ defineExpose({
 
 <template>
   <div class="oscilloscope">
-    <h3 v-if="label">{{ label }}</h3>
     <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
   </div>
 </template>
 
 <style scoped>
-.oscilloscope {
-  padding: var(--module-padding);
-  background: var(--panel-background);
-  border-radius: var(--module-border-radius);
-  border: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-h3 {
-  color: var(--secondary-color);
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: var(--font-size-xl);
-}
-
 .waveform {
   width: 100%;
   height: 100px;

@@ -2,7 +2,7 @@
 import * as Tone from 'tone'
 import { ref, watch, onUnmounted, defineComponent } from 'vue'
 import ControlKnob from './ui/ControlKnob.vue'
-import TwoWaySwitch from './ui/TwoWaySwitch.vue'
+import MonoSwitch from './ui/MonoSwitch.vue'
 
 defineComponent({
   name: 'StepSequencer',
@@ -20,7 +20,7 @@ const isSequencing = ref(false)
 const sequence = ref(
   Array(5)
     .fill(null)
-    .map(() => ({ active: 0, freq: 440 })),
+    .map(() => ({ active: false, freq: 440 })),
 )
 
 // Create frequency output using Tone.Signal
@@ -91,10 +91,9 @@ defineExpose({
           class="led-indicator"
           :class="{ active: isSequencing && stepIndex === currentStep }"
         ></div>
-        <TwoWaySwitch
+        <MonoSwitch
           v-model="step.active"
-          :options="{ off: 'Skip', on: 'Play' }"
-          :show-led="false"
+          :label="step.active ? 'On' : 'Off'"
           size="small"
           class="step-switch"
         />
@@ -114,11 +113,6 @@ defineExpose({
 
 <style scoped>
 .step-sequencer {
-  padding: 1rem;
-  background: var(--panel-background);
-  border-radius: 8px;
-  margin-top: 1rem;
-  color: var(--text-primary);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -157,13 +151,13 @@ h3 {
 }
 
 .led-indicator.active {
-  background: #ff5f56;
-  box-shadow: 0 0 8px rgba(255, 95, 86, 0.5);
+  background: var(--led-active);
+  box-shadow: 0 0 8px var(--led-glow);
 }
 
 .step-switch {
   margin: 0.25rem 0;
-  min-width: 50px;
+  min-width: 32px;
 }
 
 .frequency-knob {

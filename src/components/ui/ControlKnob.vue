@@ -34,21 +34,6 @@ const rotation = computed(() => {
   return percentage * 300 - 150 // -150 to +150 degrees rotation
 })
 
-// Generate tick marks
-const ticks = computed(() => {
-  const numTicks = 13 // More ticks for finer control
-  const tickArray = []
-  for (let i = 0; i < numTicks; i++) {
-    const value = props.min + ((props.max - props.min) / (numTicks - 1)) * i
-    const angle = (i / (numTicks - 1)) * 300 - 150
-    tickArray.push({
-      value: Math.round(value),
-      angle,
-    })
-  }
-  return tickArray
-})
-
 const handleMouseDown = (e: MouseEvent) => {
   isDragging.value = true
   startY.value = e.clientY
@@ -80,26 +65,8 @@ const handleMouseUp = () => {
 
 <template>
   <div class="control-knob-container" :class="size">
-    <!-- Background with ticks -->
-    <div class="knob-background">
-      <div
-        v-for="tick in ticks"
-        :key="tick.value"
-        class="tick"
-        :style="{
-          transform: `rotate(${tick.angle}deg)`,
-        }"
-      >
-        <div class="tick-line"></div>
-        <span
-          class="tick-value"
-          :style="{
-            transform: `rotate(${-tick.angle}deg)`,
-          }"
-          >{{ tick.value }}</span
-        >
-      </div>
-    </div>
+    <!-- Background -->
+    <div class="knob-background"></div>
 
     <!-- Actual knob -->
     <div
@@ -131,19 +98,16 @@ const handleMouseUp = () => {
 
 .control-knob-container.small {
   --knob-size: 50px;
-  --tick-height: 6px;
   --label-font-size: var(--font-size-xs);
 }
 
 .control-knob-container.medium {
   --knob-size: 65px;
-  --tick-height: 7px;
   --label-font-size: var(--font-size-sm);
 }
 
 .control-knob-container.large {
   --knob-size: 80px;
-  --tick-height: 8px;
   --label-font-size: var(--font-size-md);
 }
 
@@ -153,32 +117,9 @@ const handleMouseUp = () => {
   height: 100%;
   border-radius: 50%;
   background: var(--knob-background);
-}
-
-.tick {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.tick-line {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  height: var(--tick-height);
-  background: var(--knob-indicator);
-  transform-origin: bottom center;
-}
-
-.tick-value {
-  position: absolute;
-  color: var(--knob-label);
-  font-size: var(--label-font-size);
-  font-family: var(--font-family);
-  top: calc(var(--tick-height) + 4px);
-  transform-origin: center;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .control-knob {
@@ -195,12 +136,28 @@ const handleMouseUp = () => {
   transition: transform var(--transition-fast);
 }
 
+/* Add a pseudo-element for the static shadow */
+.control-knob::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  /* Prevent the shadow from rotating */
+  transform: rotate(0deg);
+}
+
 .indicator-line {
   width: 2px;
   height: 40%;
   background: var(--knob-indicator);
   margin-top: 4px;
   border-radius: 1px;
+  position: relative;
+  z-index: 1;
 }
 
 .label-container {

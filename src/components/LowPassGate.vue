@@ -174,13 +174,6 @@ defineExpose({
 
 <style scoped>
 .module {
-  display: flex;
-  flex-direction: column;
-  padding: var(--module-padding);
-  border-radius: var(--module-border-radius);
-  background: var(--panel-background);
-  border: 1px solid var(--border-color);
-  gap: var(--spacing-lg);
 }
 
 .module h3 {
