@@ -11,43 +11,14 @@ const { getContext } = useToneContext()
 
 // Create output and analyzer nodes
 const output = new Tone.Gain()
-const analyzer = new Tone.Analyser('waveform', 1024)
 
 // Create playbackRate control signal for external modulation
 const playbackRateSignal = new Tone.Signal(1)
 
 let noise: Tone.Noise
-const canvas = ref<HTMLCanvasElement | null>(null)
 const noiseType = ref<'white' | 'pink' | 'brown'>('white')
 const playbackRate = ref(1)
 const volume = ref(-10)
-
-const drawWaveform = () => {
-  if (!canvas.value || !analyzer) return
-
-  const ctx = canvas.value.getContext('2d')
-  if (!ctx) return
-
-  const width = canvas.value.width
-  const height = canvas.value.height
-
-  const wave = analyzer.getValue() as Float32Array
-
-  // Draw noise waveform
-  ctx.clearRect(0, 0, width, height)
-  ctx.beginPath()
-  ctx.strokeStyle = '#ff5722'
-  ctx.lineWidth = 2
-  wave.forEach((value, i) => {
-    const x = (i / wave.length) * width
-    const y = (((value as number) + 1) / 2) * height
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  })
-  ctx.stroke()
-
-  requestAnimationFrame(drawWaveform)
-}
 
 const initializeNoise = () => {
   const context = getContext()
@@ -62,14 +33,8 @@ const initializeNoise = () => {
   // Connect noise to output
   noise.connect(output)
 
-  // Connect to analyzer for visualization
-  output.connect(analyzer)
-
   // Start noise immediately (it will be controlled by LPG)
   noise.start()
-
-  // Start visualization
-  drawWaveform()
 }
 
 // Watch for audio initialization
@@ -109,7 +74,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (noise) noise.dispose()
-  if (analyzer) analyzer.dispose()
   playbackRateSignal.dispose()
   output.dispose()
 })
@@ -117,7 +81,6 @@ onUnmounted(() => {
 // Expose nodes for external routing
 defineExpose({
   output,
-  analyzer,
   playbackRate: playbackRateSignal,
 })
 </script>
@@ -126,7 +89,6 @@ defineExpose({
   <div class="noise-synth">
     <div class="synth">
       <h3>Noise Source</h3>
-      <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
       <div class="controls">
         <div class="control-group">
           <label>Type</label>
@@ -170,15 +132,6 @@ defineExpose({
 .synth h3 {
   margin: 0 0 1rem 0;
   color: #333;
-}
-
-.waveform {
-  width: 100%;
-  height: 100px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 1rem;
 }
 
 .controls {

@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
-
+import ControlKnob from './ui/ControlKnob.vue'
 const props = defineProps<{
   isAudioReady: boolean
   label: string
@@ -99,7 +99,6 @@ const updateAmount = () => {
   filter.frequency.rampTo(frequency, 0.1)
 
   // Update VCA with adjusted exponential amplitude scaling
-  const maxGain = 1 // 0dB
   const gain = amount.value === 0 ? 0 : normalizedAmount // Direct mapping for VCA
   vca.gain.rampTo(gain, 0.1)
 }
@@ -155,7 +154,8 @@ defineExpose({
         </div>
         <div class="control-group">
           <label>Amount</label>
-          <input type="range" min="0" max="1" step="0.01" v-model.number="amount" />
+          <!-- <input type="range" min="0" max="1" step="0.01" v-model.number="amount" /> -->
+          <ControlKnob v-model="amount" :min="0" :max="1" :step="0.01" label="amount" />
           <span>{{ Math.round(amount * 100) }}%</span>
         </div>
       </div>
@@ -165,23 +165,23 @@ defineExpose({
 
 <style scoped>
 .lpg {
-  padding: 1rem;
-  background: #f5f5f5;
+  padding: 2rem;
   border-radius: 8px;
-  max-width: 400px;
-  margin: 1rem;
 }
 
 .module {
-  background: white;
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
 }
 
 .module h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+
+  font-weight: 400;
+  font-size: 1.25rem;
 }
 
 .controls {
@@ -198,7 +198,7 @@ defineExpose({
 
 .control-group label {
   font-weight: bold;
-  color: #666;
+  color: var(--secondary-color);
 }
 
 .control-group select,
@@ -214,7 +214,7 @@ defineExpose({
 }
 
 .control-group span {
-  color: #666;
+  color: var(--secondary-color);
   font-size: 0.9rem;
 }
 </style>

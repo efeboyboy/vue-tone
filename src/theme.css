@@ -8,3 +8,7 @@
   --knob-indicator: #FAFAFA;
   --knob-label: #FAFAFA;
 }
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}

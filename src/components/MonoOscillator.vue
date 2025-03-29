@@ -16,7 +16,6 @@ let oscillator: Tone.Oscillator
 let modulator: Tone.Oscillator
 let shaper: Tone.WaveShaper
 const output = new Tone.Gain(0.5) // Main output with initial gain
-const analyzer = new Tone.Analyser('waveform', 1024)
 
 // Modulation system
 const modBus = {
@@ -36,9 +35,6 @@ const detune = ref(0)
 const fmAmount = ref(0) // Now represents modulation index (-10 to 10)
 const shapeAmount = ref(0) // Start at 0 (pure sine)
 const waveformType = ref<'sine-to-square' | 'sine-to-saw'>(props.waveformType || 'sine-to-square')
-
-// Visualization
-const canvas = ref<HTMLCanvasElement | null>(null)
 
 // Waveshaping functions
 const makeSquareShaper = (val: number, amount: number) => {
@@ -87,34 +83,6 @@ const updateShape = () => {
   shaper.curve = curve
 }
 
-// Waveform visualization
-const drawWaveform = () => {
-  if (!canvas.value || !analyzer) return
-  const ctx = canvas.value.getContext('2d')
-  if (!ctx) return
-
-  const width = canvas.value.width
-  const height = canvas.value.height
-  const wave = analyzer.getValue() as Float32Array
-
-  ctx.clearRect(0, 0, width, height)
-  ctx.beginPath()
-  ctx.strokeStyle = getComputedStyle(document.documentElement)
-    .getPropertyValue('--secondary-color')
-    .trim()
-  ctx.lineWidth = 2
-
-  wave.forEach((value, i) => {
-    const x = (i / wave.length) * width
-    const y = (((value as number) + 1) / 2) * height
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  })
-  ctx.stroke()
-
-  requestAnimationFrame(drawWaveform)
-}
-
 // Initialize the synth
 const initializeOscillator = () => {
   const context = getContext()
@@ -147,12 +115,10 @@ const initializeOscillator = () => {
   // Audio routing with shape control
   oscillator.connect(shaper)
   shaper.connect(output)
-  output.connect(analyzer)
 
   // Start oscillators
   oscillator.start()
   modulator.start()
-  drawWaveform()
 }
 
 // Lifecycle hooks
@@ -180,7 +146,6 @@ onUnmounted(() => {
   oscillator?.dispose()
   modulator?.dispose()
   shaper?.dispose()
-  analyzer.dispose()
   output.dispose()
   modBus.fm.input.dispose()
   modBus.fm.amount.dispose()
@@ -193,7 +158,6 @@ defineExpose({
   output,
   fmIn: modBus.fm.input,
   shapeIn: modBus.shape.input,
-  analyzer,
 })
 </script>
 
@@ -201,7 +165,6 @@ defineExpose({
   <div class="single-oscillator">
     <h3>{{ waveformType === 'sine-to-saw' ? 'Saw' : 'Square' }} Oscillator</h3>
     <div class="oscillator-content">
-      <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
       <div class="controls">
         <div class="control-group">
           <ControlKnob
@@ -227,9 +190,7 @@ defineExpose({
 <style scoped>
 .single-oscillator {
   padding: 2rem;
-  background: var(--panel-background);
   border-radius: 8px;
-  width: 400px;
 }
 
 .oscillator-content {
@@ -242,16 +203,8 @@ h3 {
   color: var(--secondary-color);
   margin-bottom: 1rem;
   text-align: center;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
   font-size: 1.25rem;
-}
-
-.waveform {
-  width: 100%;
-  height: 100px;
-  background: transparent;
-  border: 1px solid var(--primary-color);
 }
 
 .controls {
