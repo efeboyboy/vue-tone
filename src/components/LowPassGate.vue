@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
 import ControlKnob from './ui/ControlKnob.vue'
+import ThreeWaySwitch from './ui/ThreeWaySwitch.vue'
+
 const props = defineProps<{
   isAudioReady: boolean
   label: string
@@ -144,12 +146,16 @@ defineExpose({
     <h3>{{ label }}</h3>
     <div class="controls">
       <div class="control-group">
-        <label>Mode</label>
-        <select v-model="mode">
-          <option value="COMBO">COMBO (VCA + VCF)</option>
-          <option value="VCF">VCF</option>
-          <option value="VCA">VCA</option>
-        </select>
+        <ThreeWaySwitch
+          v-model="mode"
+          :options="{
+            left: 'VCF',
+            middle: 'COMBO',
+            right: 'VCA',
+          }"
+          :middle-indicator="true"
+          label="Mode"
+        />
       </div>
       <div class="control-group">
         <label>Amount</label>
@@ -179,30 +185,20 @@ defineExpose({
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: 2rem;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .control-group label {
   font-weight: bold;
   color: var(--secondary-color);
-}
-
-.control-group select,
-.control-group input[type='range'] {
-  width: 100%;
-}
-
-.control-group select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
 }
 
 .control-group span {
