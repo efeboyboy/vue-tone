@@ -19,7 +19,7 @@ const startAudio = async () => {
   <Teleport to="body">
     <div v-if="!isStarted" class="modal-overlay">
       <div class="modal">
-        <h2>Welcome to Vue Tone</h2>
+        <h2 class="modal-title">Welcome to Vue Tone</h2>
         <p>To start making music, we need to initialize the audio system.</p>
         <p class="info">This is required by web browsers for a better audio experience.</p>
         <button @click="startAudio" class="start-button">Initialize Audio</button>
@@ -35,66 +35,72 @@ const startAudio = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal {
-  background: var(--panel-background);
-  padding: var(--module-padding);
-  border-radius: var(--module-border-radius);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: var(--gradient-darker);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-lg);
   max-width: 400px;
   width: 90%;
   text-align: center;
-  color: var(--secondary-color);
-  font-family: var(--font-family);
 }
 
-.modal h2 {
-  color: var(--secondary-color);
-  margin-bottom: var(--spacing-lg);
-  font-size: var(--font-size-xl);
-  font-weight: 400;
+.modal-title {
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .modal p {
-  color: var(--secondary-color);
-  margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+  font-size: 0.875rem;
 }
 
 .modal .info {
-  font-size: var(--font-size-sm);
-  color: var(--knob-label);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
   font-style: italic;
-  opacity: 0.8;
 }
 
 .start-button {
-  padding: var(--spacing-sm) var(--spacing-xl);
-  font-size: var(--font-size-lg);
-  background-color: var(--accent-color);
-  color: var(--secondary-color);
-  border: none;
-  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  margin-top: var(--spacing-lg);
-  font-family: var(--font-family);
+  transition: all 0.2s ease;
+  margin-top: var(--space-md);
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-inset);
 }
 
 .start-button:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+  color: var(--color-text-primary);
+  text-shadow: 0 0 4px var(--color-primary-glow);
 }
 
 .start-button:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 </style>
 

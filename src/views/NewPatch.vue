@@ -149,69 +149,100 @@ watch(
 </script>
 
 <template>
-  <div class="bongo-rack">
-    <!-- Control Column -->
-    <div class="col col-1">
-      <MasterClock ref="masterClockRef" :is-audio-ready="isAudioInitialized" />
+  <div class="main-container">
+    <!-- Column 1: Clock -->
+    <div class="patch-column clock-column">
+      <MasterClock
+        ref="masterClockRef"
+        :is-audio-ready="isAudioInitialized"
+        class="module clock-module"
+      />
     </div>
 
-    <!-- Sound A Column -->
-    <div class="col col-2">
-      <StepSequencer ref="seq1Ref" :is-audio-ready="isAudioInitialized" label="Saw Sequencer" />
-      <div class="oscillator-container">
-        <div class="oscillator-module">
-          <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
-          <MonoOscillator
-            ref="sawOsc"
-            :is-audio-ready="isAudioInitialized"
-            waveform-type="sine-to-saw"
-          />
-        </div>
-      </div>
-      <div class="control-container">
-        <div class="control-module">
-          <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
-          <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
-        </div>
-      </div>
+    <!-- Column 2: Saw Voice -->
+    <div class="patch-column voice-column saw-voice">
+      <StepSequencer
+        ref="seq1Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Saw Sequencer"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
+      <MonoOscillator
+        ref="sawOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-saw"
+        class="module oscillator-module"
+      />
+      <LowPassGate
+        ref="lpg1Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="LPG 1 (Osc 1)"
+        class="module lpg-module"
+      />
+      <FunctionGenerator
+        ref="func1Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Func 1"
+        class="module envelope-module"
+      />
     </div>
 
-    <!-- Sound B Column -->
-    <div class="col col-3">
-      <StepSequencer ref="seq2Ref" :is-audio-ready="isAudioInitialized" label="Square Sequencer" />
-      <div class="oscillator-container">
-        <div class="oscillator-module">
-          <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
-          <MonoOscillator
-            ref="squareOsc"
-            :is-audio-ready="isAudioInitialized"
-            waveform-type="sine-to-square"
-          />
-        </div>
-      </div>
-      <div class="control-container">
-        <div class="control-module">
-          <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
-          <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
-        </div>
-      </div>
+    <!-- Column 3: Square Voice -->
+    <div class="patch-column voice-column square-voice">
+      <StepSequencer
+        ref="seq2Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Square Sequencer"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
+      <MonoOscillator
+        ref="squareOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-square"
+        class="module oscillator-module"
+      />
+      <LowPassGate
+        ref="lpg2Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="LPG 2 (Osc 2)"
+        class="module lpg-module"
+      />
+      <FunctionGenerator
+        ref="func2Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Func 2"
+        class="module envelope-module"
+      />
     </div>
 
-    <!-- Sound C Column -->
-    <div class="col col-4">
-      <StepSequencer ref="seq3Ref" :is-audio-ready="isAudioInitialized" label="Noise Sequencer" />
-      <div class="oscillator-container">
-        <div class="oscillator-module">
-          <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
-          <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
-        </div>
-      </div>
-      <div class="control-container">
-        <div class="control-module">
-          <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
-          <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
-        </div>
-      </div>
+    <!-- Column 4: Noise Voice -->
+    <div class="patch-column voice-column noise-voice">
+      <StepSequencer
+        ref="seq3Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Noise Sequencer"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
+      <NoiseSynth
+        ref="noiseSynthRef"
+        :is-audio-ready="isAudioInitialized"
+        class="module oscillator-module"
+      />
+      <LowPassGate
+        ref="lpg3Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="LPG 3 (Noise)"
+        class="module lpg-module"
+      />
+      <FunctionGenerator
+        ref="func3Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Func 3"
+        class="module envelope-module"
+      />
     </div>
   </div>
 </template>
