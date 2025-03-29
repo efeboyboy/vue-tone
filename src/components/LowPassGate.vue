@@ -164,7 +164,7 @@ defineExpose({
               }"
               :middle-indicator="true"
               :show-led="true"
-              label="Mode"
+              label="mode"
               size="medium"
             />
           </div>
@@ -176,7 +176,7 @@ defineExpose({
               :min="0"
               :max="1"
               :step="0.01"
-              label="Amount"
+              label="amount"
               size="medium"
             />
             <span class="value-display">{{ Math.round(amount * 100) }}%</span>

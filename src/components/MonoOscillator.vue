@@ -183,7 +183,7 @@ defineExpose({
               :min="-1200"
               :max="1200"
               :step="1"
-              label="Frequency"
+              label="tune"
               size="medium"
               @update:modelValue="updateDetune"
             />
@@ -194,7 +194,7 @@ defineExpose({
               :min="0"
               :max="10"
               :step="0.1"
-              label="FM Amount"
+              label="fm"
               size="medium"
             />
           </div>
@@ -204,7 +204,7 @@ defineExpose({
               :min="0"
               :max="50"
               :step="0.1"
-              label="Shape"
+              label="shape"
               size="medium"
             />
           </div>

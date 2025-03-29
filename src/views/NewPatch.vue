@@ -177,7 +177,7 @@ watch(
       <LowPassGate
         ref="lpg1Ref"
         :is-audio-ready="isAudioInitialized"
-        label="LPG 1 (Osc 1)"
+        label="LPG A"
         class="module lpg-module"
       />
       <FunctionGenerator
@@ -206,7 +206,7 @@ watch(
       <LowPassGate
         ref="lpg2Ref"
         :is-audio-ready="isAudioInitialized"
-        label="LPG 2 (Osc 2)"
+        label="LPG B"
         class="module lpg-module"
       />
       <FunctionGenerator
@@ -234,7 +234,7 @@ watch(
       <LowPassGate
         ref="lpg3Ref"
         :is-audio-ready="isAudioInitialized"
-        label="LPG 3 (Noise)"
+        label="LPG C"
         class="module lpg-module"
       />
       <FunctionGenerator
