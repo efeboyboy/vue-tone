@@ -117,4 +117,42 @@ defineExpose({
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.module-header h3 {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-xxs);
+}
+
+.control-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-md);
+  height: 100%;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Remove margin-top adjustment as it's now handled in theme.css */
+.control-group:first-child {
+  margin-top: 0;
+}
+</style>

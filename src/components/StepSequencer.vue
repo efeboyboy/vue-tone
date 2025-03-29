@@ -115,4 +115,34 @@ defineExpose({
   </div>
 </template>
 
-<style></style>
+<style scoped>
+.module-header h3 {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-xxs);
+}
+
+.step-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xxs);
+  position: relative;
+  width: 100%;
+}
+
+.led-indicator {
+  margin-bottom: var(--space-xxs);
+}
+
+.step-switch {
+  margin-bottom: var(--space-xs);
+}
+
+.frequency-knob {
+  margin-top: auto;
+}
+</style>

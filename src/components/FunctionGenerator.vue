@@ -151,6 +151,30 @@ defineExpose({
   </div>
 </template>
 
-<style>
-/* Component specific styles only */
+<style scoped>
+.module-header h3 {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-xxs);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.led-indicator {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--led-size);
+  height: var(--led-size);
+  z-index: 2;
+}
 </style>

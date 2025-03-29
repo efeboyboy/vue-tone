@@ -167,15 +167,13 @@ watch(
         label="Saw Sequencer"
         class="module sequencer-module"
       />
-      <div class="shared-row">
-        <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
-        <MonoOscillator
-          ref="sawOsc"
-          :is-audio-ready="isAudioInitialized"
-          waveform-type="sine-to-saw"
-          class="module oscillator-module"
-        />
-      </div>
+      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
+      <MonoOscillator
+        ref="sawOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-saw"
+        class="module oscillator-module"
+      />
       <div class="shared-row">
         <LowPassGate
           ref="lpg1Ref"
@@ -200,15 +198,13 @@ watch(
         label="Square Sequencer"
         class="module sequencer-module"
       />
-      <div class="shared-row">
-        <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
-        <MonoOscillator
-          ref="squareOsc"
-          :is-audio-ready="isAudioInitialized"
-          waveform-type="sine-to-square"
-          class="module oscillator-module"
-        />
-      </div>
+      <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
+      <MonoOscillator
+        ref="squareOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-square"
+        class="module oscillator-module"
+      />
       <div class="shared-row">
         <LowPassGate
           ref="lpg2Ref"
@@ -233,14 +229,12 @@ watch(
         label="Noise Sequencer"
         class="module sequencer-module"
       />
-      <div class="shared-row">
-        <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
-        <NoiseSynth
-          ref="noiseSynthRef"
-          :is-audio-ready="isAudioInitialized"
-          class="module oscillator-module"
-        />
-      </div>
+      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
+      <NoiseSynth
+        ref="noiseSynthRef"
+        :is-audio-ready="isAudioInitialized"
+        class="module oscillator-module"
+      />
       <div class="shared-row">
         <LowPassGate
           ref="lpg3Ref"

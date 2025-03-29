@@ -90,23 +90,24 @@ const handleMouseUp = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-xxs);
   user-select: none;
   position: relative;
-  width: var(--knob-size, clamp(48px, 6vw, 65px));
-  height: calc(var(--knob-size, clamp(48px, 6vw, 65px)) + 18px); /* Space for label only */
+  width: var(--knob-size, clamp(40px, 5vw, 65px));
+  height: calc(var(--knob-size, clamp(40px, 5vw, 65px)) * 1.2);
+  contain: layout paint style;
 }
 
 .control-knob-container.small {
-  --knob-size: clamp(32px, 4vw, 48px);
+  --knob-size: clamp(28px, 3.5vw, 44px);
 }
 
 .control-knob-container.medium {
-  --knob-size: clamp(48px, 6vw, 65px);
+  --knob-size: clamp(40px, 5vw, 60px);
 }
 
 .control-knob-container.large {
-  --knob-size: clamp(60px, 8vw, 80px);
+  --knob-size: clamp(54px, 7vw, 76px);
 }
 
 .knob-background {
@@ -117,6 +118,7 @@ const handleMouseUp = () => {
   background: var(--color-bg-darker);
   box-shadow: var(--shadow-inset);
   border: 1px solid var(--color-border-dark);
+  contain: paint style;
 }
 
 .control-knob {
@@ -132,6 +134,7 @@ const handleMouseUp = () => {
   justify-content: center;
   box-shadow: var(--shadow-inset);
   transition: transform 0.1s ease;
+  contain: layout paint;
 }
 
 /* Add a pseudo-element for the static shadow */
@@ -150,10 +153,10 @@ const handleMouseUp = () => {
 
 .indicator-line {
   position: absolute;
-  width: clamp(2px, 0.5vw, 4px);
-  height: clamp(2px, 0.5vw, 4px);
+  width: clamp(2px, 0.5vw, 3px);
+  height: clamp(6px, 15%, 8px);
   background: var(--color-primary);
-  border-radius: 50%;
+  border-radius: 1px;
   top: 10%;
   box-shadow: 0 0 4px var(--color-primary-glow);
   z-index: 1;
@@ -164,6 +167,10 @@ const handleMouseUp = () => {
   bottom: 0;
   text-align: center;
   width: 100%;
+  height: calc(var(--knob-size) * 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .knob-label {
@@ -175,5 +182,17 @@ const handleMouseUp = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  padding: 0 var(--space-xxs);
+}
+
+@media (max-width: 768px) {
+  .control-knob-container {
+    gap: var(--space-xxs);
+  }
+
+  .knob-label {
+    font-size: clamp(0.55rem, 1.2vw, 0.65rem);
+  }
 }
 </style>
