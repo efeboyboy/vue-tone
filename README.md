@@ -1,82 +1,67 @@
-# Vue Tone.js Timing Demo
+# Bongo Synth
 
-A Vue 3 + TypeScript application demonstrating precise timing control using Tone.js.
+![Bongo Synth](src/assets/bpp-logo-white.svg)
+
+Bongo is a web-based FM synthesizer inspired by classic Braun design principles: simplicity, functionality, and elegance. Built with Vue.js and Tone.js, it provides a powerful yet accessible platform for sound design and musical exploration.
 
 ## Features
 
-- Precise audio timing using Tone.js Context, Clock, and Transport
-- Event emission system for timing synchronization
-- High-resolution timing measurements
-- Interactive audio context management
+- **Multi-Channel Mixer**: Independent volume, mute, and solo controls for each channel
+- **FM-Ready Oscillators**: Create complex sounds with customizable frequency modulation
+- **Braun-Inspired UI**: Clean, intuitive interface with knobs, sliders, and switches
+- **Responsive Design**: Works across desktop and tablet devices
 
-## Timing System
+## Overview
 
-The application uses three synchronized timing systems:
+Bongo Synth is designed to bring the classic aesthetics of Dieter Rams' Braun design into the digital audio workspace. With its minimalist approach and focus on functionality, Bongo makes sound design accessible without sacrificing depth or creative potential.
 
-1. **Clock Time**: Deterministic scheduling time
+### Key Components
 
-   - Starts at lookAhead value (0.01s)
-   - Increments exactly 1 second per tick
-   - Used for precise event scheduling
+- **Oscillators**: Generate and shape the primary sound sources
+- **Mixer**: Control the balance between different sound elements
+- **Effects**: Process and refine your sounds with various audio effects
+- **Patch System**: Save and recall your favorite sound settings
 
-2. **Context Time**: Web Audio context time
+## Synth Architecture
 
-   - Real-time audio system clock
-   - Typically within 1ms of Clock Time
-   - Represents actual audio timing
+Bongo uses a modular architecture that allows for flexible signal routing:
 
-3. **Transport Time**: Musical timeline
-   - Synchronized with global transport
-   - Used for musical events and scheduling
-   - Maintains consistent timing offset
-
-## Configuration
-
-```typescript
-const audioContext = new Tone.Context({
-  latencyHint: 'interactive', // Optimized for interactive applications
-  lookAhead: 0.01, // 10ms lookahead for scheduling
-  updateInterval: 0.01, // 10ms update interval for timing
-})
+```
+Oscillators → Mixer → Effects → Output
 ```
 
-## Sample Output
+Each oscillator can modulate others, creating complex FM synthesis possibilities. The mixer allows precise control over individual signal levels, while effects can be applied to shape the final sound.
 
-```javascript
-Timing Info: {
-  'Clock Time': '0.010',      // Deterministic scheduling time
-  'Context Time': '0.011',    // Actual audio context time
-  'Transport Time': '0.029'   // Musical timeline time
-}
-```
+## Technical Implementation
 
-## Getting Started
+Bongo is built with:
 
-1. Install dependencies:
+- **Vue.js 3**: Frontend framework (Composition API)
+- **Tone.js**: Web Audio framework for reliable sound generation
+- **CSS Variables**: For consistent theming and responsive design
 
-```bash
-npm install
-```
+The synth leverages modern Web Audio API features through Tone.js, ensuring consistent audio performance across browsers.
 
-2. Run the development server:
+## Running Locally
 
-```bash
-npm run dev
-```
+If you want to run Bongo Synth locally:
 
-3. Build for production:
+1. Clone this repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open your browser to the URL shown in the terminal (typically http://localhost:5173)
 
-```bash
-npm run build
-```
+## Credits
 
-## Dependencies
+Designed and developed with ♥ by [Beats Per Plant](https://beatsperplant.com)  
+Powered by [Vue.js](https://vuejs.org/) and [Tone.js](https://tonejs.github.io/)
 
-- Vue 3
-- TypeScript
-- Tone.js
-- Vite
+---
 
-## License
-
-MIT
+v0.1 - Initial Release
