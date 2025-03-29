@@ -47,7 +47,7 @@ const initializeSequence = () => {
 }
 
 // Randomize sequence steps
-const randomize = (activeProbability = 0.5, freqMin = 100, freqMax = 1200) => {
+const randomize = (activeProbability = 1.0, freqMin = 20, freqMax = 2000) => {
   sequence.value = sequence.value.map(() => {
     // Randomly set each step as active based on probability
     const active = Math.random() < activeProbability

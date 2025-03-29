@@ -76,38 +76,44 @@ const setupAudioRouting = () => {
     seq3Ref.value.output.connect(noiseSynthRef.value.playbackRate)
   }
 
-  // Route OSC 1 to LPG 1, then to Mixer channel A
+  // Route OSC 1 (Saw) through LPG 1 and analyzer to mixer
   if (
     sawOsc.value?.output &&
     lpg1Ref.value?.input &&
     scope1Ref.value?.input &&
     mixerRef.value?.channelA
   ) {
+    // Connect oscillator to LPG
     sawOsc.value.output.connect(lpg1Ref.value.input)
+    // Connect LPG output to analyzer and mixer
     lpg1Ref.value.output.connect(scope1Ref.value.input)
     lpg1Ref.value.output.connect(mixerRef.value.channelA)
   }
 
-  // Route OSC 2 to LPG 2, then to Mixer channel B
+  // Route OSC 2 (Square) through LPG 2 and analyzer to mixer
   if (
     squareOsc.value?.output &&
     lpg2Ref.value?.input &&
     scope2Ref.value?.input &&
     mixerRef.value?.channelB
   ) {
+    // Connect oscillator to LPG
     squareOsc.value.output.connect(lpg2Ref.value.input)
+    // Connect LPG output to analyzer and mixer
     lpg2Ref.value.output.connect(scope2Ref.value.input)
     lpg2Ref.value.output.connect(mixerRef.value.channelB)
   }
 
-  // Route Noise to LPG 3, then to Mixer channel C
+  // Route Noise through LPG 3 and analyzer to mixer
   if (
     noiseSynthRef.value?.output &&
     lpg3Ref.value?.input &&
     scope3Ref.value?.input &&
     mixerRef.value?.channelC
   ) {
+    // Connect noise to LPG
     noiseSynthRef.value.output.connect(lpg3Ref.value.input)
+    // Connect LPG output to analyzer and mixer
     lpg3Ref.value.output.connect(scope3Ref.value.input)
     lpg3Ref.value.output.connect(mixerRef.value.channelC)
   }
@@ -328,9 +334,13 @@ watch(
   </div>
 </template>
 
-<style>
+<style scoped>
 .how-to-module {
   height: 100%;
   width: 100%;
+}
+.noise-voice :deep(.knob-container) {
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

@@ -18,8 +18,8 @@ const output = new Tone.Gain()
 const playbackRateSignal = new Tone.Signal(1)
 
 let noise: Tone.Noise
-const noiseType = ref<'white' | 'pink' | 'brown'>('white')
-const playbackRate = ref(1)
+const noiseType = ref<'white' | 'pink' | 'brown'>('pink')
+const playbackRate = ref(0.5)
 
 const initializeNoise = () => {
   const context = getContext()

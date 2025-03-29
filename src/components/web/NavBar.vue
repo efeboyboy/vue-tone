@@ -6,7 +6,6 @@
     <div class="menu-container">
       <router-link to="/" class="nav-link">Bongos</router-link>
       <router-link to="/about" class="nav-link">About</router-link>
-      <router-link to="/help" class="nav-link">Help & Learn</router-link>
     </div>
   </nav>
 </template>
