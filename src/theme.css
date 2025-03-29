@@ -171,10 +171,16 @@ body {
   place-items: center;
 }
 
+.control-section {
+  width: 100%;
+}
+
 .control-row {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  width: 100%;
+  justify-content: space-around;
 }
 
 /* Specific module heights */

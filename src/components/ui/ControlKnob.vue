@@ -89,7 +89,7 @@ const handleMouseUp = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
   user-select: none;
   position: relative;
   width: var(--knob-size, 65px);
@@ -97,18 +97,18 @@ const handleMouseUp = () => {
 }
 
 .control-knob-container.small {
-  --knob-size: 50px;
-  --label-font-size: var(--font-size-xs);
+  --knob-size: 48px;
+  --label-font-size: 0.75rem;
 }
 
 .control-knob-container.medium {
   --knob-size: 65px;
-  --label-font-size: var(--font-size-sm);
+  --label-font-size: 0.875rem;
 }
 
 .control-knob-container.large {
   --knob-size: 80px;
-  --label-font-size: var(--font-size-md);
+  --label-font-size: 1rem;
 }
 
 .knob-background {
@@ -116,10 +116,9 @@ const handleMouseUp = () => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: var(--knob-background);
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.2);
+  background: var(--color-bg-darker);
+  box-shadow: var(--shadow-inset);
+  border: 1px solid var(--color-border-dark);
 }
 
 .control-knob {
@@ -129,11 +128,12 @@ const handleMouseUp = () => {
   top: 7.5%;
   left: 7.5%;
   border-radius: 50%;
-  background: var(--knob-background);
+  background: var(--color-bg-dark);
   cursor: pointer;
   display: flex;
   justify-content: center;
-  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-inset);
+  transition: transform 0.1s ease;
 }
 
 /* Add a pseudo-element for the static shadow */
@@ -151,12 +151,13 @@ const handleMouseUp = () => {
 }
 
 .indicator-line {
-  width: 2px;
-  height: 40%;
-  background: var(--knob-indicator);
-  margin-top: 4px;
-  border-radius: 1px;
-  position: relative;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  top: 10%;
+  box-shadow: 0 0 4px var(--color-primary-glow);
   z-index: 1;
 }
 
@@ -164,12 +165,14 @@ const handleMouseUp = () => {
   position: absolute;
   bottom: -24px;
   text-align: center;
+  width: 100%;
 }
 
 .knob-label {
   font-size: var(--label-font-size);
-  color: var(--knob-label);
-  text-transform: lowercase;
-  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  letter-spacing: 0.05em;
 }
 </style>
