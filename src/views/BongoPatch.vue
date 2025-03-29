@@ -334,9 +334,13 @@ watch(
   </div>
 </template>
 
-<style>
+<style scoped>
 .how-to-module {
   height: 100%;
   width: 100%;
+}
+.noise-voice :deep(.knob-container) {
+  opacity: 0;
+  pointer-events: none;
 }
 </style>
