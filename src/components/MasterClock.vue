@@ -7,6 +7,10 @@ const props = defineProps<{
   isAudioReady: boolean
 }>()
 
+const emit = defineEmits<{
+  randomize: []
+}>()
+
 // Transport state
 const isPlaying = ref(false)
 const bpm = ref(120)
@@ -46,6 +50,11 @@ const toggleTransport = async () => {
     isPlaying.value = false
     activeLed.value = 0 // Reset LED when stopped
   }
+}
+
+// Randomize sequences
+const handleRandomize = () => {
+  emit('randomize')
 }
 
 // Update BPM when changed
@@ -100,9 +109,14 @@ defineExpose({
             <div class="display-label">BPM</div>
             <div class="display-value">{{ bpm }}</div>
           </div>
-          <button @click="toggleTransport" :class="{ active: isPlaying }" class="transport-btn">
-            {{ isPlaying ? '⏹' : '▶' }}
-          </button>
+          <div class="buttons-container">
+            <button @click="toggleTransport" :class="{ active: isPlaying }" class="transport-btn">
+              {{ isPlaying ? '⏹' : '▶' }}
+            </button>
+            <button @click="handleRandomize" class="dice-btn" title="Randomize Sequences">
+              🎲
+            </button>
+          </div>
         </div>
 
         <!-- Bottom row with knobs -->
@@ -182,13 +196,19 @@ defineExpose({
   gap: var(--space-md);
 }
 
+.buttons-container {
+  display: flex;
+  gap: var(--space-xs);
+}
+
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.transport-btn {
+.transport-btn,
+.dice-btn {
   width: 40px;
   height: 40px;
   display: flex;
@@ -204,14 +224,21 @@ defineExpose({
   box-shadow: var(--shadow-inset);
 }
 
-.transport-btn:hover {
+.transport-btn:hover,
+.dice-btn:hover {
   background-color: var(--color-bg-tertiary);
+  transform: scale(1.05);
 }
 
 .transport-btn.active {
   background-color: var(--color-primary-dark);
   border-color: var(--color-primary);
   box-shadow: var(--shadow-glow);
+}
+
+.dice-btn:active {
+  background-color: var(--color-primary-dark);
+  transform: scale(0.95);
 }
 
 .time-display {

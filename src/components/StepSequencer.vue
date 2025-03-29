@@ -46,6 +46,19 @@ const initializeSequence = () => {
   Tone.getTransport().scheduleRepeat(repeat, '16n')
 }
 
+// Randomize sequence steps
+const randomize = (activeProbability = 0.5, freqMin = 100, freqMax = 1200) => {
+  sequence.value = sequence.value.map(() => {
+    // Randomly set each step as active based on probability
+    const active = Math.random() < activeProbability
+
+    // Generate random frequency within range
+    const freq = Math.floor(freqMin + Math.random() * (freqMax - freqMin))
+
+    return { active, freq }
+  })
+}
+
 // Watch transport state
 watch(
   () => Tone.getTransport().state,
@@ -79,6 +92,7 @@ const getCurrentStepData = () => {
 defineExpose({
   output: frequencyOutput,
   getCurrentStepData,
+  randomize,
 })
 </script>
 

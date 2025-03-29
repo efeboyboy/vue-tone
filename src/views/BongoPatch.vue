@@ -44,6 +44,26 @@ const seq1Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
 const seq2Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
 const seq3Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
 
+// Function to randomize all sequencers with different settings for each
+const randomizeAllSequencers = () => {
+  if (seq1Ref.value) {
+    // Saw sequencer - lower frequencies, higher chance of activation
+    seq1Ref.value.randomize(0.6, 80, 400)
+  }
+
+  if (seq2Ref.value) {
+    // Square sequencer - mid frequencies, medium chance of activation
+    seq2Ref.value.randomize(0.4, 200, 800)
+  }
+
+  if (seq3Ref.value) {
+    // Noise sequencer - higher frequencies for noise rate, lower chance of activation
+    seq3Ref.value.randomize(0.3, 400, 1600)
+  }
+
+  console.log('All sequencers randomized')
+}
+
 const setupAudioRouting = () => {
   // Connect sequencers to oscillators and noise
   if (seq1Ref.value?.output && sawOsc.value) {
@@ -115,6 +135,9 @@ const setupAudioRouting = () => {
 
   // Setup clock triggers
   setupTriggers()
+
+  // After all routing is done, randomize the sequencers
+  randomizeAllSequencers()
 }
 
 // Setup 16th note triggers
@@ -187,6 +210,7 @@ watch(
         ref="masterClockRef"
         :is-audio-ready="isAudioInitialized"
         class="module clock-module"
+        @randomize="randomizeAllSequencers"
       />
       <MainMixer
         ref="mixerRef"
