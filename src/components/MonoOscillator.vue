@@ -215,11 +215,28 @@ defineExpose({
 </template>
 
 <style scoped>
+.mono-oscillator {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  min-height: 0;
+  padding: var(--space-sm);
+  width: 100%;
+}
+
+.mono-oscillator .control-row {
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
 .control-section {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
 }
 
 .control-row {

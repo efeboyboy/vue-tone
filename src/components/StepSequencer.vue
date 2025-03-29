@@ -116,24 +116,53 @@ defineExpose({
 </template>
 
 <style scoped>
+.sequence-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(2px, 0.5vw, 4px);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  place-items: center;
+}
+
 .step-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xxs);
+  gap: var(--space-sm);
   position: relative;
   width: 100%;
 }
 
 .led-indicator {
-  margin-bottom: var(--space-xxs);
+  margin-bottom: var(--space-sm);
 }
 
 .step-switch {
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .frequency-knob {
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
   margin-top: auto;
+}
+
+.module-content {
+  height: calc(100% - 25px);
+  padding: var(--space-sm);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.step-sequencer {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

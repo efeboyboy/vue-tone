@@ -181,6 +181,78 @@ watch([() => props.attackTime, () => props.decayTime], () => {
   </div>
 </template>
 
-<style>
-/* Using existing oscilloscope styles from theme.css */
+<style scoped>
+.envelope-screen-module {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.oscilloscope-content {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  padding: var(--space-sm);
+  background-color: var(--color-bg-darker);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-inset);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+.oscilloscope-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: var(--color-bg-darker);
+  border-radius: var(--radius-sm);
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: blur(0.5px) brightness(1.2);
+}
+
+.oscilloscope-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(0.5px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.oscilloscope-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 30%,
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.envelope-module .screen-container {
+  flex: 0.8;
+  height: 100%;
+}
+
+.envelope-module .control-section {
+  flex: 1;
+}
+
+.envelope-module .control-row {
+  transform-origin: center center;
+}
 </style>

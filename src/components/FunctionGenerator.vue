@@ -152,11 +152,45 @@ defineExpose({
 </template>
 
 <style scoped>
+.function-generator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  width: 100%;
+}
+
+.function-generator .module-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.function-generator .module-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 25px);
+}
+
+.function-generator .screen-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  contain: layout;
+}
+
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
+  gap: var(--space-sm);
 }
 
 .led-indicator {
@@ -167,5 +201,16 @@ defineExpose({
   width: var(--led-size);
   height: var(--led-size);
   z-index: 2;
+}
+
+.knob-label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  margin-top: var(--space-sm);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

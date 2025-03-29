@@ -91,7 +91,6 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
   position: relative;
   width: var(--switch-width, clamp(120px, 14vw, 140px));
 }
@@ -125,11 +124,6 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 .led-indicator.active {
   background-color: var(--color-primary);
   box-shadow: var(--shadow-glow);
-}
-
-.label-container {
-  margin-bottom: var(--space-xxs);
-  width: 100%;
 }
 
 .switch-label {

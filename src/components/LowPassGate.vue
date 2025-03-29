@@ -186,4 +186,23 @@ defineExpose({
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.low-pass-gate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  height: 100%;
+  width: 100%;
+}
+
+.control-section {
+  transform-origin: center center;
+  height: 100%;
+  justify-content: space-evenly;
+}
+
+.control-row {
+  padding-bottom: 0;
+}
+</style>

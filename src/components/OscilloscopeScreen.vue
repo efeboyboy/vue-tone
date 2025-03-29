@@ -119,6 +119,65 @@ defineExpose({
   </div>
 </template>
 
-<style>
-/* Component specific styles only */
+<style scoped>
+.oscilloscope-module {
+  width: 100%;
+  height: 100%;
+  contain: strict;
+  content-visibility: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.oscilloscope-content {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  padding: var(--space-sm);
+  background-color: var(--color-bg-darker);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-inset);
+  overflow: hidden;
+  position: relative;
+}
+
+.oscilloscope-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(0.5px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.oscilloscope-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 30%,
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.oscilloscope-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: blur(0.5px) brightness(1.2);
+}
 </style>

@@ -98,6 +98,103 @@ defineExpose({
   </div>
 </template>
 
-<style>
-/* Component specific styles only */
+<style scoped>
+.master-clock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 100%;
+}
+
+.led-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: var(--space-md);
+}
+
+.clock-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.transport-btn {
+  padding: var(--space-sm);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-inset);
+  width: 100%;
+}
+
+.transport-btn:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.transport-btn.active {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.bpm-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.bpm-control label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}
+
+.bpm-control input[type='number'] {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  font-family: var(--font-sans);
+  width: 100%;
+}
+
+.bpm-control input[type='range'] {
+  width: 100%;
+  -webkit-appearance: none;
+  background-color: var(--color-bg-tertiary);
+  height: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.bpm-control input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.time-display {
+  font-family: monospace;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  background-color: var(--color-bg-tertiary);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-inset);
+}
 </style>

@@ -118,6 +118,17 @@ defineExpose({
 </template>
 
 <style scoped>
+.noise-synth {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  min-height: 0;
+  padding: var(--space-sm);
+  height: 100%;
+  width: 100%;
+}
+
 .control-section {
   width: 100%;
   display: flex;
@@ -142,8 +153,9 @@ defineExpose({
   align-items: center;
 }
 
-/* Remove margin-top adjustment as it's now handled in theme.css */
-.control-group:first-child {
-  margin-top: 0;
+.noise-voice .oscillator-module .control-row {
+  align-items: center;
+  display: flex;
+  height: 100%;
 }
 </style>

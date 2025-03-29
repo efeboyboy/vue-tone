@@ -37,3 +37,77 @@ declare global {
   }
 }
 </script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: var(--gradient-darker);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-title {
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.modal p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.modal .info {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.start-button {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: var(--space-md);
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-inset);
+}
+
+.start-button:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+  color: var(--color-text-primary);
+  text-shadow: 0 0 4px var(--color-primary-glow);
+}
+
+.start-button:active {
+  transform: translateY(1px);
+}
+</style>
