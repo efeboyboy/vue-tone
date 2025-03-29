@@ -23,10 +23,39 @@ const drawWaveform = () => {
   const height = canvas.value.height
   const wave = analyzer.getValue() as Float32Array
 
-  ctx.clearRect(0, 0, width, height)
+  // Clear with dark background
+  ctx.fillStyle = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-bg-darker')
+    .trim()
+  ctx.fillRect(0, 0, width, height)
+
+  // Draw grid
+  ctx.strokeStyle = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-border-dark')
+    .trim()
+  ctx.lineWidth = 1
+
+  // Vertical grid lines
+  const gridSize = 40
+  for (let x = 0; x < width; x += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, height)
+    ctx.stroke()
+  }
+
+  // Horizontal grid lines
+  for (let y = 0; y < height; y += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(width, y)
+    ctx.stroke()
+  }
+
+  // Draw waveform
   ctx.beginPath()
   ctx.strokeStyle = getComputedStyle(document.documentElement)
-    .getPropertyValue('--secondary-color')
+    .getPropertyValue('--color-primary')
     .trim()
   ctx.lineWidth = 2
 
@@ -42,6 +71,17 @@ const drawWaveform = () => {
 }
 
 onMounted(() => {
+  if (canvas.value) {
+    // Make canvas responsive
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        canvas.value!.width = width
+        canvas.value!.height = height
+      }
+    })
+    resizeObserver.observe(canvas.value)
+  }
   drawWaveform()
 })
 
@@ -57,12 +97,9 @@ defineExpose({
 </script>
 
 <template>
-  <div class="module oscilloscope">
-    <div class="module-header">
-      <h3>{{ label || 'Output' }}</h3>
-    </div>
-    <div class="module-content">
-      <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
+  <div class="module oscilloscope-module">
+    <div class="oscilloscope-content">
+      <canvas ref="canvas" class="oscilloscope-canvas"></canvas>
     </div>
   </div>
 </template>
