@@ -15,10 +15,10 @@
   --breakpoint-2xl: 1536px;
 
   /* Colors - Primary */
-  --color-primary: #00ff00;
-  --color-primary-dark: #00cc00;
-  --color-primary-light: rgba(0, 255, 0, .3);
-  --color-primary-glow: rgba(0, 255, 0, .5);
+  --color-primary: #65e18b;
+  --color-primary-dark: #4bc06d;
+  --color-primary-light: rgba(101, 225, 139, 0.3);
+  --color-primary-glow: rgba(101, 225, 139, 0.5);
 
   /* Colors - Background */
   --color-bg-darkest: #0a0a0a;
@@ -237,7 +237,7 @@ body {
 /* Component Styles - NavBar */
 .navbar {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
   background-color: var(--color-bg-darker);

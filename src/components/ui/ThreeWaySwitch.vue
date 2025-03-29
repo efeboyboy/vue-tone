@@ -101,12 +101,12 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 }
 
 .switch-container.medium {
-  --switch-width: clamp(120px, 14vw, 140px);
+  --switch-width: clamp(120px, 16vw, 160px);
   --switch-height: clamp(28px, 4vh, 36px);
 }
 
 .switch-container.large {
-  --switch-width: clamp(140px, 18vw, 180px);
+  --switch-width: clamp(140px, 20vw, 200px);
   --switch-height: clamp(32px, 5vh, 40px);
 }
 
@@ -196,7 +196,7 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0 var(--space-xs);
+  padding: 0 var(--space-xxs);
 }
 
 .click-area .option-label {
@@ -213,9 +213,9 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   text-align: center;
   max-width: 100%;
   display: block;
-  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
-  letter-spacing: -0.01em;
-  padding: 0 var(--space-xxs);
+  font-size: clamp(0.5rem, 1.2vw, 0.65rem);
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .click-area.active .option-label {
@@ -226,8 +226,24 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 
 @media (max-width: 768px) {
   .click-area .option-label {
-    font-size: clamp(0.55rem, 1.2vw, 0.65rem);
-    letter-spacing: -0.02em;
+    font-size: clamp(0.5rem, 1.1vw, 0.6rem);
+    letter-spacing: -0.03em;
+  }
+
+  .switch-container.small,
+  .switch-container.medium,
+  .switch-container.large {
+    --switch-width: max-content;
+    min-width: clamp(100px, 16vw, 160px);
+    max-width: 100%;
+  }
+
+  .switch-track {
+    min-width: 100%;
+  }
+
+  .click-area {
+    padding: 0 var(--space-xs);
   }
 }
 </style>

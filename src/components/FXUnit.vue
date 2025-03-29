@@ -23,10 +23,10 @@ let delay: Tone.FeedbackDelay
 
 // Effect parameters
 const reverbEnabled = ref(true)
-const reverbAmount = ref(30)
+const reverbAmount = ref(10)
 const reverbDecay = ref(2)
 
-const delayEnabled = ref(true)
+const delayEnabled = ref(false)
 const delayAmount = ref(30)
 const delayTime = ref(0.25)
 const delayFeedback = ref(0.4)
@@ -256,6 +256,7 @@ defineExpose({
 
 .fx-row {
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
   gap: var(--space-md);
   width: 100%;

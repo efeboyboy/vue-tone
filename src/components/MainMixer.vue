@@ -193,12 +193,11 @@ defineExpose({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-md);
 }
 
 .channel-label {
   font-weight: bold;
-  margin-bottom: var(--space-xs);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;

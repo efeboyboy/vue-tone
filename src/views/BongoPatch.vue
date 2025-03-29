@@ -194,7 +194,7 @@ watch(
         class="module mixer-module"
       />
       <FXUnit ref="fxUnitRef" :is-audio-initialized="isAudioInitialized" class="module fx-module" />
-      <div class="module how-to-module">
+      <!-- <div class="module how-to-module">
         <div class="module-header">
           <h3>Quick Tips</h3>
         </div>
@@ -207,7 +207,7 @@ watch(
             <li>Add effects with FX unit</li>
           </ul>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Column 2: Saw Voice -->
