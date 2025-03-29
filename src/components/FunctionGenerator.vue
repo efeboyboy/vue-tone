@@ -119,12 +119,26 @@ defineExpose({
       <div class="knobs-row">
         <div class="control-group">
           <label>Attack</label>
-          <ControlKnob v-model="attack" :min="0.001" :max="0.25" :step="0.001" label="attack" />
+          <ControlKnob
+            v-model="attack"
+            :min="0.001"
+            :max="0.25"
+            :step="0.001"
+            label="attack"
+            size="small"
+          />
           <span>{{ Math.round(attack * 1000) }}ms</span>
         </div>
         <div class="control-group">
           <label>Decay</label>
-          <ControlKnob v-model="decay" :min="0.001" :max="0.5" :step="0.001" label="decay" />
+          <ControlKnob
+            v-model="decay"
+            :min="0.001"
+            :max="0.5"
+            :step="0.001"
+            label="decay"
+            size="small"
+          />
           <span>{{ Math.round(decay * 1000) }}ms</span>
         </div>
       </div>

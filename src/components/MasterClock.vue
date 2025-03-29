@@ -25,7 +25,7 @@ const initializeClock = () => {
   Tone.getTransport().bpm.value = bpm.value
 
   // Schedule beat tracking for LEDs
-  Tone.getTransport().scheduleRepeat((time) => {
+  Tone.getTransport().scheduleRepeat(() => {
     activeLed.value = (activeLed.value + 1) % 4
   }, '4n') // Schedule on quarter notes for 4/4 time
 

@@ -1,23 +1,29 @@
 :root {
   /* Colors */
-  --primary-color: #000;
-  --secondary-color: #fff;
-  --accent-color: #ff5f56;
-  --danger-color: #ff4444;
+  --primary-color: #2C2C2C;
+  --secondary-color: #FAFAFA;
+  --accent-color: #FF4B12;
+  --danger-color: #E60012;
 
   /* Background Colors */
-  --background-color: #333333;
-  --background-color-light: #404040;
-  --panel-background: #595959;
-  --border-color: rgba(255, 255, 255, 0.1);
+  --background-color: #2C2C2C;
+  --background-color-light: #3C3C3C;
+  --panel-background: #4A4A4A;
+  --border-color: rgba(255, 255, 255, 0.12);
 
   /* Component Colors */
   --knob-background: #919191;
   --knob-indicator: #FAFAFA;
   --knob-label: #FAFAFA;
-  --led-active: #ff5f56;
-  --led-inactive: var(--knob-background);
-  --led-glow: rgba(255, 95, 86, 0.5);
+  --led-active: #FF4B12;
+  --led-inactive: #4A4A4A;
+  --led-glow: rgba(255, 75, 18, 0.5);
+
+  /* Braun-specific colors */
+  --braun-gray: #4A4A4A;
+  --braun-light: #FAFAFA;
+  --braun-accent: #FF4B12;
+  --braun-dark: #2C2C2C;
 
   /* Typography */
   --font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -26,6 +32,9 @@
   --font-size-md: 0.875rem;
   --font-size-lg: 1rem;
   --font-size-xl: 1.25rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -35,9 +44,10 @@
   --spacing-xl: 2rem;
 
   /* Component Specific */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 6px;
+  --border-radius-full: 9999px;
 
   /* Transitions */
   --transition-fast: 0.1s ease;
@@ -45,15 +55,25 @@
   --transition-slow: 0.3s ease;
 
   /* Module Dimensions */
-  --module-padding: var(--spacing-xl);
-  --module-gap: var(--spacing-lg);
+  --module-padding: var(--spacing-lg);
+  --module-gap: var(--spacing-md);
   --module-border-radius: var(--border-radius-md);
+
+  /* Knob Dimensions */
+  --knob-size-sm: 40px;
+  --knob-size-md: 60px;
+  --knob-size-lg: 120px;
+
+  /* Background Colors / Gradients */
+  --gradient-rack: linear-gradient(180deg, var(--braun-dark) 0%, var(--braun-gray) 100%);
 }
 
 body {
   font-family: var(--font-family);
-  background-color: var(--background-color);
-  color: var(--secondary-color);
+  background-color: var(--gradient-rack);
+  color: var(--braun-light);
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

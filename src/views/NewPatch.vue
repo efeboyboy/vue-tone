@@ -193,11 +193,10 @@ watch(
   display: flex;
   gap: var(--module-gap);
   width: 100vw;
-  height: 100vh;
   padding: var(--module-padding);
   box-sizing: border-box;
   overflow-x: hidden;
-  background-color: var(--background-color);
+  background-color: var(--gradient-rack);
 }
 
 .col {

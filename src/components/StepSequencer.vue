@@ -95,6 +95,7 @@ defineExpose({
           v-model="step.active"
           :options="{ off: 'Skip', on: 'Play' }"
           :show-led="false"
+          size="small"
           class="step-switch"
         />
         <ControlKnob
@@ -103,6 +104,7 @@ defineExpose({
           :max="2000"
           :step="1"
           :label="`${step.freq}Hz`"
+          size="small"
           class="frequency-knob"
         />
       </div>
@@ -117,6 +119,9 @@ defineExpose({
   border-radius: 8px;
   margin-top: 1rem;
   color: var(--text-primary);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 h3 {
@@ -126,18 +131,19 @@ h3 {
 
 .sequence-grid {
   display: flex;
-  gap: 1.5rem;
-  flex-grow: 1;
+  gap: 0.5rem;
+  width: 100%;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .step-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  flex: 1;
+  gap: 0.5rem;
+  min-width: 60px;
+  flex: 0 1 auto;
   position: relative;
 }
 
@@ -156,10 +162,12 @@ h3 {
 }
 
 .step-switch {
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
+  min-width: 50px;
 }
 
 .frequency-knob {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
+  min-width: 50px;
 }
 </style>
