@@ -53,13 +53,25 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 
       <!-- Click Areas -->
       <div class="click-areas">
-        <div class="click-area" @click="handleClick('left')">
+        <div
+          class="click-area"
+          :class="{ active: modelValue === options.left }"
+          @click="handleClick('left')"
+        >
           <span class="label">{{ options.left }}</span>
         </div>
-        <div class="click-area" @click="handleClick('middle')">
+        <div
+          class="click-area"
+          :class="{ active: modelValue === options.middle }"
+          @click="handleClick('middle')"
+        >
           <span class="label">{{ options.middle }}</span>
         </div>
-        <div class="click-area" @click="handleClick('right')">
+        <div
+          class="click-area"
+          :class="{ active: modelValue === options.right }"
+          @click="handleClick('right')"
+        >
           <span class="label">{{ options.right }}</span>
         </div>
       </div>
@@ -145,14 +157,25 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.label {
+.click-area .label {
   color: var(--knob-label);
+  opacity: 0.5;
   font-size: 0.75rem;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   text-transform: uppercase;
   pointer-events: none;
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+.click-area.active .label {
+  color: var(--color-primary);
+  opacity: 1;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
 .label-container {
