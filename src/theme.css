@@ -1,14 +1,59 @@
 :root {
+  /* Colors */
   --primary-color: #000;
   --secondary-color: #fff;
+  --accent-color: #ff5f56;
+  --danger-color: #ff4444;
 
+  /* Background Colors */
+  --background-color: #333333;
+  --background-color-light: #404040;
   --panel-background: #595959;
+  --border-color: rgba(255, 255, 255, 0.1);
 
+  /* Component Colors */
   --knob-background: #919191;
   --knob-indicator: #FAFAFA;
   --knob-label: #FAFAFA;
+  --led-active: #ff5f56;
+  --led-inactive: var(--knob-background);
+  --led-glow: rgba(255, 95, 86, 0.5);
+
+  /* Typography */
+  --font-family: 'Helvetica Neue', Arial, sans-serif;
+  --font-size-xs: 0.65rem;
+  --font-size-sm: 0.75rem;
+  --font-size-md: 0.875rem;
+  --font-size-lg: 1rem;
+  --font-size-xl: 1.25rem;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Component Specific */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Module Dimensions */
+  --module-padding: var(--spacing-xl);
+  --module-gap: var(--spacing-lg);
+  --module-border-radius: var(--border-radius-md);
 }
 
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+  margin: 0;
+  padding: 0;
 }

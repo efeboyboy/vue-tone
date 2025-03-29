@@ -11,12 +11,14 @@ interface Props {
   label?: string
   middleIndicator?: boolean
   showLed?: boolean
+  size?: 'small' | 'medium' | 'large'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   label: '',
   middleIndicator: false,
   showLed: false,
+  size: 'medium',
 })
 
 const emit = defineEmits<{
@@ -31,7 +33,7 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 </script>
 
 <template>
-  <div class="switch-container">
+  <div class="switch-container" :class="size">
     <!-- LED Indicator -->
     <div
       v-if="showLed"
@@ -89,33 +91,50 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  width: 180px;
+  gap: var(--spacing-xs);
   position: relative;
+  width: var(--switch-width, 140px);
+}
+
+.switch-container.small {
+  --switch-width: 120px;
+  --switch-height: 32px;
+  --label-font-size: var(--font-size-xs);
+}
+
+.switch-container.medium {
+  --switch-width: 140px;
+  --switch-height: 36px;
+  --label-font-size: var(--font-size-sm);
+}
+
+.switch-container.large {
+  --switch-width: 180px;
+  --switch-height: 40px;
+  --label-font-size: var(--font-size-md);
 }
 
 .led-indicator {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--knob-background);
-  margin-bottom: 4px;
-  transition: background-color 0.2s ease;
+  background: var(--led-inactive);
+  margin-bottom: var(--spacing-xs);
+  transition: all var(--transition-normal);
 }
 
 .led-indicator.active {
-  background: #ff5f56;
-  box-shadow: 0 0 8px rgba(255, 95, 86, 0.5);
+  background: var(--led-active);
+  box-shadow: 0 0 8px var(--led-glow);
 }
 
 .switch-track {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: var(--switch-height);
   background: var(--knob-background);
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
-  margin-top: 0.5rem;
 }
 
 .switch-track.no-led {
@@ -163,19 +182,18 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 .click-area .label {
   color: var(--knob-label);
   opacity: 0.5;
-  font-size: 0.75rem;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--label-font-size);
+  font-family: var(--font-family);
   text-transform: uppercase;
   pointer-events: none;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
   font-weight: 400;
 }
 
 .click-area.active .label {
-  color: var(--color-primary);
   opacity: 1;
   font-weight: 600;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 8px var(--led-glow);
 }
 
 .label-container {
@@ -183,9 +201,9 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 }
 
 .switch-label {
-  font-size: 0.75rem;
+  font-size: var(--label-font-size);
   color: var(--knob-label);
   text-transform: lowercase;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-family);
 }
 </style>

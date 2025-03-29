@@ -180,14 +180,29 @@ defineExpose({
           :max="1200"
           :step="1"
           label="frequency"
+          size="small"
           @update:modelValue="updateDetune"
         />
       </div>
       <div class="control-group">
-        <ControlKnob v-model="fmAmount" :min="0" :max="10" :step="0.1" label="fm amount" />
+        <ControlKnob
+          v-model="fmAmount"
+          :min="0"
+          :max="10"
+          :step="0.1"
+          label="fm amount"
+          size="small"
+        />
       </div>
       <div class="control-group">
-        <ControlKnob v-model="shapeAmount" :min="0" :max="50" :step="0.1" label="shape" />
+        <ControlKnob
+          v-model="shapeAmount"
+          :min="0"
+          :max="50"
+          :step="0.1"
+          label="shape"
+          size="small"
+        />
       </div>
     </div>
   </div>
@@ -197,28 +212,32 @@ defineExpose({
 .module {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  border-radius: 8px;
+  padding: var(--module-padding);
+  border-radius: var(--module-border-radius);
+  background: var(--panel-background);
+  border: 1px solid var(--border-color);
+  gap: var(--spacing-lg);
 }
 
 .module h3 {
   color: var(--secondary-color);
-  margin-bottom: 1rem;
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family);
 }
 
 .controls {
   display: flex;
-  justify-content: space-between;
-  padding: 0 1rem;
-  gap: 2rem;
+  justify-content: center;
+  gap: var(--spacing-xl);
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--spacing-sm);
 }
 </style>

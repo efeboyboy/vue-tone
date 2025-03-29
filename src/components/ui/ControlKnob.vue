@@ -7,6 +7,7 @@ interface Props {
   max?: number
   step?: number
   label?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -14,6 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
   max: 100,
   step: 1,
   label: '',
+  size: 'medium',
 })
 
 const emit = defineEmits<{
@@ -77,7 +79,7 @@ const handleMouseUp = () => {
 </script>
 
 <template>
-  <div class="control-knob-container">
+  <div class="control-knob-container" :class="size">
     <!-- Background with ticks -->
     <div class="knob-background">
       <div
@@ -120,11 +122,29 @@ const handleMouseUp = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   user-select: none;
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: var(--knob-size, 65px);
+  height: var(--knob-size, 65px);
+}
+
+.control-knob-container.small {
+  --knob-size: 50px;
+  --tick-height: 6px;
+  --label-font-size: var(--font-size-xs);
+}
+
+.control-knob-container.medium {
+  --knob-size: 65px;
+  --tick-height: 7px;
+  --label-font-size: var(--font-size-sm);
+}
+
+.control-knob-container.large {
+  --knob-size: 80px;
+  --tick-height: 8px;
+  --label-font-size: var(--font-size-md);
 }
 
 .knob-background {
@@ -147,7 +167,7 @@ const handleMouseUp = () => {
   position: absolute;
   top: 0;
   width: 1px;
-  height: 8px;
+  height: var(--tick-height);
   background: var(--knob-indicator);
   transform-origin: bottom center;
 }
@@ -155,9 +175,9 @@ const handleMouseUp = () => {
 .tick-value {
   position: absolute;
   color: var(--knob-label);
-  font-size: 0.65rem;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  top: 12px;
+  font-size: var(--label-font-size);
+  font-family: var(--font-family);
+  top: calc(var(--tick-height) + 4px);
   transform-origin: center;
 }
 
@@ -172,7 +192,7 @@ const handleMouseUp = () => {
   cursor: pointer;
   display: flex;
   justify-content: center;
-  transition: transform 0.1s ease;
+  transition: transform var(--transition-fast);
 }
 
 .indicator-line {
@@ -190,9 +210,9 @@ const handleMouseUp = () => {
 }
 
 .knob-label {
-  font-size: 0.75rem;
+  font-size: var(--label-font-size);
   color: var(--knob-label);
   text-transform: lowercase;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-family);
 }
 </style>

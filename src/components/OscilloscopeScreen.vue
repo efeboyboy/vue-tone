@@ -65,24 +65,29 @@ defineExpose({
 
 <style scoped>
 .oscilloscope {
-  padding: 1rem;
+  padding: var(--module-padding);
   background: var(--panel-background);
-  border-radius: 8px;
+  border-radius: var(--module-border-radius);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
 }
 
 h3 {
   color: var(--secondary-color);
-  margin-bottom: 1rem;
+  margin: 0;
   text-align: center;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-family);
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
 }
 
 .waveform {
   width: 100%;
   height: 100px;
-  background: transparent;
-  border: 1px solid var(--primary-color);
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
 }
 </style>

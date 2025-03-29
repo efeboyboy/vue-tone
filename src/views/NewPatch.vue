@@ -191,26 +191,28 @@ watch(
 <style scoped>
 .bongo-rack {
   display: flex;
-  gap: 2rem;
+  gap: var(--module-gap);
   width: 100vw;
   height: 100vh;
-  padding: 2rem;
+  padding: var(--module-padding);
   box-sizing: border-box;
   overflow-x: hidden;
+  background-color: var(--background-color);
 }
 
 .col {
   display: flex;
   flex: 1;
-  min-width: 0; /* Prevents flex items from overflowing */
+  min-width: 0;
   flex-direction: column;
   background-color: var(--panel-background);
-  gap: 2rem;
-  padding: 1rem;
-  border-radius: 8px;
+  gap: var(--module-gap);
+  padding: var(--module-padding);
+  border-radius: var(--module-border-radius);
+  border: 1px solid var(--border-color);
 }
 
 .col-1 {
-  flex: 0.75; /* Make the master clock column slightly smaller */
+  flex: 0.75;
 }
 </style>

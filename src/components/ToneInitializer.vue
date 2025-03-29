@@ -35,7 +35,7 @@ const startAudio = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,45 +43,53 @@ const startAudio = async () => {
 }
 
 .modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--panel-background);
+  padding: var(--module-padding);
+  border-radius: var(--module-border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 90%;
   text-align: center;
+  color: var(--secondary-color);
+  font-family: var(--font-family);
 }
 
 .modal h2 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-xl);
+  font-weight: 400;
 }
 
 .modal p {
-  color: #34495e;
-  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
 }
 
 .modal .info {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-sm);
+  color: var(--knob-label);
   font-style: italic;
+  opacity: 0.8;
 }
 
 .start-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1.1rem;
-  background-color: #4caf50;
-  color: white;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
+  transition: all var(--transition-normal);
+  margin-top: var(--spacing-lg);
+  font-family: var(--font-family);
 }
 
 .start-button:hover {
-  background-color: #45a049;
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 

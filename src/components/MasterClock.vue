@@ -96,12 +96,13 @@ defineExpose({
 
 <style scoped>
 .master-clock {
-  padding: 2rem;
-  background: var(--background-color);
-  border-radius: 8px;
+  padding: var(--module-padding);
+  background: var(--panel-background);
+  border-radius: var(--module-border-radius);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-lg);
 }
 
 h3 {
@@ -109,46 +110,47 @@ h3 {
   margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family);
 }
 
 .led-container {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 0.5rem;
+  gap: var(--spacing-lg);
 }
 
 .led {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--knob-background);
-  opacity: 1;
-  transition: all 0.2s ease;
-  margin-bottom: 4px;
+  background-color: var(--led-inactive);
+  transition: all var(--transition-normal);
 }
 
 .led.active {
-  background: #ff5f56;
-  box-shadow: 0 0 8px rgba(255, 95, 86, 0.5);
+  background: var(--led-active);
+  box-shadow: 0 0 8px var(--led-glow);
 }
 
 .clock-controls {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--spacing-lg);
   align-items: center;
+  justify-content: center;
 }
 
 button {
-  padding: 0.75rem 1.5rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
   background: var(--accent-color);
-  color: white;
+  color: var(--secondary-color);
   cursor: pointer;
   font-weight: bold;
-  transition: all 0.2s ease;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-normal);
 }
 
 button:hover {
@@ -162,31 +164,35 @@ button.active {
 .bpm-control {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
   color: var(--secondary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
 }
 
 .bpm-control input[type='number'] {
   width: 60px;
-  padding: 0.5rem;
+  padding: var(--spacing-sm);
   background: var(--background-color-light);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
-  color: var(--text-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--secondary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
 }
 
 .bpm-control input[type='range'] {
-  width: 150px;
+  width: 120px;
   accent-color: var(--accent-color);
 }
 
 .time-display {
   font-family: monospace;
-  font-size: 1.2rem;
-  padding: 0.75rem;
+  font-size: var(--font-size-lg);
+  padding: var(--spacing-sm);
   background: var(--background-color-light);
   color: var(--accent-color);
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
   min-width: 80px;
   text-align: center;
   border: 1px solid var(--border-color);

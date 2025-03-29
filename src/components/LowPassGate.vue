@@ -161,12 +161,12 @@ defineExpose({
           :middle-indicator="true"
           :show-led="true"
           label="Mode"
+          size="small"
         />
       </div>
       <div class="control-group">
-        <label>Amount</label>
-        <ControlKnob v-model="amount" :min="0" :max="1" :step="0.01" label="amount" />
-        <span>{{ Math.round(amount * 100) }}%</span>
+        <ControlKnob v-model="amount" :min="0" :max="1" :step="0.01" label="amount" size="small" />
+        <span class="value-display">{{ Math.round(amount * 100) }}%</span>
       </div>
     </div>
   </div>
@@ -176,39 +176,46 @@ defineExpose({
 .module {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  border-radius: 8px;
+  padding: var(--module-padding);
+  border-radius: var(--module-border-radius);
+  background: var(--panel-background);
+  border: 1px solid var(--border-color);
+  gap: var(--spacing-lg);
 }
 
 .module h3 {
   color: var(--secondary-color);
-  margin-bottom: 1rem;
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family);
 }
 
 .controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: var(--spacing-xl);
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .control-group label {
-  font-weight: bold;
+  font-weight: 400;
   color: var(--secondary-color);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
 }
 
-.control-group span {
+.value-display {
   color: var(--secondary-color);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
 }
 </style>
