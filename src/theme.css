@@ -146,8 +146,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
-  align-items: center;
-  justify-content: center;
+  align-items: space-between;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -177,8 +176,6 @@ body {
   overflow: hidden;
 }
 
-
-
 .shared-row {
   display: flex;
   gap: var(--space-xs);
@@ -186,17 +183,21 @@ body {
   height: 100%;
 }
 
+.module-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-sm);
+  padding-top: var(--space-xxs);
+  padding-bottom: 0;
+}
 
-
-.module-title {
-  color: var(--color-text-muted);
+.module-header h3 {
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--color-text-muted);
   margin: 0;
-  width: 100%;
-  text-align: center;
-  padding: var(--space-xxs) 0;
+  padding-bottom: var(--space-xxs);
 }
 
 .sequence-grid {
@@ -244,21 +245,6 @@ body {
   position: relative;
 }
 
-/* Module Headers */
-.module-header {
-  width: 100%;
-  text-align: center;
-  margin-bottom: var(--space-xs);
-}
-
-.module-header h3 {
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
 /* Led indicators */
 .led-indicator {
   width: var(--led-size);
@@ -289,8 +275,6 @@ body {
   text-align: center;
 }
 
-
-
 .scope-module {
   flex: 1 1 auto;
   display: flex;
@@ -312,7 +296,7 @@ body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   min-height: 0;
   contain: layout size;
   padding: var(--space-xs);
@@ -325,14 +309,12 @@ body {
 }
 
 .lpg-module {
-  flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  min-height: 0;
-  height: 100%;
-  contain: layout size;
-  padding: var(--space-xxs);
+  gap: var(--space-xxs);
+  padding: var(--space-xs);
+  height: auto;
+  flex: 1;
 }
 
 .lpg-module .control-section {
@@ -347,16 +329,7 @@ body {
   padding-bottom: 0;
 }
 
-.envelope-module {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 0;
-  height: 100%;
-  contain: layout size;
-  padding: var(--space-xxs);
-}
+
 
 .envelope-module .screen-container {
   flex: 0.8;
@@ -377,14 +350,14 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 /* Step Sequencer Specific Styles */
 .step-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: space-around;
   gap: 2px;
   width: 100%;
   height: 100%;
@@ -586,6 +559,7 @@ body {
   align-items: center;
   gap: var(--space-xxs);
   width: 100%;
+  margin-bottom: var(--space-sm);
 }
 
 .function-generator .module-content {
@@ -867,7 +841,6 @@ body {
   display: flex;
   height: 100%;
 }
-
 
 /* Specific module heights */
 .voice-column>.shared-row {

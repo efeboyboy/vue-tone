@@ -118,15 +118,6 @@ defineExpose({
 </template>
 
 <style scoped>
-.module-header h3 {
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  text-align: center;
-  margin-bottom: var(--space-xxs);
-}
-
 .control-section {
   width: 100%;
   display: flex;
