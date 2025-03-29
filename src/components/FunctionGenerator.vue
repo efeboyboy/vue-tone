@@ -18,6 +18,7 @@ let func: Tone.Envelope
 const output = new Tone.Gain()
 
 const initializeFunctionGenerator = () => {
+  console.log(`[FunctionGenerator ${props.label}] Initializing...`)
   const context = getContext()
 
   // Create envelope with AD configuration
@@ -31,20 +32,30 @@ const initializeFunctionGenerator = () => {
 
   // Connect envelope directly to output
   func.connect(output)
+  console.log(
+    `[FunctionGenerator ${props.label}] Initialized with attack: ${attack.value}s, decay: ${decay.value}s`,
+  )
 }
 
 const updateEnvelopeParams = () => {
   if (!func) return
   func.attack = attack.value
   func.decay = decay.value
+  console.log(
+    `[FunctionGenerator ${props.label}] Parameters updated - attack: ${attack.value}s, decay: ${decay.value}s`,
+  )
 }
 
 // Trigger the envelope with proper scheduling
-const trigger = () => {
+const trigger = (time = Tone.now() + 0.1) => {
   if (!func) return
-  // Schedule the trigger slightly ahead in time for better accuracy
-  const time = Tone.now() + 0.1 // Schedule 100ms ahead
+  console.log(`[FunctionGenerator ${props.label}] Triggered at time: ${time}`)
   func.triggerAttackRelease(decay.value, time)
+}
+
+// Handle manual button clicks
+const handleTriggerClick = () => {
+  trigger()
 }
 
 watch([attack, decay], updateEnvelopeParams)
@@ -61,6 +72,22 @@ watch(
 onMounted(() => {
   if (props.isAudioReady) {
     initializeFunctionGenerator()
+
+    // Monitor output signal
+    const monitor = new Tone.Waveform()
+    output.connect(monitor)
+
+    // Log output values periodically
+    setInterval(() => {
+      const values = monitor.getValue()
+      const maxValue = Math.max(...values)
+      if (maxValue > 0.01) {
+        // Only log when there's significant output
+        console.log(
+          `[FunctionGenerator ${props.label}] Output max amplitude: ${maxValue.toFixed(3)}`,
+        )
+      }
+    }, 100)
   }
 })
 
@@ -90,7 +117,7 @@ defineExpose({
           <input type="range" min="0.001" max="0.5" step="0.001" v-model.number="decay" />
           <span>{{ Math.round(decay * 1000) }}ms</span>
         </div>
-        <button @click="trigger" class="trigger-btn">Trigger</button>
+        <button @click="handleTriggerClick" class="trigger-btn">Trigger</button>
       </div>
     </div>
   </div>

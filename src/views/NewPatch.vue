@@ -1,10 +1,17 @@
 <script setup lang="ts">
+import MasterClock from '../components/MasterClock.vue'
+import StepSequencer from '../components/StepSequencer.vue'
+
+import OscilloscopeScreen from '../components/OscilloscopeScreen.vue'
 import MonoOscillator from '../components/MonoOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
-import OscilloscopeScreen from '../components/OscilloscopeScreen.vue'
+import FunctionGenerator from '../components/FunctionGenerator.vue'
+import * as Tone from 'tone'
 import { ref, onMounted, watch, onUnmounted } from 'vue'
+
 const isAudioInitialized = ref(false)
+const masterClockRef = ref()
 
 // Create refs for the oscillators
 const sawOsc = ref<InstanceType<typeof MonoOscillator> | null>(null)
@@ -16,12 +23,33 @@ const lpg1Ref = ref()
 const lpg2Ref = ref()
 const lpg3Ref = ref()
 
+// Create refs for the Function Generators
+const func1Ref = ref()
+const func2Ref = ref()
+const func3Ref = ref()
+
 // Create refs for oscilloscopes
 const scope1Ref = ref()
 const scope2Ref = ref()
 const scope3Ref = ref()
 
+// Create refs for sequencers
+const seq1Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+const seq2Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+const seq3Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+
 const setupAudioRouting = () => {
+  // Connect sequencers to oscillators and noise
+  if (seq1Ref.value?.output && sawOsc.value) {
+    seq1Ref.value.output.connect(sawOsc.value.fmIn)
+  }
+  if (seq2Ref.value?.output && squareOsc.value) {
+    seq2Ref.value.output.connect(squareOsc.value.fmIn)
+  }
+  if (seq3Ref.value?.output && noiseSynthRef.value) {
+    seq3Ref.value.output.connect(noiseSynthRef.value.playbackRate)
+  }
+
   // Route OSC 1 to LPG 1
   if (sawOsc.value?.output && lpg1Ref.value?.input && scope1Ref.value?.input) {
     sawOsc.value.output.connect(lpg1Ref.value.input)
@@ -42,6 +70,37 @@ const setupAudioRouting = () => {
     lpg3Ref.value.output.connect(scope3Ref.value.input)
     lpg3Ref.value.output.toDestination()
   }
+
+  // Connect function generators to LPGs
+  if (func1Ref.value?.output && lpg1Ref.value?.amount) {
+    func1Ref.value.output.connect(lpg1Ref.value.amount)
+  }
+  if (func2Ref.value?.output && lpg2Ref.value?.amount) {
+    func2Ref.value.output.connect(lpg2Ref.value.amount)
+  }
+  if (func3Ref.value?.output && lpg3Ref.value?.amount) {
+    func3Ref.value.output.connect(lpg3Ref.value.amount)
+  }
+
+  // Setup clock triggers
+  setupTriggers()
+}
+
+// Setup 16th note triggers
+const setupTriggers = () => {
+  const transport = Tone.getTransport()
+  transport.scheduleRepeat((time: number) => {
+    // Trigger envelopes based on active steps
+    if (seq1Ref.value?.getCurrentStepData().active) {
+      func1Ref.value?.trigger(time)
+    }
+    if (seq2Ref.value?.getCurrentStepData().active) {
+      func2Ref.value?.trigger(time)
+    }
+    if (seq3Ref.value?.getCurrentStepData().active) {
+      func3Ref.value?.trigger(time)
+    }
+  }, '16n')
 }
 
 // Watch for audio initialization
@@ -91,32 +150,40 @@ watch(
 
 <template>
   <div class="bongo-rack">
-    <div class="col col-1"></div>
+    <div class="col col-1">
+      <MasterClock ref="masterClockRef" :is-audio-ready="isAudioInitialized" />
+    </div>
     <div class="col col-2">
-      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
+      <StepSequencer ref="seq1Ref" :is-audio-ready="isAudioInitialized" label="Saw Sequencer" />
 
+      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
       <MonoOscillator
         ref="sawOsc"
         :is-audio-ready="isAudioInitialized"
         waveform-type="sine-to-saw"
       />
       <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
+      <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
     </div>
     <div class="col col-3">
-      <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
+      <StepSequencer ref="seq2Ref" :is-audio-ready="isAudioInitialized" label="Square Sequencer" />
 
+      <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
       <MonoOscillator
         ref="squareOsc"
         :is-audio-ready="isAudioInitialized"
         waveform-type="sine-to-square"
       />
       <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
+      <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
     </div>
     <div class="col col-4">
-      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
+      <StepSequencer ref="seq3Ref" :is-audio-ready="isAudioInitialized" label="Noise Sequencer" />
 
+      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
       <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
       <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
+      <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
     </div>
   </div>
 </template>

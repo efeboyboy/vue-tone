@@ -51,11 +51,25 @@ const initializeLPG = () => {
   filter.frequency.value = 20 // Set minimum frequency as base value
   filterAmountNode.connect(filter.frequency)
 
-  // Connect amount node directly to VCA gain
-  amountNode.connect(vca.gain)
+  // Create a base gain for manual amount control
+  const baseGain = new Tone.Signal(amount.value)
+
+  // Use Tone.Add to sum the base amount and CV
+  const summedSignal = new Tone.Add()
+  baseGain.connect(summedSignal)
+  amountNode.connect(summedSignal)
+
+  // Connect the summed signal to VCA gain
+  summedSignal.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
+
+  // Update base amount when amount changes
+  watch(amount, (newAmount) => {
+    const normalizedAmount = Math.pow(newAmount, 0.5)
+    baseGain.value = normalizedAmount
+  })
 }
 
 const updateRouting = () => {
@@ -87,22 +101,13 @@ const updateRouting = () => {
 const updateAmount = () => {
   if (!filter || !vca) return
 
-  // Adjust the input range to be more responsive at lower values
-  const normalizedAmount = Math.pow(amount.value, 0.5) // Square root for more sensitivity at low values
-
-  // Update the amount node gain (affects both CV attenuation and base level)
-  amountNode.gain.rampTo(normalizedAmount, 0.1)
-
   // Update filter frequency with adjusted exponential scaling
   const minFreq = 20 // Lower minimum frequency
   const maxFreq = 20000
   const freqRange = Math.log(maxFreq / minFreq)
-  const frequency = amount.value === 0 ? 0 : minFreq * Math.exp(freqRange * normalizedAmount)
+  const normalizedAmount = Math.pow(amount.value, 0.5)
+  const frequency = amount.value === 0 ? minFreq : minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
-
-  // Update VCA with adjusted exponential amplitude scaling
-  const gain = amount.value === 0 ? 0 : normalizedAmount // Direct mapping for VCA
-  vca.gain.rampTo(gain, 0.1)
 }
 
 // Watch for audio initialization

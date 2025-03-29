@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import * as Tone from 'tone'
 import { ref, watch, onUnmounted, defineComponent } from 'vue'
+import ControlKnob from './ui/ControlKnob.vue'
+import TwoWaySwitch from './ui/TwoWaySwitch.vue'
 
 defineComponent({
   name: 'StepSequencer',
@@ -8,60 +10,32 @@ defineComponent({
 
 const props = defineProps<{
   isAudioReady: boolean
+  label?: string
 }>()
 
 // Sequencer state
 const steps = ref(5)
 const currentStep = ref(0)
 const isSequencing = ref(false)
-const channels = ref([
-  {
-    name: 'Osc 1',
-    sequence: Array(5)
-      .fill(null)
-      .map(() => ({ active: 0, freq: 440 })),
-  },
-  {
-    name: 'Osc 2',
-    sequence: Array(5)
-      .fill(null)
-      .map(() => ({ active: 0, freq: 440 })),
-  },
-  {
-    name: 'Noise',
-    sequence: Array(5)
-      .fill(null)
-      .map(() => ({ active: 0, freq: 1000 })),
-  },
-])
+const sequence = ref(
+  Array(5)
+    .fill(null)
+    .map(() => ({ active: 0, freq: 440 })),
+)
 
-// Create frequency outputs using Tone.Signal
-const outputs = {
-  freq1: new Tone.Signal(440),
-  freq2: new Tone.Signal(440),
-  playbackRate: new Tone.Signal(1),
-}
+// Create frequency output using Tone.Signal
+const frequencyOutput = new Tone.Signal(440)
 
 // Initialize sequence
 const initializeSequence = () => {
   // Schedule the sequence
   const repeat = (time: number) => {
     isSequencing.value = true
-    const currentStepData = {
-      osc1: channels.value[0].sequence[currentStep.value],
-      osc2: channels.value[1].sequence[currentStep.value],
-      noise: channels.value[2].sequence[currentStep.value],
-    }
+    const stepData = sequence.value[currentStep.value]
 
-    // Update frequency outputs if step is active
-    if (currentStepData.osc1.active) {
-      outputs.freq1.setValueAtTime(currentStepData.osc1.freq, time)
-    }
-    if (currentStepData.osc2.active) {
-      outputs.freq2.setValueAtTime(currentStepData.osc2.freq, time)
-    }
-    if (currentStepData.noise.active) {
-      outputs.playbackRate.setValueAtTime(currentStepData.noise.freq / 1000, time)
+    // Update frequency output if step is active
+    if (stepData.active) {
+      frequencyOutput.setValueAtTime(stepData.freq, time)
     }
 
     // Advance to next step
@@ -80,23 +54,10 @@ watch(
   },
 )
 
-// Sequence controls
-const toggleStep = (channelIndex: number, stepIndex: number) => {
-  const step = channels.value[channelIndex].sequence[stepIndex]
-  step.active = step.active === 0 ? 1 : 0
-}
-
-const updateFrequency = (channelIndex: number, stepIndex: number, event: Event) => {
-  const value = +(event.target as HTMLInputElement).value
-  channels.value[channelIndex].sequence[stepIndex].freq = value
-}
-
 // Cleanup on component unmount
 onUnmounted(() => {
   Tone.getTransport().clear(0) // Clear all scheduled events
-  outputs.freq1.dispose()
-  outputs.freq2.dispose()
-  outputs.playbackRate.dispose()
+  frequencyOutput.dispose()
 })
 
 // Watch for audio initialization
@@ -109,53 +70,41 @@ watch(
   },
 )
 
-// Get current step data for a channel
-const getCurrentStepData = (channelIndex: number) => {
-  return channels.value[channelIndex].sequence[currentStep.value]
+// Get current step data
+const getCurrentStepData = () => {
+  return sequence.value[currentStep.value]
 }
 
 // Expose outputs for parent component
 defineExpose({
-  outputs,
+  output: frequencyOutput,
   getCurrentStepData,
 })
 </script>
 
 <template>
   <div class="step-sequencer">
-    <h3>Step Sequencer</h3>
-    <div class="channels">
-      <div v-for="(channel, channelIndex) in channels" :key="channel.name" class="channel">
-        <div class="channel-label">{{ channel.name }}</div>
-        <div class="sequence-grid">
-          <div
-            v-for="(step, stepIndex) in channel.sequence"
-            :key="stepIndex"
-            class="step-container"
-            :class="{ playing: isSequencing && stepIndex === currentStep }"
-          >
-            <button
-              @click="toggleStep(channelIndex, stepIndex)"
-              :class="{
-                step: true,
-                active: step.active === 1,
-                current: stepIndex === currentStep && isSequencing,
-              }"
-            />
-            <input
-              type="range"
-              :value="step.freq"
-              :min="channel.name === 'Noise' ? 100 : 20"
-              :max="channel.name === 'Noise' ? 10000 : 2000"
-              step="1"
-              class="frequency-slider"
-              @input="(e) => updateFrequency(channelIndex, stepIndex, e)"
-            />
-            <div class="freq-value">
-              {{ step.freq }}{{ channel.name === 'Noise' ? 'Hz' : 'Hz' }}
-            </div>
-          </div>
-        </div>
+    <h3>{{ label || 'Step Sequencer' }}</h3>
+    <div class="sequence-grid">
+      <div v-for="(step, stepIndex) in sequence" :key="stepIndex" class="step-container">
+        <div
+          class="led-indicator"
+          :class="{ active: isSequencing && stepIndex === currentStep }"
+        ></div>
+        <TwoWaySwitch
+          v-model="step.active"
+          :options="{ off: 'Skip', on: 'Play' }"
+          :show-led="false"
+          class="step-switch"
+        />
+        <ControlKnob
+          v-model="step.freq"
+          :min="20"
+          :max="2000"
+          :step="1"
+          :label="`${step.freq}Hz`"
+          class="frequency-knob"
+        />
       </div>
     </div>
   </div>
@@ -164,93 +113,53 @@ defineExpose({
 <style scoped>
 .step-sequencer {
   padding: 1rem;
-  background: #f5f5f5;
+  background: var(--panel-background);
   border-radius: 8px;
   margin-top: 1rem;
+  color: var(--text-primary);
 }
 
-.channels {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.channel {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.channel-label {
-  width: 60px;
-  font-weight: bold;
-  color: #2196f3;
+h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-accent);
 }
 
 .sequence-grid {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-grow: 1;
+  justify-content: space-between;
+  padding: 1rem;
 }
 
 .step-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   flex: 1;
   position: relative;
 }
 
-.step-container::after {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
+.led-indicator {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #4caf50;
-  opacity: 0;
-  transition: opacity 0.2s;
+  background: var(--knob-background);
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
 }
 
-.step-container.playing::after {
-  opacity: 1;
+.led-indicator.active {
+  background: #ff5f56;
+  box-shadow: 0 0 8px rgba(255, 95, 86, 0.5);
 }
 
-.step {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  border: 2px solid #2196f3;
-  background: white;
-  cursor: pointer;
+.step-switch {
+  margin: 0.5rem 0;
 }
 
-.step.active {
-  background: #2196f3;
-  box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
-}
-
-.step.current {
-  border-color: #f44336;
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
-}
-
-.step.active.current {
-  background: #f44336;
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
-}
-
-.frequency-slider {
-  width: 100%;
-  margin: 0;
-}
-
-.freq-value {
-  font-size: 0.8rem;
-  color: #666;
+.frequency-knob {
+  margin-top: 0.5rem;
 }
 </style>
