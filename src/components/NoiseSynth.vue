@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
 import ControlKnob from './ui/ControlKnob.vue'
+import ThreeWaySwitch from './ui/ThreeWaySwitch.vue'
 
 const props = defineProps<{
   isAudioReady: boolean
@@ -83,12 +84,16 @@ defineExpose({
     <h3>Noise Source</h3>
     <div class="controls">
       <div class="control-group">
-        <label>Type</label>
-        <select v-model="noiseType">
-          <option value="white">White</option>
-          <option value="pink">Pink</option>
-          <option value="brown">Brown</option>
-        </select>
+        <ThreeWaySwitch
+          v-model="noiseType"
+          :options="{
+            left: 'white',
+            middle: 'pink',
+            right: 'brown',
+          }"
+          :show-led="false"
+          label="Type"
+        />
       </div>
       <div class="control-group">
         <ControlKnob v-model="playbackRate" :min="0.1" :max="4" :step="0.1" label="rate" />
@@ -115,8 +120,8 @@ defineExpose({
 
 .controls {
   display: flex;
-  justify-content: space-between;
-  padding: 0 1rem;
+  flex-direction: column;
+  align-items: center;
   gap: 2rem;
 }
 

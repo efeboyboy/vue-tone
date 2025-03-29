@@ -10,11 +10,13 @@ interface Props {
   }
   label?: string
   middleIndicator?: boolean
+  showLed?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   label: '',
   middleIndicator: false,
+  showLed: false,
 })
 
 const emit = defineEmits<{
@@ -31,10 +33,14 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 <template>
   <div class="switch-container">
     <!-- LED Indicator -->
-    <div class="led-indicator" :class="{ active: middleIndicator && isMiddleSelected }"></div>
+    <div
+      v-if="showLed"
+      class="led-indicator"
+      :class="{ active: middleIndicator && isMiddleSelected }"
+    ></div>
 
     <!-- Switch Track -->
-    <div class="switch-track">
+    <div class="switch-track" :class="{ 'no-led': !showLed }">
       <!-- Switch Handle -->
       <div
         class="switch-handle"
@@ -71,7 +77,7 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   width: 180px;
   position: relative;
 }
@@ -97,6 +103,11 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   background: var(--knob-background);
   border-radius: 4px;
   overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.switch-track.no-led {
+  margin-top: 0;
 }
 
 .switch-handle {

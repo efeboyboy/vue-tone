@@ -154,6 +154,7 @@ defineExpose({
             right: 'VCA',
           }"
           :middle-indicator="true"
+          :show-led="true"
           label="Mode"
         />
       </div>
