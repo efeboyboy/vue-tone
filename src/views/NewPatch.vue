@@ -151,7 +151,6 @@ watch(
 <template>
   <div class="bongo-rack">
     <!-- Control Column -->
-
     <div class="col col-1">
       <MasterClock ref="masterClockRef" :is-audio-ready="isAudioInitialized" />
     </div>
@@ -160,16 +159,20 @@ watch(
     <div class="col col-2">
       <StepSequencer ref="seq1Ref" :is-audio-ready="isAudioInitialized" label="Saw Sequencer" />
       <div class="oscillator-container">
-        <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
-        <MonoOscillator
-          ref="sawOsc"
-          :is-audio-ready="isAudioInitialized"
-          waveform-type="sine-to-saw"
-        />
+        <div class="oscillator-module">
+          <OscilloscopeScreen ref="scope1Ref" label="Saw Output" />
+          <MonoOscillator
+            ref="sawOsc"
+            :is-audio-ready="isAudioInitialized"
+            waveform-type="sine-to-saw"
+          />
+        </div>
       </div>
       <div class="control-container">
-        <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
-        <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
+        <div class="control-module">
+          <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
+          <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
+        </div>
       </div>
     </div>
 
@@ -177,16 +180,20 @@ watch(
     <div class="col col-3">
       <StepSequencer ref="seq2Ref" :is-audio-ready="isAudioInitialized" label="Square Sequencer" />
       <div class="oscillator-container">
-        <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
-        <MonoOscillator
-          ref="squareOsc"
-          :is-audio-ready="isAudioInitialized"
-          waveform-type="sine-to-square"
-        />
+        <div class="oscillator-module">
+          <OscilloscopeScreen ref="scope2Ref" label="Square Output" />
+          <MonoOscillator
+            ref="squareOsc"
+            :is-audio-ready="isAudioInitialized"
+            waveform-type="sine-to-square"
+          />
+        </div>
       </div>
       <div class="control-container">
-        <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
-        <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
+        <div class="control-module">
+          <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
+          <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
+        </div>
       </div>
     </div>
 
@@ -194,46 +201,19 @@ watch(
     <div class="col col-4">
       <StepSequencer ref="seq3Ref" :is-audio-ready="isAudioInitialized" label="Noise Sequencer" />
       <div class="oscillator-container">
-        <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
-        <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
+        <div class="oscillator-module">
+          <OscilloscopeScreen ref="scope3Ref" label="Noise Output" />
+          <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
+        </div>
       </div>
       <div class="control-container">
-        <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
-        <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+        <div class="control-module">
+          <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
+          <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.bongo-rack {
-  display: flex;
-  padding: var(--module-padding);
-  background-color: var(--gradient-rack);
-}
-
-.col {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  padding: var(--module-padding);
-  gap: var(--module-gap);
-}
-
-.oscillator-container {
-  display: flex;
-  gap: var(--module-gap);
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-
-.control-container {
-  display: flex;
-  gap: var(--module-gap);
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-</style>
+<style scoped></style>

@@ -59,11 +59,24 @@ body {
   color: var(--secondary-color);
   margin: 0;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling */
+  box-sizing: border-box;
+  /* Include padding in width calculations */
 }
 
 html {
   background: var(--gradient-rack);
   min-height: 100vh;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  /* Ensure all elements use border-box */
 }
 
 /* Shared Module Styles */
@@ -74,12 +87,17 @@ html {
   padding: var(--spacing-md);
   background: var(--panel-background);
   border-radius: var(--module-border-radius);
+  min-width: 0;
+  height: 100%;
+  min-height: 200px;
 }
 
 .module-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 2.5rem;
+  width: 100%;
 }
 
 .module-header h3 {
@@ -90,27 +108,31 @@ html {
   font-family: var(--font-family);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 .module-content {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  flex: 1;
+
+  min-width: 0;
+  width: 100%;
+  /* Distribute space evenly */
 }
 
 .control-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  justify-content: space-around;
-  flex: 1;
+  justify-content: center;
+  width: 100%;
 }
 
 .control-row {
   display: flex;
   justify-content: center;
   gap: var(--spacing-lg);
+  width: 100%;
 }
 
 .control-group {
@@ -118,6 +140,8 @@ html {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xs);
+
+  min-width: fit-content;
 }
 
 .value-display {
@@ -166,6 +190,8 @@ html {
   gap: var(--spacing-lg);
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .transport-btn {
@@ -193,9 +219,8 @@ html {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  color: var(--secondary-color);
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
+  flex-wrap: wrap;
+  min-width: 200px;
 }
 
 .bpm-control input[type='number'] {
@@ -210,8 +235,9 @@ html {
 }
 
 .bpm-control input[type='range'] {
-  width: 120px;
-  accent-color: var(--accent-color);
+
+  min-width: 120px;
+  max-width: 300px;
 }
 
 .time-display {
@@ -250,17 +276,18 @@ html {
 /* Oscilloscope Screen */
 .waveform {
   width: 100%;
-  height: 80px;
+  aspect-ratio: 3/1;
   background: var(--background-color);
   border-radius: var(--border-radius-sm);
 }
 
 /* Sequencer Specific */
 .sequence-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: var(--spacing-md);
   width: 100%;
-  justify-content: space-between;
+  align-items: start;
 }
 
 .step-container {
@@ -268,32 +295,125 @@ html {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-  min-width: 60px;
-  flex: 1;
+  width: 100%;
 }
 
 /* Rack Layout */
 .bongo-rack {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   padding: var(--module-padding);
   background-color: var(--gradient-rack);
   gap: var(--module-gap);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .col {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  padding: var(--module-padding);
+  display: grid;
+  grid-auto-rows: minmax(min-content, auto);
   gap: var(--module-gap);
+  min-width: 0;
 }
 
-.oscillator-container,
-.control-container {
-  display: flex;
+.oscillator-container {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--module-gap);
-  text-align: center;
+  width: 100%;
+}
+
+.oscillator-module {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--panel-background);
+  border-radius: var(--module-border-radius);
+  min-height: 200px;
+}
+
+.oscillator-module .waveform-container {
+  width: 100%;
+  height: 100%;
+  min-height: 150px;
+}
+
+.oscillator-module .module-content {
+  height: 100%;
+}
+
+.control-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--module-gap);
+  width: 100%;
+}
+
+.control-module {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--panel-background);
+  border-radius: var(--module-border-radius);
+  min-height: 200px;
+}
+
+.control-module .module-content {
+  height: 100%;
+}
+
+/* Oscilloscope Screen Container */
+.waveform-container {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+}
+
+.waveform {
+  width: 100%;
+  aspect-ratio: 3/1;
+  background: var(--background-color);
+  border-radius: var(--border-radius-sm);
+  margin: auto;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1400px) {
+  .bongo-rack {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bongo-rack {
+    grid-template-columns: 1fr;
+  }
+
+  .oscillator-module,
+  .control-module {
+    grid-template-columns: 1fr;
+  }
+
+  .module {
+    min-height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bpm-control {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .time-display {
+    width: 100%;
+  }
+
+  .module {
+    padding: var(--spacing-sm);
+  }
 }
