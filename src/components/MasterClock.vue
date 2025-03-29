@@ -70,131 +70,34 @@ defineExpose({
 </script>
 
 <template>
-  <div class="master-clock">
-    <h3>Master Clock</h3>
-    <div class="led-container">
-      <div
-        v-for="n in 4"
-        :key="n"
-        class="led"
-        :class="{ active: isPlaying && activeLed === n - 1 }"
-      ></div>
+  <div class="module master-clock">
+    <div class="module-header">
+      <h3>Master Clock</h3>
     </div>
-    <div class="clock-controls">
-      <button @click="toggleTransport" :class="{ active: isPlaying }">
-        {{ isPlaying ? '⏹ Stop' : '▶ Play' }}
-      </button>
-      <div class="bpm-control">
-        <label>BPM:</label>
-        <input type="number" v-model.number="bpm" min="30" max="300" />
-        <input type="range" v-model.number="bpm" min="30" max="300" />
+    <div class="module-content">
+      <div class="led-container">
+        <div
+          v-for="n in 4"
+          :key="n"
+          class="led-indicator"
+          :class="{ active: isPlaying && activeLed === n - 1 }"
+        ></div>
       </div>
-      <div class="time-display">{{ currentTime }}</div>
+      <div class="clock-controls">
+        <button @click="toggleTransport" :class="{ active: isPlaying }" class="transport-btn">
+          {{ isPlaying ? '⏹ Stop' : '▶ Play' }}
+        </button>
+        <div class="bpm-control">
+          <label>BPM:</label>
+          <input type="number" v-model.number="bpm" min="30" max="300" />
+          <input type="range" v-model.number="bpm" min="30" max="300" />
+        </div>
+        <div class="time-display">{{ currentTime }}</div>
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.master-clock {
-  padding: var(--module-padding);
-  background: var(--panel-background);
-  border-radius: var(--module-border-radius);
-  border: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-h3 {
-  color: var(--secondary-color);
-  margin: 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: var(--font-size-xl);
-  font-family: var(--font-family);
-}
-
-.led-container {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-lg);
-}
-
-.led {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--led-inactive);
-  transition: all var(--transition-normal);
-}
-
-.led.active {
-  background: var(--led-active);
-  box-shadow: 0 0 8px var(--led-glow);
-}
-
-.clock-controls {
-  display: flex;
-  gap: var(--spacing-lg);
-  align-items: center;
-  justify-content: center;
-}
-
-button {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  background: var(--accent-color);
-  color: var(--secondary-color);
-  cursor: pointer;
-  font-weight: bold;
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-normal);
-}
-
-button:hover {
-  filter: brightness(1.1);
-}
-
-button.active {
-  background: var(--danger-color);
-}
-
-.bpm-control {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  color: var(--secondary-color);
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-}
-
-.bpm-control input[type='number'] {
-  width: 60px;
-  padding: var(--spacing-sm);
-  background: var(--background-color-light);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  color: var(--secondary-color);
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-}
-
-.bpm-control input[type='range'] {
-  width: 120px;
-  accent-color: var(--accent-color);
-}
-
-.time-display {
-  font-family: monospace;
-  font-size: var(--font-size-lg);
-  padding: var(--spacing-sm);
-  background: var(--background-color-light);
-  color: var(--accent-color);
-  border-radius: var(--border-radius-sm);
-  min-width: 80px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-}
+<style>
+/* Component specific styles only */
 </style>

@@ -80,74 +80,44 @@ defineExpose({
 </script>
 
 <template>
-  <div class="module">
-    <h3>Noise Source</h3>
-    <div class="controls">
-      <div class="control-group">
-        <ThreeWaySwitch
-          v-model="noiseType"
-          :options="{
-            left: 'white',
-            middle: 'pink',
-            right: 'brown',
-          }"
-          :show-led="false"
-          label="Type"
-          size="small"
-        />
-      </div>
-      <div class="control-group">
-        <ControlKnob
-          v-model="playbackRate"
-          :min="0.1"
-          :max="4"
-          :step="0.1"
-          label="rate"
-          size="small"
-        />
+  <div class="module noise-synth">
+    <div class="module-header">
+      <h3>Noise</h3>
+    </div>
+    <div class="module-content">
+      <div class="control-section">
+        <div class="control-row">
+          <div class="control-group">
+            <ThreeWaySwitch
+              v-model="noiseType"
+              :options="{
+                left: 'White',
+                middle: 'Pink',
+                right: 'Brown',
+              }"
+              :show-led="false"
+              label="Type"
+              size="medium"
+            />
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control-group">
+            <ControlKnob
+              v-model="playbackRate"
+              :min="0.1"
+              :max="4"
+              :step="0.1"
+              label="Rate"
+              size="medium"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.module {
-  display: flex;
-  flex-direction: column;
-  padding: var(--module-padding);
-  border-radius: var(--module-border-radius);
-  background: var(--panel-background);
-  border: 1px solid var(--border-color);
-  gap: var(--spacing-lg);
-}
-
-.module h3 {
-  color: var(--secondary-color);
-  margin: 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: var(--font-size-xl);
-  font-family: var(--font-family);
-}
-
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xl);
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.control-group label {
-  font-weight: 400;
-  color: var(--secondary-color);
-  font-size: var(--font-size-sm);
-  font-family: var(--font-family);
-}
+<style>
+/* Component specific styles only */
 </style>

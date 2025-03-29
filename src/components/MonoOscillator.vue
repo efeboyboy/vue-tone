@@ -170,71 +170,50 @@ defineExpose({
 </script>
 
 <template>
-  <div class="module">
-    <h3>oscillator a</h3>
-    <div class="controls">
-      <div class="control-group">
-        <ControlKnob
-          v-model="detune"
-          :min="-1200"
-          :max="1200"
-          :step="1"
-          label="frequency"
-          size="small"
-          @update:modelValue="updateDetune"
-        />
-      </div>
-      <div class="control-group">
-        <ControlKnob
-          v-model="fmAmount"
-          :min="0"
-          :max="10"
-          :step="0.1"
-          label="fm amount"
-          size="small"
-        />
-      </div>
-      <div class="control-group">
-        <ControlKnob
-          v-model="shapeAmount"
-          :min="0"
-          :max="50"
-          :step="0.1"
-          label="shape"
-          size="small"
-        />
+  <div class="module mono-oscillator">
+    <div class="module-header">
+      <h3>Oscillator</h3>
+    </div>
+    <div class="module-content">
+      <div class="control-section">
+        <div class="control-row">
+          <div class="control-group">
+            <ControlKnob
+              v-model="detune"
+              :min="-1200"
+              :max="1200"
+              :step="1"
+              label="Frequency"
+              size="medium"
+              @update:modelValue="updateDetune"
+            />
+          </div>
+          <div class="control-group">
+            <ControlKnob
+              v-model="fmAmount"
+              :min="0"
+              :max="10"
+              :step="0.1"
+              label="FM Amount"
+              size="medium"
+            />
+          </div>
+          <div class="control-group">
+            <ControlKnob
+              v-model="shapeAmount"
+              :min="0"
+              :max="50"
+              :step="0.1"
+              label="Shape"
+              size="medium"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.module {
-  display: flex;
-  flex-direction: column;
-  padding: var(--module-padding);
-  gap: var(--spacing-lg);
-}
-
-.module h3 {
-  color: var(--secondary-color);
-  margin: 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: var(--font-size-xl);
-  font-family: var(--font-family);
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-xl);
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
+<style>
+/* Component specific styles only */
 </style>

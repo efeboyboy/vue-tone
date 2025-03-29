@@ -57,17 +57,16 @@ defineExpose({
 </script>
 
 <template>
-  <div class="oscilloscope">
-    <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
+  <div class="module oscilloscope">
+    <div class="module-header">
+      <h3>{{ label || 'Output' }}</h3>
+    </div>
+    <div class="module-content">
+      <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
+    </div>
   </div>
 </template>
 
-<style scoped>
-.waveform {
-  width: 100%;
-  height: 100px;
-  background: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-}
+<style>
+/* Component specific styles only */
 </style>

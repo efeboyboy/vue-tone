@@ -65,3 +65,235 @@ html {
   background: var(--gradient-rack);
   min-height: 100vh;
 }
+
+/* Shared Module Styles */
+.module {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--panel-background);
+  border-radius: var(--module-border-radius);
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.module-header h3 {
+  color: var(--secondary-color);
+  margin: 0;
+  font-weight: 400;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.module-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.control-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  justify-content: space-around;
+  flex: 1;
+}
+
+.control-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.value-display {
+  color: var(--secondary-color);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family);
+  opacity: 0.8;
+}
+
+/* LED Indicators */
+.led-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--led-inactive);
+  opacity: 0.3;
+  transition: all var(--transition-fast);
+}
+
+.led-indicator.active {
+  background-color: var(--accent-color);
+  opacity: 1;
+  box-shadow: 0 0 4px var(--accent-color);
+}
+
+/* Master Clock Styles */
+.led-container {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+}
+
+.led {
+  border-radius: 50%;
+  background-color: var(--led-inactive);
+  transition: all var(--transition-normal);
+}
+
+.led.active {
+  background: var(--led-active);
+  box-shadow: 0 0 8px var(--led-glow);
+}
+
+.clock-controls {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  justify-content: center;
+}
+
+.transport-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--accent-color);
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-weight: bold;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-normal);
+}
+
+.transport-btn:hover {
+  filter: brightness(1.1);
+}
+
+.transport-btn.active {
+  background: var(--danger-color);
+}
+
+.bpm-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--secondary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+}
+
+.bpm-control input[type='number'] {
+  width: 60px;
+  padding: var(--spacing-sm);
+  background: var(--background-color-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--secondary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+}
+
+.bpm-control input[type='range'] {
+  width: 120px;
+  accent-color: var(--accent-color);
+}
+
+.time-display {
+  font-family: monospace;
+  font-size: var(--font-size-lg);
+  padding: var(--spacing-sm);
+  background: var(--background-color-light);
+  color: var(--accent-color);
+  border-radius: var(--border-radius-sm);
+  min-width: 80px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+/* Buttons */
+.trigger-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--accent-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.trigger-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Oscilloscope Screen */
+.waveform {
+  width: 100%;
+  height: 80px;
+  background: var(--background-color);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Sequencer Specific */
+.sequence-grid {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  justify-content: space-between;
+}
+
+.step-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 60px;
+  flex: 1;
+}
+
+/* Rack Layout */
+.bongo-rack {
+  display: flex;
+  padding: var(--module-padding);
+  background-color: var(--gradient-rack);
+  gap: var(--module-gap);
+}
+
+.col {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  padding: var(--module-padding);
+  gap: var(--module-gap);
+}
+
+.oscillator-container,
+.control-container {
+  display: flex;
+  gap: var(--module-gap);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
