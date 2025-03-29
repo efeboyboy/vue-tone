@@ -8,6 +8,7 @@ interface Props {
   step?: number
   label?: string
   size?: 'small' | 'medium' | 'large'
+  default?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   step: 1,
   label: '',
   size: 'medium',
+  default: 50, // Default value if not specified
 })
 
 const emit = defineEmits<{
@@ -47,7 +49,9 @@ const handleMouseMove = (e: MouseEvent) => {
 
   const deltaY = startY.value - e.clientY
   const range = props.max - props.min
-  const valueChange = (deltaY / 200) * range // 200px movement = full range
+  // Adjust sensitivity when shift is pressed
+  const sensitivity = e.shiftKey ? 400 : 200
+  const valueChange = (deltaY / sensitivity) * range
 
   let newValue = startValue.value + valueChange
   newValue = Math.round(newValue / props.step) * props.step
@@ -61,6 +65,10 @@ const handleMouseUp = () => {
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', handleMouseUp)
 }
+
+const handleDoubleClick = () => {
+  emit('update:modelValue', props.default)
+}
 </script>
 
 <template>
@@ -73,6 +81,7 @@ const handleMouseUp = () => {
       ref="knobRef"
       class="control-knob"
       @mousedown="handleMouseDown"
+      @dblclick="handleDoubleClick"
       :style="{ transform: `rotate(${rotation}deg)` }"
     >
       <div class="indicator-line"></div>

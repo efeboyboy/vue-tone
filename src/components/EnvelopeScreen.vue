@@ -105,8 +105,9 @@ const drawEnvelope = (timestamp: number) => {
     let value = 0
 
     if (t <= attackTime) {
-      // Attack phase - linear ramp up
-      value = t / attackTime
+      // Attack phase - exponential rise
+      const attackProgress = t / attackTime
+      value = 1 - Math.exp(-attackProgress * 3)
     } else {
       // Decay phase - exponential decay
       const decayProgress = (t - attackTime) / decayTime
