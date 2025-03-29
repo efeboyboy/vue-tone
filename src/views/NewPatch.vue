@@ -164,7 +164,7 @@ watch(
       <StepSequencer
         ref="seq1Ref"
         :is-audio-ready="isAudioInitialized"
-        label="Saw Sequencer"
+        label="Sequence A"
         class="module sequencer-module"
       />
       <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
@@ -184,7 +184,7 @@ watch(
         <FunctionGenerator
           ref="func1Ref"
           :is-audio-ready="isAudioInitialized"
-          label="Func 1"
+          label="ENV A"
           class="module envelope-module"
         />
       </div>
@@ -195,7 +195,7 @@ watch(
       <StepSequencer
         ref="seq2Ref"
         :is-audio-ready="isAudioInitialized"
-        label="Square Sequencer"
+        label="Sequence B"
         class="module sequencer-module"
       />
       <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
@@ -215,7 +215,7 @@ watch(
         <FunctionGenerator
           ref="func2Ref"
           :is-audio-ready="isAudioInitialized"
-          label="Func 2"
+          label="ENV B"
           class="module envelope-module"
         />
       </div>
@@ -226,7 +226,7 @@ watch(
       <StepSequencer
         ref="seq3Ref"
         :is-audio-ready="isAudioInitialized"
-        label="Noise Sequencer"
+        label="Sequence C"
         class="module sequencer-module"
       />
       <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
@@ -245,7 +245,7 @@ watch(
         <FunctionGenerator
           ref="func3Ref"
           :is-audio-ready="isAudioInitialized"
-          label="Func 3"
+          label="ENV C"
           class="module envelope-module"
         />
       </div>

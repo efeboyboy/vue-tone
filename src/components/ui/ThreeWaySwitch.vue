@@ -65,21 +65,21 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
           :class="{ active: modelValue === options.left }"
           @click="handleClick('left')"
         >
-          <span class="label">{{ options.left }}</span>
+          <span class="option-label">{{ options.left }}</span>
         </div>
         <div
           class="click-area"
           :class="{ active: modelValue === options.middle }"
           @click="handleClick('middle')"
         >
-          <span class="label">{{ options.middle }}</span>
+          <span class="option-label">{{ options.middle }}</span>
         </div>
         <div
           class="click-area"
           :class="{ active: modelValue === options.right }"
           @click="handleClick('right')"
         >
-          <span class="label">{{ options.right }}</span>
+          <span class="option-label">{{ options.right }}</span>
         </div>
       </div>
     </div>
@@ -138,6 +138,12 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   text-align: center;
 }
 
+.label-container {
+  margin-bottom: var(--space-xs);
+  width: 100%;
+  text-align: center;
+}
+
 .switch-track {
   position: relative;
   width: 100%;
@@ -190,9 +196,10 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0 var(--space-xs);
 }
 
-.click-area .label {
+.click-area .option-label {
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   font-family: var(--font-sans);
@@ -204,17 +211,23 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+  max-width: 100%;
+  display: block;
+  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+  letter-spacing: -0.01em;
+  padding: 0 var(--space-xxs);
 }
 
-.click-area.active .label {
+.click-area.active .option-label {
   color: var(--color-text-primary);
   font-weight: 600;
   text-shadow: 0 0 4px var(--color-primary-glow);
 }
 
 @media (max-width: 768px) {
-  .click-area .label {
+  .click-area .option-label {
     font-size: clamp(0.55rem, 1.2vw, 0.65rem);
+    letter-spacing: -0.02em;
   }
 }
 </style>

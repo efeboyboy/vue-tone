@@ -194,6 +194,7 @@ defineExpose({
   padding: var(--space-sm);
   height: 100%;
   width: 100%;
+  justify-content: space-between;
 }
 
 .control-section {

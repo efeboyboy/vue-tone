@@ -223,6 +223,7 @@ defineExpose({
   min-height: 0;
   padding: var(--space-sm);
   width: 100%;
+  height: 100%;
 }
 
 .mono-oscillator .control-row {

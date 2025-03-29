@@ -94,21 +94,19 @@ defineExpose({
             class="led-indicator"
             :class="{ active: isSequencing && stepIndex === currentStep }"
           ></div>
-          <MonoSwitch
-            v-model="step.active"
-            :label="step.active ? 'On' : 'Off'"
-            size="small"
-            class="step-switch"
-          />
-          <ControlKnob
-            v-model="step.freq"
-            :min="20"
-            :max="2000"
-            :step="1"
-            :label="`${step.freq}Hz`"
-            size="medium"
-            class="frequency-knob"
-          />
+          <MonoSwitch v-model="step.active" :label="''" size="small" class="step-switch" />
+          <div class="knob-container">
+            <div class="knob-socket"></div>
+            <ControlKnob
+              v-model="step.freq"
+              :min="20"
+              :max="2000"
+              :step="1"
+              :label="`${step.freq}Hz`"
+              size="medium"
+              class="frequency-knob"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -123,32 +121,67 @@ defineExpose({
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  place-items: center;
+  place-items: stretch;
 }
 
 .step-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   position: relative;
   width: 100%;
+  height: 100%;
+  justify-content: space-between;
+  padding: var(--space-xs) 0;
 }
 
 .led-indicator {
-  margin-bottom: var(--space-sm);
+  width: var(--led-size);
+  height: var(--led-size);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  transition: all 0.1s ease;
+  margin-bottom: 0;
+}
+
+.led-indicator.active {
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
 }
 
 .step-switch {
-  margin-bottom: var(--space-sm);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0;
+  max-width: calc(var(--knob-size, clamp(40px, 5vw, 60px)) * 0.8);
+}
+
+.knob-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.knob-socket {
+  position: absolute;
+  width: clamp(44px, 5.5vw, 66px);
+  height: clamp(44px, 5.5vw, 66px);
+  border-radius: 50%;
+  background: var(--color-bg-darkest);
+  box-shadow: var(--shadow-inset);
+  border: 1px solid var(--color-border-darkest);
+  z-index: -1;
 }
 
 .frequency-knob {
-  width: 100%;
-  text-align: center;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  margin-top: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .module-content {
@@ -156,12 +189,13 @@ defineExpose({
   padding: var(--space-sm);
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .step-sequencer {
-  height: 100%;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }

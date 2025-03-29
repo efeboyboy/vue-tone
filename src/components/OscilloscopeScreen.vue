@@ -123,8 +123,6 @@ defineExpose({
 .oscilloscope-module {
   width: 100%;
   height: 100%;
-  contain: strict;
-  content-visibility: auto;
   display: flex;
   flex-direction: column;
 }

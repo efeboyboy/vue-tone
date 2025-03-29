@@ -122,9 +122,11 @@ defineExpose({
         <EnvelopeScreen :attack-time="attack" :decay-time="decay" :triggered="isTriggered" />
       </div>
       <div class="control-section">
+        <!-- Single LED indicator for the whole component -->
+        <div class="main-led-indicator" :class="{ active: isTriggered }"></div>
+
         <div class="control-row">
           <div class="control-group">
-            <div class="led-indicator" :class="{ active: isTriggered }"></div>
             <ControlKnob
               v-model="attack"
               :min="0.001"
@@ -135,7 +137,6 @@ defineExpose({
             />
           </div>
           <div class="control-group">
-            <div class="led-indicator" :class="{ active: isTriggered }"></div>
             <ControlKnob
               v-model="decay"
               :min="0.001"
@@ -175,6 +176,7 @@ defineExpose({
   flex: 1;
   width: 100%;
   height: calc(100% - 25px);
+  position: relative;
 }
 
 .function-generator .screen-container {
@@ -185,22 +187,36 @@ defineExpose({
   contain: layout;
 }
 
+.control-section {
+  position: relative;
+}
+
+.main-led-indicator {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--led-size);
+  height: var(--led-size);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.main-led-indicator.active {
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   gap: var(--space-sm);
-}
-
-.led-indicator {
-  position: absolute;
-  top: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: var(--led-size);
-  height: var(--led-size);
-  z-index: 2;
 }
 
 .knob-label {
