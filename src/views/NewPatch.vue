@@ -9,11 +9,43 @@ const isAudioInitialized = ref(false)
 // Create refs for the oscillators
 const sawOsc = ref<InstanceType<typeof MonoOscillator> | null>(null)
 const squareOsc = ref<InstanceType<typeof MonoOscillator> | null>(null)
+const noiseSynthRef = ref<InstanceType<typeof NoiseSynth> | null>(null)
 
 // Create refs for the Low Pass Gates
 const lpg1Ref = ref()
 const lpg2Ref = ref()
 const lpg3Ref = ref()
+
+const setupAudioRouting = () => {
+  // Route OSC 1 to LPG 1
+  if (sawOsc.value?.output && lpg1Ref.value?.input) {
+    sawOsc.value.output.connect(lpg1Ref.value.input)
+    lpg1Ref.value.output.toDestination()
+  }
+
+  // Route OSC 2 to LPG 2
+  if (squareOsc.value?.output && lpg2Ref.value?.input) {
+    squareOsc.value.output.connect(lpg2Ref.value.input)
+    lpg2Ref.value.output.toDestination()
+  }
+
+  // Route Noise to LPG 3
+  if (noiseSynthRef.value?.output && lpg3Ref.value?.input) {
+    noiseSynthRef.value.output.connect(lpg3Ref.value.input)
+    lpg3Ref.value.output.toDestination()
+  }
+}
+
+// Watch for audio initialization
+watch(
+  () => isAudioInitialized.value,
+  (isReady) => {
+    if (isReady) {
+      // Wait for components to initialize
+      setTimeout(setupAudioRouting, 100)
+    }
+  },
+)
 
 // Start audio context and initialize oscillators when component mounts
 onMounted(() => {

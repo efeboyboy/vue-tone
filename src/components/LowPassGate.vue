@@ -15,17 +15,14 @@ let vca: Tone.Gain
 
 const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
 const amount = ref(0)
-const cvAmount = ref(0)
 
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
 const output = new Tone.Gain()
 const amountNode = new Tone.Gain()
-const cvInput = new Tone.Gain()
 
-// Connect CV input to amount modulation
-cvInput.connect(amountNode)
-cvInput.gain.value = 0 // Initial CV input gain
+// Initialize with amount as base level
+amountNode.gain.value = 0
 
 const initializeLPG = () => {
   const context = getContext()
@@ -40,7 +37,7 @@ const initializeLPG = () => {
 
   vca = new Tone.Gain({
     context,
-    gain: 0,
+    gain: amount.value, // Initialize with amount value
   })
 
   // Create a gain node for filter frequency modulation
@@ -52,17 +49,8 @@ const initializeLPG = () => {
   filter.frequency.value = 20 // Set minimum frequency as base value
   filterAmountNode.connect(filter.frequency)
 
-  // Connect CV input directly to VCA gain with proper scaling
-  const vcaAmountNode = new Tone.Gain()
-  amountNode.connect(vcaAmountNode)
-  vcaAmountNode.gain.value = 1
-  vcaAmountNode.connect(vca.gain)
-
-  // Connect CV input directly to VCA gain for direct modulation
-  const vcaCVNode = new Tone.Gain()
-  cvInput.connect(vcaCVNode)
-  vcaCVNode.gain.value = 1
-  vcaCVNode.connect(vca.gain)
+  // Connect amount node directly to VCA gain
+  amountNode.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
@@ -100,24 +88,19 @@ const updateAmount = () => {
   // Adjust the input range to be more responsive at lower values
   const normalizedAmount = Math.pow(amount.value, 0.5) // Square root for more sensitivity at low values
 
+  // Update the amount node gain (affects both CV attenuation and base level)
+  amountNode.gain.rampTo(normalizedAmount, 0.1)
+
   // Update filter frequency with adjusted exponential scaling
-  const minFreq = 100 // Increased minimum frequency
+  const minFreq = 20 // Lower minimum frequency
   const maxFreq = 20000
   const freqRange = Math.log(maxFreq / minFreq)
-  const frequency =
-    amount.value === 0
-      ? 0 // Absolute zero frequency when amount is 0
-      : minFreq * Math.exp(freqRange * normalizedAmount)
+  const frequency = amount.value === 0 ? 0 : minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
 
   // Update VCA with adjusted exponential amplitude scaling
-  const minGain = 0.01 // -40dB, more audible minimum
   const maxGain = 1 // 0dB
-  const gainRange = Math.log(maxGain / minGain)
-  const gain =
-    amount.value === 0
-      ? 0 // Absolute zero gain when amount is 0
-      : minGain * Math.exp(gainRange * normalizedAmount)
+  const gain = amount.value === 0 ? 0 : normalizedAmount // Direct mapping for VCA
   vca.gain.rampTo(gain, 0.1)
 }
 
@@ -134,11 +117,6 @@ watch(
 // Watch for mode and amount changes
 watch(mode, updateRouting)
 watch(amount, updateAmount)
-
-// Watch for CV amount changes
-watch(cvAmount, (newValue) => {
-  cvInput.gain.value = newValue
-})
 
 onMounted(() => {
   if (props.isAudioReady) {
@@ -176,9 +154,9 @@ defineExpose({
           </select>
         </div>
         <div class="control-group">
-          <label>Offset</label>
-          <input type="range" min="0" max="1" step="0.01" v-model.number="cvAmount" />
-          <span>{{ Math.round(cvAmount * 100) }}%</span>
+          <label>Amount</label>
+          <input type="range" min="0" max="1" step="0.01" v-model.number="amount" />
+          <span>{{ Math.round(amount * 100) }}%</span>
         </div>
       </div>
     </div>

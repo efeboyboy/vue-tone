@@ -148,7 +148,6 @@ const initializeOscillator = () => {
   oscillator.connect(shaper)
   shaper.connect(output)
   output.connect(analyzer)
-  output.connect(context.destination)
 
   // Start oscillators
   oscillator.start()
@@ -194,6 +193,7 @@ defineExpose({
   output,
   fmIn: modBus.fm.input,
   shapeIn: modBus.shape.input,
+  analyzer,
 })
 </script>
 
