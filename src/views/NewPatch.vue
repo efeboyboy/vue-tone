@@ -192,11 +192,25 @@ watch(
 .bongo-rack {
   display: flex;
   gap: 2rem;
+  width: 100vw;
+  height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
+
 .col {
   display: flex;
   flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
   flex-direction: column;
   background-color: var(--panel-background);
+  gap: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.col-1 {
+  flex: 0.75; /* Make the master clock column slightly smaller */
 }
 </style>

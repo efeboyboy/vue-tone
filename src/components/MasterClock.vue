@@ -11,7 +11,10 @@ const isPlaying = ref(false)
 const bpm = ref(120)
 const currentTime = ref('0:0:0')
 
-// Update time display
+// LED states
+const activeLed = ref(0)
+
+// Update time display and LEDs
 const updateTime = () => {
   currentTime.value = Tone.getTransport().position.toString().split('.')[0]
   requestAnimationFrame(updateTime)
@@ -20,6 +23,11 @@ const updateTime = () => {
 const initializeClock = () => {
   // Set initial BPM
   Tone.getTransport().bpm.value = bpm.value
+
+  // Schedule beat tracking for LEDs
+  Tone.getTransport().scheduleRepeat((time) => {
+    activeLed.value = (activeLed.value + 1) % 4
+  }, '4n') // Schedule on quarter notes for 4/4 time
 
   // Start time display updates
   updateTime()
@@ -34,6 +42,7 @@ const toggleTransport = async () => {
   } else {
     Tone.getTransport().stop()
     isPlaying.value = false
+    activeLed.value = 0 // Reset LED when stopped
   }
 }
 
@@ -63,6 +72,14 @@ defineExpose({
 <template>
   <div class="master-clock">
     <h3>Master Clock</h3>
+    <div class="led-container">
+      <div
+        v-for="n in 4"
+        :key="n"
+        class="led"
+        :class="{ active: isPlaying && activeLed === n - 1 }"
+      ></div>
+    </div>
     <div class="clock-controls">
       <button @click="toggleTransport" :class="{ active: isPlaying }">
         {{ isPlaying ? '⏹ Stop' : '▶ Play' }}
@@ -79,55 +96,99 @@ defineExpose({
 
 <style scoped>
 .master-clock {
-  padding: 1rem;
-  background: #f5f5f5;
+  padding: 2rem;
+  background: var(--background-color);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+h3 {
+  color: var(--secondary-color);
+  margin: 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 1.25rem;
+}
+
+.led-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--knob-background);
+  opacity: 1;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+}
+
+.led.active {
+  background: #ff5f56;
+  box-shadow: 0 0 8px rgba(255, 95, 86, 0.5);
 }
 
 .clock-controls {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: center;
-  margin-top: 1rem;
 }
 
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 4px;
-  background: #2196f3;
+  background: var(--accent-color);
   color: white;
   cursor: pointer;
   font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  filter: brightness(1.1);
 }
 
 button.active {
-  background: #f44336;
+  background: var(--danger-color);
 }
 
 .bpm-control {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+  color: var(--secondary-color);
 }
 
 .bpm-control input[type='number'] {
   width: 60px;
-  padding: 0.25rem;
+  padding: 0.5rem;
+  background: var(--background-color-light);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color);
 }
 
 .bpm-control input[type='range'] {
   width: 150px;
+  accent-color: var(--accent-color);
 }
 
 .time-display {
   font-family: monospace;
   font-size: 1.2rem;
-  padding: 0.5rem;
-  background: #333;
-  color: #4caf50;
+  padding: 0.75rem;
+  background: var(--background-color-light);
+  color: var(--accent-color);
   border-radius: 4px;
   min-width: 80px;
   text-align: center;
+  border: 1px solid var(--border-color);
 }
 </style>
