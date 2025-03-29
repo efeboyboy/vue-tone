@@ -162,44 +162,38 @@ defineExpose({
 </script>
 
 <template>
-  <div class="single-oscillator">
+  <div class="module">
     <h3>{{ waveformType === 'sine-to-saw' ? 'Saw' : 'Square' }} Oscillator</h3>
-    <div class="oscillator-content">
-      <div class="controls">
-        <div class="control-group">
-          <ControlKnob
-            v-model="detune"
-            :min="-1200"
-            :max="1200"
-            :step="1"
-            label="frequency"
-            @update:modelValue="updateDetune"
-          />
-        </div>
-        <div class="control-group">
-          <ControlKnob v-model="fmAmount" :min="0" :max="10" :step="0.1" label="fm amount" />
-        </div>
-        <div class="control-group">
-          <ControlKnob v-model="shapeAmount" :min="0" :max="50" :step="0.1" label="shape" />
-        </div>
+    <div class="controls">
+      <div class="control-group">
+        <ControlKnob
+          v-model="detune"
+          :min="-1200"
+          :max="1200"
+          :step="1"
+          label="frequency"
+          @update:modelValue="updateDetune"
+        />
+      </div>
+      <div class="control-group">
+        <ControlKnob v-model="fmAmount" :min="0" :max="10" :step="0.1" label="fm amount" />
+      </div>
+      <div class="control-group">
+        <ControlKnob v-model="shapeAmount" :min="0" :max="50" :step="0.1" label="shape" />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.single-oscillator {
+.module {
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
   border-radius: 8px;
 }
 
-.oscillator-content {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-}
-
-h3 {
+.module h3 {
   color: var(--secondary-color);
   margin-bottom: 1rem;
   text-align: center;

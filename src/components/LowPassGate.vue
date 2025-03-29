@@ -140,46 +140,38 @@ defineExpose({
 </script>
 
 <template>
-  <div class="lpg">
-    <div class="module">
-      <h3>{{ label }}</h3>
-      <div class="controls">
-        <div class="control-group">
-          <label>Mode</label>
-          <select v-model="mode">
-            <option value="COMBO">COMBO (VCA + VCF)</option>
-            <option value="VCF">VCF</option>
-            <option value="VCA">VCA</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <label>Amount</label>
-          <!-- <input type="range" min="0" max="1" step="0.01" v-model.number="amount" /> -->
-          <ControlKnob v-model="amount" :min="0" :max="1" :step="0.01" label="amount" />
-          <span>{{ Math.round(amount * 100) }}%</span>
-        </div>
+  <div class="module">
+    <h3>{{ label }}</h3>
+    <div class="controls">
+      <div class="control-group">
+        <label>Mode</label>
+        <select v-model="mode">
+          <option value="COMBO">COMBO (VCA + VCF)</option>
+          <option value="VCF">VCF</option>
+          <option value="VCA">VCA</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Amount</label>
+        <ControlKnob v-model="amount" :min="0" :max="1" :step="0.01" label="amount" />
+        <span>{{ Math.round(amount * 100) }}%</span>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.lpg {
-  padding: 2rem;
-  border-radius: 8px;
-}
-
 .module {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  padding: 2rem;
+  border-radius: 8px;
 }
 
 .module h3 {
   color: var(--secondary-color);
   margin-bottom: 1rem;
   text-align: center;
-
   font-weight: 400;
   font-size: 1.25rem;
 }

@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
+import ControlKnob from './ui/ControlKnob.vue'
 
 const props = defineProps<{
   isAudioReady: boolean
@@ -18,7 +19,6 @@ const playbackRateSignal = new Tone.Signal(1)
 let noise: Tone.Noise
 const noiseType = ref<'white' | 'pink' | 'brown'>('white')
 const playbackRate = ref(1)
-const volume = ref(-10)
 
 const initializeNoise = () => {
   const context = getContext()
@@ -27,7 +27,6 @@ const initializeNoise = () => {
     context,
     type: noiseType.value,
     playbackRate: playbackRate.value,
-    volume: volume.value,
   })
 
   // Connect noise to output
@@ -60,12 +59,6 @@ watch(playbackRate, (value) => {
   }
 })
 
-watch(volume, (value) => {
-  if (noise) {
-    noise.volume.value = value
-  }
-})
-
 onMounted(() => {
   if (props.isAudioReady) {
     initializeNoise()
@@ -86,85 +79,64 @@ defineExpose({
 </script>
 
 <template>
-  <div class="noise-synth">
-    <div class="synth">
-      <h3>Noise Source</h3>
-      <div class="controls">
-        <div class="control-group">
-          <label>Type</label>
-          <select v-model="noiseType">
-            <option value="white">White</option>
-            <option value="pink">Pink</option>
-            <option value="brown">Brown</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <label>Playback Rate</label>
-          <input type="range" min="0.1" max="4" step="0.1" v-model.number="playbackRate" />
-          <span>{{ playbackRate }}x</span>
-        </div>
-        <div class="control-group">
-          <label>Volume</label>
-          <input type="range" min="-40" max="0" step="1" v-model.number="volume" />
-          <span>{{ volume }}dB</span>
-        </div>
+  <div class="module">
+    <h3>Noise Source</h3>
+    <div class="controls">
+      <div class="control-group">
+        <label>Type</label>
+        <select v-model="noiseType">
+          <option value="white">White</option>
+          <option value="pink">Pink</option>
+          <option value="brown">Brown</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <ControlKnob v-model="playbackRate" :min="0.1" :max="4" :step="0.1" label="rate" />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.noise-synth {
-  padding: 1rem;
-  background: #f5f5f5;
+.module {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
   border-radius: 8px;
-  max-width: 400px;
-  margin: 1rem;
 }
 
-.synth {
-  background: white;
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.synth h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
+.module h3 {
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 400;
+  font-size: 1.25rem;
 }
 
 .controls {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 2rem;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .control-group label {
   font-weight: bold;
-  color: #666;
-}
-
-.control-group select,
-.control-group input[type='range'] {
-  width: 100%;
+  color: var(--secondary-color);
 }
 
 .control-group select {
+  width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: white;
-}
-
-.control-group span {
-  color: #666;
-  font-size: 0.9rem;
+  background: var(--input-bg);
 }
 </style>
