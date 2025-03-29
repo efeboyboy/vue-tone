@@ -1,0 +1,10 @@
+:root {
+  --primary-color: #000;
+  --secondary-color: #fff;
+
+  --panel-background: #595959;
+
+  --knob-background: #919191;
+  --knob-indicator: #FAFAFA;
+  --knob-label: #FAFAFA;
+}

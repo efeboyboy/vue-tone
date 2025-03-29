@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
+import ControlKnob from './ui/ControlKnob.vue'
 
 const props = defineProps<{
   isAudioReady: boolean
@@ -98,7 +99,9 @@ const drawWaveform = () => {
 
   ctx.clearRect(0, 0, width, height)
   ctx.beginPath()
-  ctx.strokeStyle = '#4caf50'
+  ctx.strokeStyle = getComputedStyle(document.documentElement)
+    .getPropertyValue('--secondary-color')
+    .trim()
   ctx.lineWidth = 2
 
   wave.forEach((value, i) => {
@@ -197,29 +200,25 @@ defineExpose({
 <template>
   <div class="single-oscillator">
     <h3>{{ waveformType === 'sine-to-saw' ? 'Saw' : 'Square' }} Oscillator</h3>
-    <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
-    <div class="controls">
-      <div class="control-group">
-        <label>Frequency</label>
-        <input
-          type="range"
-          min="-1200"
-          max="1200"
-          step="1"
-          v-model.number="detune"
-          @input="updateDetune"
-        />
-        <span>{{ Math.round(baseFreq * Math.pow(2, detune / 1200)) }}Hz</span>
-      </div>
-      <div class="control-group">
-        <label>FM Amount (Modulation Index)</label>
-        <input type="range" min="0" max="10" step="0.1" v-model.number="fmAmount" />
-        <span>{{ fmAmount.toFixed(1) }}</span>
-      </div>
-      <div class="control-group">
-        <label>Shape Amount</label>
-        <input type="range" min="0" max="50" step="0.1" v-model.number="shapeAmount" />
-        <span>{{ shapeAmount.toFixed(1) }}</span>
+    <div class="oscillator-content">
+      <canvas ref="canvas" width="300" height="100" class="waveform"></canvas>
+      <div class="controls">
+        <div class="control-group">
+          <ControlKnob
+            v-model="detune"
+            :min="-1200"
+            :max="1200"
+            :step="1"
+            label="frequency"
+            @update:modelValue="updateDetune"
+          />
+        </div>
+        <div class="control-group">
+          <ControlKnob v-model="fmAmount" :min="0" :max="10" :step="0.1" label="fm amount" />
+        </div>
+        <div class="control-group">
+          <ControlKnob v-model="shapeAmount" :min="0" :max="50" :step="0.1" label="shape" />
+        </div>
       </div>
     </div>
   </div>
@@ -227,45 +226,44 @@ defineExpose({
 
 <style scoped>
 .single-oscillator {
-  padding: 1rem;
-  background: #f5f5f5;
+  padding: 2rem;
+  background: var(--panel-background);
   border-radius: 8px;
-  max-width: 400px;
-  margin: 1rem;
+  width: 400px;
+}
+
+.oscillator-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+h3 {
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
 }
 
 .waveform {
   width: 100%;
   height: 100px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  background: transparent;
+  border: 1px solid var(--primary-color);
 }
 
 .controls {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 2rem;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.control-group label {
-  font-weight: bold;
-  color: #666;
-}
-
-.control-group input[type='range'] {
-  width: 100%;
-}
-
-.control-group span {
-  color: #666;
-  font-size: 0.9rem;
+  align-items: center;
 }
 </style>

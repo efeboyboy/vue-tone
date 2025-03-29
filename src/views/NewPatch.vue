@@ -57,3 +57,12 @@ watch(
     <div class="col col-4"></div>
   </div>
 </template>
+
+<style scoped>
+.bongo-rack {
+  display: flex;
+}
+.col {
+  flex: 1;
+}
+</style>
