@@ -2,18 +2,18 @@
 
 ![Bongo Synth](src/assets/bpp-logo-white.svg)
 
-Bongo is a web-based FM synthesizer inspired by classic Braun design principles: simplicity, functionality, and elegance. Built with Vue.js and Tone.js, it provides a powerful yet accessible platform for sound design and musical exploration.
+Bongo is a web-based FM synthesizer built with a focus on minimalist design principles: simplicity, functionality, and elegance. Built with Vue.js and Tone.js, it provides a powerful yet accessible platform for sound design and musical exploration.
 
 ## Features
 
 - **Multi-Channel Mixer**: Independent volume, mute, and solo controls for each channel
 - **FM-Ready Oscillators**: Create complex sounds with customizable frequency modulation
-- **Braun-Inspired UI**: Clean, intuitive interface with knobs, sliders, and switches
+- **Modern Interface**: Clean, intuitive interface with knobs, sliders, and switches
 - **Responsive Design**: Works across desktop and tablet devices
 
 ## Overview
 
-Bongo Synth is designed to bring the classic aesthetics of Dieter Rams' Braun design into the digital audio workspace. With its minimalist approach and focus on functionality, Bongo makes sound design accessible without sacrificing depth or creative potential.
+Bongo Synth embraces minimalist design philosophy, bringing professional-grade sound design into an accessible digital audio workspace. With its clean approach and focus on functionality, Bongo makes sound design accessible without sacrificing depth or creative potential.
 
 ### Key Components
 
@@ -27,7 +27,7 @@ Bongo Synth is designed to bring the classic aesthetics of Dieter Rams' Braun de
 Bongo uses a modular architecture that allows for flexible signal routing:
 
 ```
-Oscillators → Mixer → Effects → Output
+Sequencers → Oscillators → LPG's + Envelopes → Mixer → Effects → Output
 ```
 
 Each oscillator can modulate others, creating complex FM synthesis possibilities. The mixer allows precise control over individual signal levels, while effects can be applied to shape the final sound.

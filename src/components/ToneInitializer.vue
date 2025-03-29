@@ -19,7 +19,7 @@ const startAudio = async () => {
   <Teleport to="body">
     <div v-if="!isStarted" class="modal-overlay">
       <div class="modal">
-        <h2 class="modal-title">Welcome to Vue Tone</h2>
+        <h2 class="modal-title">Bongos!</h2>
         <p>To start making music, we need to initialize the audio system.</p>
         <p class="info">This is required by web browsers for a better audio experience.</p>
         <button @click="startAudio" class="start-button">Initialize Audio</button>
