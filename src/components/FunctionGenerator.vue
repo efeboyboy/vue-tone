@@ -78,11 +78,6 @@ const trigger = (time = Tone.now() + 0.1) => {
   func.triggerAttackRelease(decay.value, time)
 }
 
-// Handle manual button clicks
-const handleTriggerClick = () => {
-  trigger()
-}
-
 watch([attack, decay], updateEnvelopeParams)
 
 watch(
@@ -143,7 +138,6 @@ defineExpose({
             <span class="value-display">{{ Math.round(decay * 1000) }}ms</span>
           </div>
         </div>
-        <button @click="handleTriggerClick" class="trigger-btn">Trigger</button>
       </div>
     </div>
   </div>
