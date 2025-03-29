@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BongoHelp from '../views/BongoHelp.vue'
-import NewPatch from '../views/NewPatch.vue'
+import NewPatch from '../views/BongoPatch.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
