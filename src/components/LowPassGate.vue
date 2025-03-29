@@ -2,6 +2,8 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as Tone from 'tone'
 import { useToneContext } from '../composables/useToneContext'
+import ControlKnob from './ui/ControlKnob.vue'
+import ThreeWaySwitch from './ui/ThreeWaySwitch.vue'
 
 const props = defineProps<{
   isAudioReady: boolean
@@ -15,17 +17,14 @@ let vca: Tone.Gain
 
 const mode = ref<'COMBO' | 'VCF' | 'VCA'>('COMBO')
 const amount = ref(0)
-const cvAmount = ref(0)
 
 // Create input and output nodes for external connections
 const input = new Tone.Gain()
 const output = new Tone.Gain()
 const amountNode = new Tone.Gain()
-const cvInput = new Tone.Gain()
 
-// Connect CV input to amount modulation
-cvInput.connect(amountNode)
-cvInput.gain.value = 0 // Initial CV input gain
+// Initialize with amount as base level
+amountNode.gain.value = 1 // Changed from 0 to 1 to allow modulation through
 
 const initializeLPG = () => {
   const context = getContext()
@@ -40,11 +39,11 @@ const initializeLPG = () => {
 
   vca = new Tone.Gain({
     context,
-    gain: 0,
+    gain: amount.value, // Initialize with amount value
   })
 
   // Create a gain node for filter frequency modulation
-  const filterAmountNode = new Tone.Gain()
+  const filterAmountNode = new Tone.Gain(1) // Changed from default to 1
   amountNode.connect(filterAmountNode)
 
   // Scale and offset the filter frequency modulation
@@ -52,20 +51,25 @@ const initializeLPG = () => {
   filter.frequency.value = 20 // Set minimum frequency as base value
   filterAmountNode.connect(filter.frequency)
 
-  // Connect CV input directly to VCA gain with proper scaling
-  const vcaAmountNode = new Tone.Gain()
-  amountNode.connect(vcaAmountNode)
-  vcaAmountNode.gain.value = 1
-  vcaAmountNode.connect(vca.gain)
+  // Create a base gain for manual amount control
+  const baseGain = new Tone.Signal(amount.value)
 
-  // Connect CV input directly to VCA gain for direct modulation
-  const vcaCVNode = new Tone.Gain()
-  cvInput.connect(vcaCVNode)
-  vcaCVNode.gain.value = 1
-  vcaCVNode.connect(vca.gain)
+  // Use Tone.Add to sum the base amount and CV
+  const summedSignal = new Tone.Add()
+  baseGain.connect(summedSignal)
+  amountNode.connect(summedSignal)
+
+  // Connect the summed signal to VCA gain
+  summedSignal.connect(vca.gain)
 
   // Initial routing based on mode
   updateRouting()
+
+  // Update base amount when amount changes
+  watch(amount, (newAmount) => {
+    const normalizedAmount = Math.pow(newAmount, 0.5)
+    baseGain.value = normalizedAmount
+  })
 }
 
 const updateRouting = () => {
@@ -97,28 +101,13 @@ const updateRouting = () => {
 const updateAmount = () => {
   if (!filter || !vca) return
 
-  // Adjust the input range to be more responsive at lower values
-  const normalizedAmount = Math.pow(amount.value, 0.5) // Square root for more sensitivity at low values
-
   // Update filter frequency with adjusted exponential scaling
-  const minFreq = 100 // Increased minimum frequency
+  const minFreq = 20 // Lower minimum frequency
   const maxFreq = 20000
   const freqRange = Math.log(maxFreq / minFreq)
-  const frequency =
-    amount.value === 0
-      ? 0 // Absolute zero frequency when amount is 0
-      : minFreq * Math.exp(freqRange * normalizedAmount)
+  const normalizedAmount = Math.pow(amount.value, 0.5)
+  const frequency = amount.value === 0 ? minFreq : minFreq * Math.exp(freqRange * normalizedAmount)
   filter.frequency.rampTo(frequency, 0.1)
-
-  // Update VCA with adjusted exponential amplitude scaling
-  const minGain = 0.01 // -40dB, more audible minimum
-  const maxGain = 1 // 0dB
-  const gainRange = Math.log(maxGain / minGain)
-  const gain =
-    amount.value === 0
-      ? 0 // Absolute zero gain when amount is 0
-      : minGain * Math.exp(gainRange * normalizedAmount)
-  vca.gain.rampTo(gain, 0.1)
 }
 
 // Watch for audio initialization
@@ -134,11 +123,6 @@ watch(
 // Watch for mode and amount changes
 watch(mode, updateRouting)
 watch(amount, updateAmount)
-
-// Watch for CV amount changes
-watch(cvAmount, (newValue) => {
-  cvInput.gain.value = newValue
-})
 
 onMounted(() => {
   if (props.isAudioReady) {
@@ -163,22 +147,39 @@ defineExpose({
 </script>
 
 <template>
-  <div class="lpg">
-    <div class="module">
+  <div class="module low-pass-gate">
+    <div class="module-header">
       <h3>{{ label }}</h3>
-      <div class="controls">
-        <div class="control-group">
-          <label>Mode</label>
-          <select v-model="mode">
-            <option value="COMBO">COMBO (VCA + VCF)</option>
-            <option value="VCF">VCF</option>
-            <option value="VCA">VCA</option>
-          </select>
+    </div>
+    <div class="module-content">
+      <div class="control-section">
+        <div class="control-row">
+          <div class="control-group">
+            <ThreeWaySwitch
+              v-model="mode"
+              :options="{
+                left: 'VCF',
+                middle: 'COMBO',
+                right: 'VCA',
+              }"
+              :middle-indicator="true"
+              :show-led="true"
+              label="mode"
+              size="medium"
+            />
+          </div>
         </div>
-        <div class="control-group">
-          <label>Offset</label>
-          <input type="range" min="0" max="1" step="0.01" v-model.number="cvAmount" />
-          <span>{{ Math.round(cvAmount * 100) }}%</span>
+        <div class="control-row">
+          <div class="control-group">
+            <ControlKnob
+              v-model="amount"
+              :min="0"
+              :max="1"
+              :step="0.01"
+              label="amount"
+              size="medium"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -186,57 +187,23 @@ defineExpose({
 </template>
 
 <style scoped>
-.lpg {
-  padding: 1rem;
-  background: #f5f5f5;
-  border-radius: 8px;
-  max-width: 400px;
-  margin: 1rem;
-}
-
-.module {
-  background: white;
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.module h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-}
-
-.controls {
+.low-pass-gate {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.control-group label {
-  font-weight: bold;
-  color: #666;
-}
-
-.control-group select,
-.control-group input[type='range'] {
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  height: 100%;
   width: 100%;
+  justify-content: space-between;
 }
 
-.control-group select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
+.control-section {
+  transform-origin: center center;
+  height: 100%;
+  justify-content: space-evenly;
 }
 
-.control-group span {
-  color: #666;
-  font-size: 0.9rem;
+.control-row {
+  padding-bottom: 0;
 }
 </style>

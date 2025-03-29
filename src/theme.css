@@ -1,0 +1,386 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Typography */
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-size-xs: clamp(0.65rem, 1.5vw, 0.75rem);
+  --font-size-sm: clamp(0.75rem, 1.75vw, 0.875rem);
+  --font-size-base: clamp(0.875rem, 2vw, 1rem);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Colors - Primary */
+  --color-primary: #65e18b;
+  --color-primary-dark: #4bc06d;
+  --color-primary-light: rgba(101, 225, 139, 0.3);
+  --color-primary-glow: rgba(101, 225, 139, 0.5);
+
+  /* Colors - Background */
+  --color-bg-darkest: #0a0a0a;
+  --color-bg-darker: #121212;
+  --color-bg-dark: #1a1a1a;
+  --color-bg-primary: #242424;
+  --color-bg-secondary: #2e2e2e;
+  --color-bg-tertiary: #383838;
+
+  /* Colors - Text */
+  --color-text-primary: rgba(255, 255, 255, .87);
+  --color-text-secondary: #95a5a6;
+  --color-text-muted: rgba(255, 255, 255, .6);
+
+  /* Colors - Borders */
+  --color-border-primary: #3c3c3c;
+  --color-border-dark: #1a1a1a;
+  --color-border-darkest: #0a0a0a;
+
+  /* Gradients */
+  --gradient-dark: linear-gradient(165deg, #2e2e2e, #242424);
+  --gradient-darker: linear-gradient(165deg, #1a1a1a, #121212);
+
+  /* Shadows */
+  --shadow-sm: 2px 2px 4px rgba(0, 0, 0, .5);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, .3);
+  --shadow-lg: 0 0 20px rgba(0, 0, 0, .5);
+  --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, .3);
+  --shadow-glow: 0 0 10px var(--color-primary-glow);
+
+  /* Border Radius */
+  --radius-sm: clamp(2px, 0.5vw, 4px);
+  --radius-md: clamp(4px, 0.75vw, 6px);
+  --radius-lg: clamp(6px, 1vw, 8px);
+  --radius-full: 50%;
+
+  /* Spacing */
+  --space-xxs: clamp(0.1rem, 0.2vw, 0.2rem);
+  --space-xs: clamp(0.15rem, 0.3vw, 0.3rem);
+  --space-sm: clamp(0.2rem, 0.4vw, 0.4rem);
+  --space-md: clamp(0.4rem, 0.8vw, 0.8rem);
+  --space-lg: clamp(0.6rem, 1.2vw, 1.2rem);
+  --space-xl: clamp(0.8rem, 1.6vw, 1.6rem);
+
+  /* Module Sizes */
+  --module-height: minmax(auto, 1fr);
+  --knob-base-size: clamp(28px, 3.5vw, 44px);
+
+  /* LED Indicator */
+  --led-size: clamp(4px, 0.6vw, 6px);
+}
+
+/* Global Resets */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-darker);
+  min-height: 100vh;
+  font-size: var(--font-size-base);
+}
+
+/* Layout Classes */
+.main-container {
+  display: grid;
+  grid-template-columns: minmax(200px, 20%) repeat(3, 1fr);
+  gap: var(--space-sm);
+  width: 100%;
+  height: calc(100vh - 40px);
+  min-height: calc(100vh - 40px);
+  padding: var(--space-sm);
+  background-color: var(--color-bg-darker);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.patch-column {
+  background: var(--gradient-dark);
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-md);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  box-sizing: border-box;
+  overflow: hidden;
+  height: 100%;
+}
+
+.module {
+  background: var(--gradient-darker);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Common Module Elements */
+.module-header {
+  width: 100%;
+  text-align: center;
+}
+
+.module-header h3 {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding-bottom: var(--space-sm);
+}
+
+.module-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--knob-base-size), 1fr));
+  gap: var(--space-sm);
+  width: 100%;
+  box-sizing: border-box;
+  place-items: center;
+}
+
+/* Common Control Elements */
+.control-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  justify-content: space-evenly;
+  position: relative;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Led indicators */
+.led-indicator {
+  width: var(--led-size);
+  height: var(--led-size);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  transition: all 0.1s ease;
+}
+
+.led-indicator.active {
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Knob labels */
+.knob-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Component Styles - NavBar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-bg-darker);
+  border-bottom: 1px solid var(--color-border-primary);
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.logo-container h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.menu-container {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.nav-link.router-link-active {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* Layout classes for patch arrangement */
+.clock-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.voice-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Make each module take exactly 1/4 of its column */
+
+
+.shared-row {
+  display: flex;
+  gap: var(--space-sm);
+  width: 100%;
+  flex: 1 0 calc(25% - (var(--space-sm) * 3) / 4);
+  height: calc(25% - (var(--space-sm) * 3) / 4);
+  min-height: 0;
+}
+
+.shared-row .module {
+  width: 50%;
+  height: 100%;
+}
+
+
+
+/* Media Queries for Responsive Layout */
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    overflow: hidden;
+  }
+
+  .clock-column {
+    grid-column: 1 / -1;
+    height: auto;
+    max-height: 20vh;
+  }
+
+  .patch-column {
+    overflow: hidden;
+  }
+
+  .module {
+    padding: var(--space-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(3, 1fr);
+    height: auto;
+    min-height: calc(100vh - 40px);
+    overflow: auto;
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .patch-column {
+    overflow: hidden;
+    max-height: 70vh;
+  }
+
+  .voice-column>.sequencer-module {
+    height: 25% !important;
+  }
+
+  .voice-column>.shared-row {
+    height: 25% !important;
+  }
+
+  .shared-row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .shared-row .module {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .module-content {
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--knob-base-size) * 0.8), 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .module {
+    padding: var(--space-sm);
+  }
+
+  .module-content {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+}

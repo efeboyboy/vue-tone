@@ -1,47 +1,125 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import DualOscillator from '../components/DualOscillator.vue'
+import MasterClock from '../components/MasterClock.vue'
+import StepSequencer from '../components/StepSequencer.vue'
+
+import OscilloscopeScreen from '../components/OscilloscopeScreen.vue'
+import MonoOscillator from '../components/MonoOscillator.vue'
 import NoiseSynth from '../components/NoiseSynth.vue'
 import LowPassGate from '../components/LowPassGate.vue'
 import FunctionGenerator from '../components/FunctionGenerator.vue'
+import MainMixer from '../components/MainMixer.vue'
+import FXUnit from '../components/FXUnit.vue'
+import * as Tone from 'tone'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 
 const isAudioInitialized = ref(false)
+const masterClockRef = ref()
 
-// References to components for audio routing
-const dualOscRef = ref()
-const noiseSynthRef = ref()
+// Create refs for the oscillators
+const sawOsc = ref<InstanceType<typeof MonoOscillator> | null>(null)
+const squareOsc = ref<InstanceType<typeof MonoOscillator> | null>(null)
+const noiseSynthRef = ref<InstanceType<typeof NoiseSynth> | null>(null)
+
+// Create refs for the Low Pass Gates
 const lpg1Ref = ref()
 const lpg2Ref = ref()
 const lpg3Ref = ref()
+
+// Create refs for the Function Generators
 const func1Ref = ref()
 const func2Ref = ref()
 const func3Ref = ref()
 
-// Listen for the global audio initialization event
-const handleAudioInitialized = () => {
-  isAudioInitialized.value = true
+// Create refs for mixers and effects
+const mixerRef = ref<InstanceType<typeof MainMixer> | null>(null)
+const fxUnitRef = ref<InstanceType<typeof FXUnit> | null>(null)
+
+// Create refs for oscilloscopes
+const scope1Ref = ref()
+const scope2Ref = ref()
+const scope3Ref = ref()
+
+// Create refs for sequencers
+const seq1Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+const seq2Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+const seq3Ref = ref<InstanceType<typeof StepSequencer> | null>(null)
+
+// Function to randomize all sequencers with different settings for each
+const randomizeAllSequencers = () => {
+  if (seq1Ref.value) {
+    // Saw sequencer - lower frequencies, higher chance of activation
+    seq1Ref.value.randomize(0.6, 80, 400)
+  }
+
+  if (seq2Ref.value) {
+    // Square sequencer - mid frequencies, medium chance of activation
+    seq2Ref.value.randomize(0.4, 200, 800)
+  }
+
+  if (seq3Ref.value) {
+    // Noise sequencer - higher frequencies for noise rate, lower chance of activation
+    seq3Ref.value.randomize(0.3, 400, 1600)
+  }
+
+  console.log('All sequencers randomized')
 }
 
 const setupAudioRouting = () => {
-  // Route oscillator 1 through LPG 1
-  if (dualOscRef.value?.output1 && lpg1Ref.value?.input) {
-    dualOscRef.value.output1.connect(lpg1Ref.value.input)
-    lpg1Ref.value.output.connect(dualOscRef.value.analyzer1)
-    dualOscRef.value.analyzer1.toDestination()
+  // Connect sequencers to oscillators and noise
+  if (seq1Ref.value?.output && sawOsc.value) {
+    seq1Ref.value.output.connect(sawOsc.value.freq)
+  }
+  if (seq2Ref.value?.output && squareOsc.value) {
+    seq2Ref.value.output.connect(squareOsc.value.freq)
+  }
+  if (seq3Ref.value?.output && noiseSynthRef.value) {
+    seq3Ref.value.output.connect(noiseSynthRef.value.playbackRate)
   }
 
-  // Route oscillator 2 through LPG 2
-  if (dualOscRef.value?.output2 && lpg2Ref.value?.input) {
-    dualOscRef.value.output2.connect(lpg2Ref.value.input)
-    lpg2Ref.value.output.connect(dualOscRef.value.analyzer2)
-    dualOscRef.value.analyzer2.toDestination()
+  // Route OSC 1 to LPG 1, then to Mixer channel A
+  if (
+    sawOsc.value?.output &&
+    lpg1Ref.value?.input &&
+    scope1Ref.value?.input &&
+    mixerRef.value?.channelA
+  ) {
+    sawOsc.value.output.connect(lpg1Ref.value.input)
+    lpg1Ref.value.output.connect(scope1Ref.value.input)
+    lpg1Ref.value.output.connect(mixerRef.value.channelA)
   }
 
-  // Route noise synth through LPG 3
-  if (noiseSynthRef.value?.output && lpg3Ref.value?.input) {
+  // Route OSC 2 to LPG 2, then to Mixer channel B
+  if (
+    squareOsc.value?.output &&
+    lpg2Ref.value?.input &&
+    scope2Ref.value?.input &&
+    mixerRef.value?.channelB
+  ) {
+    squareOsc.value.output.connect(lpg2Ref.value.input)
+    lpg2Ref.value.output.connect(scope2Ref.value.input)
+    lpg2Ref.value.output.connect(mixerRef.value.channelB)
+  }
+
+  // Route Noise to LPG 3, then to Mixer channel C
+  if (
+    noiseSynthRef.value?.output &&
+    lpg3Ref.value?.input &&
+    scope3Ref.value?.input &&
+    mixerRef.value?.channelC
+  ) {
     noiseSynthRef.value.output.connect(lpg3Ref.value.input)
-    lpg3Ref.value.output.connect(noiseSynthRef.value.analyzer)
-    noiseSynthRef.value.analyzer.toDestination()
+    lpg3Ref.value.output.connect(scope3Ref.value.input)
+    lpg3Ref.value.output.connect(mixerRef.value.channelC)
+  }
+
+  // Connect mixer to FX unit
+  if (mixerRef.value?.output && fxUnitRef.value?.input) {
+    mixerRef.value.output.connect(fxUnitRef.value.input)
+  }
+
+  // Connect FX unit to destination
+  if (fxUnitRef.value?.output) {
+    fxUnitRef.value.output.toDestination()
   }
 
   // Connect function generators to LPGs
@@ -54,6 +132,29 @@ const setupAudioRouting = () => {
   if (func3Ref.value?.output && lpg3Ref.value?.amount) {
     func3Ref.value.output.connect(lpg3Ref.value.amount)
   }
+
+  // Setup clock triggers
+  setupTriggers()
+
+  // After all routing is done, randomize the sequencers
+  randomizeAllSequencers()
+}
+
+// Setup 16th note triggers
+const setupTriggers = () => {
+  const transport = Tone.getTransport()
+  transport.scheduleRepeat((time: number) => {
+    // Trigger envelopes based on active steps
+    if (seq1Ref.value?.getCurrentStepData().active) {
+      func1Ref.value?.trigger(time)
+    }
+    if (seq2Ref.value?.getCurrentStepData().active) {
+      func2Ref.value?.trigger(time)
+    }
+    if (seq3Ref.value?.getCurrentStepData().active) {
+      func3Ref.value?.trigger(time)
+    }
+  }, '16n')
 }
 
 // Watch for audio initialization
@@ -67,75 +168,169 @@ watch(
   },
 )
 
+// Start audio context and initialize oscillators when component mounts
 onMounted(() => {
-  window.addEventListener('audioInitialized', handleAudioInitialized)
+  // Listen for the global audio initialization event
+  window.addEventListener('audioInitialized', () => {
+    console.log('NewPatch received audio initialization')
+    isAudioInitialized.value = true
+  })
 })
 
+// Cleanup event listener on unmount
 onUnmounted(() => {
-  window.removeEventListener('audioInitialized', handleAudioInitialized)
+  window.removeEventListener('audioInitialized', () => {
+    isAudioInitialized.value = true
+  })
 })
+
+// Set up cross FM modulation when oscillators are ready
+watch(
+  [sawOsc, squareOsc],
+  ([newSawOsc, newSquareOsc]) => {
+    if (newSawOsc && newSquareOsc && isAudioInitialized.value) {
+      // Connect saw oscillator to square's FM input through the FM amount attenuverter
+      newSawOsc.output.connect(newSquareOsc.fmIn)
+
+      // Connect square oscillator to saw's FM input through the FM amount attenuverter
+      newSquareOsc.output.connect(newSawOsc.fmIn)
+
+      console.log('Cross-modulation routing established')
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
-  <div class="bongo-patch">
-    <h1>Bongo Patch</h1>
-    <div class="synth-container">
-      <div class="oscillators">
-        <DualOscillator ref="dualOscRef" :is-audio-ready="isAudioInitialized" />
-        <div class="noise-synths">
-          <NoiseSynth ref="noiseSynthRef" :is-audio-ready="isAudioInitialized" />
+  <div class="main-container">
+    <!-- Column 1: Clock -->
+    <div class="patch-column clock-column">
+      <MasterClock
+        ref="masterClockRef"
+        :is-audio-ready="isAudioInitialized"
+        class="module clock-module"
+        @randomize="randomizeAllSequencers"
+      />
+      <MainMixer
+        ref="mixerRef"
+        :is-audio-initialized="isAudioInitialized"
+        class="module mixer-module"
+      />
+      <FXUnit ref="fxUnitRef" :is-audio-initialized="isAudioInitialized" class="module fx-module" />
+      <!-- <div class="module how-to-module">
+        <div class="module-header">
+          <h3>Quick Tips</h3>
         </div>
+        <div class="module-content">
+          <ul class="tips-list">
+            <li>Set BPM with master clock</li>
+            <li>Create patterns on sequencers</li>
+            <li>Adjust sound with oscillators</li>
+            <li>Mix channels with mixer</li>
+            <li>Add effects with FX unit</li>
+          </ul>
+        </div>
+      </div> -->
+    </div>
+
+    <!-- Column 2: Saw Voice -->
+    <div class="patch-column voice-column saw-voice">
+      <StepSequencer
+        ref="seq1Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Sequence A"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope1Ref" label="Saw Output" class="module scope-module" />
+      <MonoOscillator
+        ref="sawOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-saw"
+        class="module oscillator-module"
+      />
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg1Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG A"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func1Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="ENV A"
+          class="module envelope-module"
+        />
       </div>
-      <div class="lpgs">
-        <LowPassGate ref="lpg1Ref" :is-audio-ready="isAudioInitialized" label="LPG 1 (Osc 1)" />
-        <LowPassGate ref="lpg2Ref" :is-audio-ready="isAudioInitialized" label="LPG 2 (Osc 2)" />
-        <LowPassGate ref="lpg3Ref" :is-audio-ready="isAudioInitialized" label="LPG 3 (Noise)" />
+    </div>
+
+    <!-- Column 3: Square Voice -->
+    <div class="patch-column voice-column square-voice">
+      <StepSequencer
+        ref="seq2Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Sequence B"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope2Ref" label="Square Output" class="module scope-module" />
+      <MonoOscillator
+        ref="squareOsc"
+        :is-audio-ready="isAudioInitialized"
+        waveform-type="sine-to-square"
+        class="module oscillator-module"
+      />
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg2Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG B"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func2Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="ENV B"
+          class="module envelope-module"
+        />
       </div>
-      <div class="function-generators">
-        <FunctionGenerator ref="func1Ref" :is-audio-ready="isAudioInitialized" label="Func 1" />
-        <FunctionGenerator ref="func2Ref" :is-audio-ready="isAudioInitialized" label="Func 2" />
-        <FunctionGenerator ref="func3Ref" :is-audio-ready="isAudioInitialized" label="Func 3" />
+    </div>
+
+    <!-- Column 4: Noise Voice -->
+    <div class="patch-column voice-column noise-voice">
+      <StepSequencer
+        ref="seq3Ref"
+        :is-audio-ready="isAudioInitialized"
+        label="Sequence C"
+        class="module sequencer-module"
+      />
+      <OscilloscopeScreen ref="scope3Ref" label="Noise Output" class="module scope-module" />
+      <NoiseSynth
+        ref="noiseSynthRef"
+        :is-audio-ready="isAudioInitialized"
+        class="module oscillator-module"
+      />
+      <div class="shared-row">
+        <LowPassGate
+          ref="lpg3Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="LPG C"
+          class="module lpg-module"
+        />
+        <FunctionGenerator
+          ref="func3Ref"
+          :is-audio-ready="isAudioInitialized"
+          label="ENV C"
+          class="module envelope-module"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.bongo-patch {
-  padding: 2rem;
-}
-
-h1 {
-  margin-bottom: 2rem;
-  color: #333;
-}
-
-.synth-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.oscillators,
-.noise-synths,
-.lpgs,
-.function-generators {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.lpgs {
-  background: rgba(156, 39, 176, 0.1);
-  padding: 2rem;
-  border-radius: 8px;
-}
-
-.function-generators {
-  background: rgba(76, 175, 80, 0.1);
-  padding: 2rem;
-  border-radius: 8px;
+<style>
+.how-to-module {
+  height: 100%;
+  width: 100%;
 }
 </style>
