@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import BongoHelp from '../views/BongoHelp.vue'
 import NewPatch from '../views/BongoPatch.vue'
 import BongoAbout from '../views/BongoAbout.vue'
 
@@ -10,11 +9,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: NewPatch,
-    },
-    {
-      path: '/help',
-      name: 'help',
-      component: BongoHelp,
     },
     {
       path: '/about',

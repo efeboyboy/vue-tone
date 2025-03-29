@@ -12,6 +12,26 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 let animationFrameId: number | null = null
 let startTime: number | null = null
 let resizeObserver: ResizeObserver | null = null
+let resizeTimeout: number | null = null
+
+// Debounced resize handler
+const handleResize = (entries: ResizeObserverEntry[]) => {
+  if (resizeTimeout) {
+    window.cancelAnimationFrame(resizeTimeout)
+  }
+
+  resizeTimeout = window.requestAnimationFrame(() => {
+    if (!canvas.value) return
+
+    for (const entry of entries) {
+      const { width, height } = entry.contentRect
+      if (width > 0 && height > 0) {
+        canvas.value.width = width
+        canvas.value.height = height
+      }
+    }
+  })
+}
 
 // Draw envelope visualization
 const drawEnvelope = (timestamp: number) => {
@@ -137,18 +157,8 @@ onMounted(() => {
     canvas.value.width = containerWidth
     canvas.value.height = containerHeight
 
-    // Make canvas responsive
-    resizeObserver = new ResizeObserver((entries) => {
-      if (!canvas.value) return
-
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        if (canvas.value && width > 0 && height > 0) {
-          canvas.value.width = width
-          canvas.value.height = height
-        }
-      }
-    })
+    // Make canvas responsive with debounced resize observer
+    resizeObserver = new ResizeObserver(handleResize)
     resizeObserver.observe(canvas.value.parentElement as Element)
   }
   animationFrameId = requestAnimationFrame(drawEnvelope)
@@ -162,6 +172,10 @@ onUnmounted(() => {
   if (resizeObserver && canvas.value?.parentElement) {
     resizeObserver.unobserve(canvas.value.parentElement)
     resizeObserver.disconnect()
+  }
+
+  if (resizeTimeout) {
+    window.cancelAnimationFrame(resizeTimeout)
   }
 })
 
