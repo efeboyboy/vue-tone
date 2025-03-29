@@ -14,7 +14,7 @@ const { getContext } = useToneContext()
 
 // Reactive envelope parameters
 const attack = ref(0.01)
-const decay = ref(0.1)
+const decay = ref(0.08)
 const isTriggered = ref(false)
 
 let func: Tone.Envelope

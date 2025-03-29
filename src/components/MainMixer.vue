@@ -15,9 +15,9 @@ const output = new Tone.Gain()
 
 // Create reactive channel states
 const channelStates = reactive([
-  { volume: 80, mute: false, solo: false },
-  { volume: 80, mute: false, solo: false },
-  { volume: 80, mute: false, solo: false },
+  { volume: 50, mute: false, solo: false },
+  { volume: 50, mute: false, solo: false },
+  { volume: 10, mute: false, solo: false },
 ])
 
 // Create audio nodes for each channel
