@@ -179,7 +179,6 @@ defineExpose({
               label="amount"
               size="medium"
             />
-            <span class="value-display">{{ Math.round(amount * 100) }}%</span>
           </div>
         </div>
       </div>

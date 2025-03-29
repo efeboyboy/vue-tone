@@ -50,12 +50,13 @@ watch(
 // Watch for parameter changes
 watch(noiseType, (value) => {
   if (noise) {
-    noise.type = value
+    noise.type = value.toLowerCase() as 'white' | 'pink' | 'brown'
   }
 })
 
 watch(playbackRate, (value) => {
   if (noise) {
+    noise.playbackRate = value
     playbackRateSignal.value = value
   }
 })
@@ -91,17 +92,15 @@ defineExpose({
             <ThreeWaySwitch
               v-model="noiseType"
               :options="{
-                left: 'White',
-                middle: 'Pink',
-                right: 'Brown',
+                left: 'white',
+                middle: 'pink',
+                right: 'brown',
               }"
               :show-led="false"
               label="Type"
               size="medium"
             />
           </div>
-        </div>
-        <div class="control-row">
           <div class="control-group">
             <ControlKnob
               v-model="playbackRate"
@@ -118,6 +117,4 @@ defineExpose({
   </div>
 </template>
 
-<style>
-/* Component specific styles only */
-</style>
+<style scoped></style>

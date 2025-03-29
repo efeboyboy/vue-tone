@@ -41,6 +41,11 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
       :class="{ active: middleIndicator && isMiddleSelected }"
     ></div>
 
+    <!-- Label -->
+    <div v-if="label" class="label-container">
+      <span class="switch-label">{{ label }}</span>
+    </div>
+
     <!-- Switch Track -->
     <div class="switch-track" :class="{ 'no-led': !showLed }">
       <!-- Switch Handle -->
@@ -78,11 +83,6 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
         </div>
       </div>
     </div>
-
-    <!-- Label -->
-    <div v-if="label" class="label-container">
-      <span class="switch-label">{{ label }}</span>
-    </div>
   </div>
 </template>
 
@@ -91,7 +91,7 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
   position: relative;
   width: var(--switch-width, 140px);
 }
@@ -99,41 +99,54 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 .switch-container.small {
   --switch-width: 120px;
   --switch-height: 32px;
-  --label-font-size: var(--font-size-xs);
 }
 
 .switch-container.medium {
   --switch-width: 140px;
   --switch-height: 36px;
-  --label-font-size: var(--font-size-sm);
 }
 
 .switch-container.large {
   --switch-width: 180px;
   --switch-height: 40px;
-  --label-font-size: var(--font-size-md);
 }
 
 .led-indicator {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  background: var(--led-inactive);
-  margin-bottom: var(--spacing-xs);
-  transition: all var(--transition-normal);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: var(--shadow-inset);
+  margin-bottom: var(--space-xs);
+  transition: all 0.2s ease;
 }
 
 .led-indicator.active {
-  background: var(--led-active);
-  box-shadow: 0 0 8px var(--led-glow);
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.label-container {
+  margin-bottom: var(--space-xs);
+}
+
+.switch-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  letter-spacing: 0.05em;
 }
 
 .switch-track {
   position: relative;
   width: 100%;
   height: var(--switch-height);
-  background: var(--knob-background);
-  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-darker);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-inset);
   overflow: hidden;
 }
 
@@ -145,7 +158,8 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
   position: absolute;
   width: 33.33%;
   height: 100%;
-  background: var(--knob-indicator);
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border-dark);
   transition: transform 0.2s ease;
   z-index: 1;
 }
@@ -180,30 +194,18 @@ const handleClick = (position: 'left' | 'middle' | 'right') => {
 }
 
 .click-area .label {
-  color: var(--knob-label);
-  opacity: 0.5;
-  font-size: var(--label-font-size);
-  font-family: var(--font-family);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
   text-transform: uppercase;
   pointer-events: none;
-  transition: all var(--transition-normal);
+  transition: all 0.2s ease;
   font-weight: 400;
 }
 
 .click-area.active .label {
-  opacity: 1;
+  color: var(--color-text-primary);
   font-weight: 600;
-  text-shadow: 0 0 8px var(--led-glow);
-}
-
-.label-container {
-  text-align: center;
-}
-
-.switch-label {
-  font-size: var(--label-font-size);
-  color: var(--knob-label);
-  text-transform: lowercase;
-  font-family: var(--font-family);
+  text-shadow: 0 0 8px var(--color-primary-glow);
 }
 </style>

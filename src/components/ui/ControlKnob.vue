@@ -78,6 +78,7 @@ const handleMouseUp = () => {
       <div class="indicator-line"></div>
     </div>
 
+    <!-- Label -->
     <div class="label-container" v-if="label">
       <span class="knob-label">{{ label }}</span>
     </div>
@@ -93,28 +94,25 @@ const handleMouseUp = () => {
   user-select: none;
   position: relative;
   width: var(--knob-size, 65px);
-  height: var(--knob-size, 65px);
+  height: calc(var(--knob-size, 65px) + 24px); /* Space for label only */
 }
 
 .control-knob-container.small {
   --knob-size: 48px;
-  --label-font-size: 0.75rem;
 }
 
 .control-knob-container.medium {
   --knob-size: 65px;
-  --label-font-size: 0.875rem;
 }
 
 .control-knob-container.large {
   --knob-size: 80px;
-  --label-font-size: 1rem;
 }
 
 .knob-background {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: var(--knob-size);
+  height: var(--knob-size);
   border-radius: 50%;
   background: var(--color-bg-darker);
   box-shadow: var(--shadow-inset);
@@ -123,10 +121,10 @@ const handleMouseUp = () => {
 
 .control-knob {
   position: absolute;
-  width: 85%;
-  height: 85%;
-  top: 7.5%;
-  left: 7.5%;
+  width: calc(var(--knob-size) * 0.85);
+  height: calc(var(--knob-size) * 0.85);
+  top: calc(var(--knob-size) * 0.075);
+  left: calc(var(--knob-size) * 0.075);
   border-radius: 50%;
   background: var(--color-bg-dark);
   cursor: pointer;
@@ -163,13 +161,13 @@ const handleMouseUp = () => {
 
 .label-container {
   position: absolute;
-  bottom: -24px;
+  bottom: 0;
   text-align: center;
   width: 100%;
 }
 
 .knob-label {
-  font-size: var(--label-font-size);
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   font-family: var(--font-sans);

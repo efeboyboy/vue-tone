@@ -124,7 +124,6 @@ defineExpose({
               label="Attack"
               size="medium"
             />
-            <span class="value-display">{{ Math.round(attack * 1000) }}ms</span>
           </div>
           <div class="control-group">
             <ControlKnob
@@ -135,7 +134,6 @@ defineExpose({
               label="Decay"
               size="medium"
             />
-            <span class="value-display">{{ Math.round(decay * 1000) }}ms</span>
           </div>
         </div>
       </div>
